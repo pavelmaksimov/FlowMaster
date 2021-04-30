@@ -4,10 +4,10 @@ from flowmaster.operators.etl.providers.yandex_metrika_logs import (
     YandexMetrikaLogsExportPolicy,
 )
 from flowmaster.operators.etl.service import ETLOperator
+from flowmaster.utils.executor import catch_exceptions, Executor
 from flowmaster.utils.yaml_helper import YamlHelper
 from tests import get_tests_dir
 from tests.fixtures.yandex_metrika import yml_visits_to_file_config as CONFIG
-from utils.executor import catch_exceptions, Executor
 
 credentials = YamlHelper.parse_file(get_tests_dir("tests2") / "credentials.yml")
 CONFIG.export.credentials = YandexMetrikaLogsExportPolicy.Credentials(

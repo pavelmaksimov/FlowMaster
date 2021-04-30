@@ -1,6 +1,6 @@
 import datetime as dt
 
-from utils import iter_period_from_range
+from flowmaster.utils import iter_period_from_range
 
 
 def test_iter_period_from_range():
