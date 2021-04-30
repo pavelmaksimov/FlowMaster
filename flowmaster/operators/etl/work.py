@@ -76,7 +76,7 @@ def order_etl_flow(logger: Logger, dry_run: bool = False) -> Iterator["ETLOperat
     from flowmaster.operators.etl.config import ETLFlowConfig
 
     for file_name, config in YamlHelper.iter_parse_file_from_dir(
-        FLOW_CONFIGS_DIR, match=".flow"
+        FLOW_CONFIGS_DIR, match=".etl.flow"
     ):
         if dry_run:
             if config.get("provider") != "fakedata":
