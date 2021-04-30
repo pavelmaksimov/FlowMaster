@@ -1,0 +1,36 @@
+description: testing
+provider: yandex_metrika_logs
+storage: file
+
+work:
+    update_stale_data: 1
+    schedule:
+        timezone: Europe/Moscow
+        start_time: 00:00:00
+        from_date: 2021-03-20
+        interval: daily
+
+export:
+    credentials:
+        counter_id:
+        access_token:
+
+    params:
+        source: visits
+        columns:
+            - ym:s:date
+            - ym:s:pageViews
+
+load:
+    encoding: "UTF-8"
+    save_mode: "w" # 'w' or 'a'
+    file_name: "{provider} {name}.tsv"
+    sep: "\t"
+    newline: "\n"
+    with_columns: True
+    add_data_before: "{name}\n{provider}\n\n"
+    add_data_after: "\nHappy end\nupdated at {datetime}\n"
+
+transform:
+    timezone: Europe/Moscow
+    error_policy: default

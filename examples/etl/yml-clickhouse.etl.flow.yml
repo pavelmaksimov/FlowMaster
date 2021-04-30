@@ -1,0 +1,61 @@
+description: testing
+provider: yandex_metrika_logs
+storage: file
+
+work:
+    update_stale_data: 1
+    schedule:
+        timezone: Europe/Moscow
+        start_time: 00:00:00
+        from_date: 2021-03-20
+        interval: daily
+
+export:
+    credentials:
+        counter_id:
+        access_token:
+
+    params:
+        source: visits
+        columns:
+            - ym:s:counterID
+            - ym:s:clientID
+            - ym:s:visitID
+            - ym:s:date
+            - ym:s:dateTime
+            - ym:s:lastTrafficSource
+            - ym:s:startURL
+            - ym:s:pageViews
+
+load:
+    credentials:
+        host: 109.195.250.170
+        user: admin
+        password: "429220"
+        port: 9000
+
+    table_schema:
+        db: default
+        table: test_yml_clickhouse
+        columns:
+            ym:s:counterID: CounterID UInt64
+            ym:s:visitID: VisitID UInt64
+            ym:s:clientID: ClientID UInt64
+            ym:s:date: Date Date
+            ym:s:dateTime: DateTime DateTime
+            ym:s:lastTrafficSource: LastTrafficSource String
+            ym:s:startURL: StartURL String
+            ym:s:pageViews: Users UInt64
+        orders:
+            - CounterID
+            - Date
+            - ClientID
+        partition:
+            - CounterID
+            - Date
+
+    data_cleaning_mode: partition
+
+transform:
+    timezone: Europe/Moscow
+    error_policy: default

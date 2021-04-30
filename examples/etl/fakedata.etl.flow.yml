@@ -1,0 +1,30 @@
+description: fakedata
+provider: fakedata
+storage: file
+
+work:
+    schedule:
+        timezone: Europe/Moscow
+        start_time: 00:00:00
+        from_date: 2021-03-28
+        interval: daily
+
+export:
+    rows: 10
+    columns:
+        - name
+        - company
+        - date_time
+
+load:
+    encoding: "UTF-8"
+    save_mode: "a" # 'w' or 'a'
+    file_name: "{provider} {name}.tsv"
+    sep: "\t"
+    newline: "\n"
+    with_columns: True
+    add_data_before: ""
+    add_data_after: ""
+
+transform:
+    error_policy: default

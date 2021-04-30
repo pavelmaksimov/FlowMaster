@@ -1,0 +1,13 @@
+.idea
+.vscode
+*.pyc
+*/__pycache__
+/django-dev/src/.pytest_cache/
+venv
+.git
+.pytest_cache
+tests2/credentials.yml
+tests/__test_files__
+.pypirc
+Makefile
+TODO.md

@@ -1,0 +1,43 @@
+description: testing
+provider: yandex_metrika_management
+storage: file
+
+work:
+    update_stale_data: 1
+    schedule:
+        timezone: Europe/Moscow
+        start_time: 00:00:00
+        interval: daily
+
+export:
+    credentials:
+        access_token:
+
+    # https://yandex.ru/dev/metrika/doc/api2/management/direct_clients/getclients.html
+    resource: goals
+    params:
+        useDeleted: True
+    columns:
+        - id
+        - name
+        - type
+        - is_retargeting
+        - flag
+        - conditions
+        - steps
+        - depth
+        - default_price
+
+load:
+    encoding: "UTF-8"
+    save_mode: "w" # 'w' or 'a'
+    file_name: "{provider} {name}.tsv"
+    sep: "\t"
+    newline: "\n"
+    with_columns: True
+    add_data_before: "{name}\n{provider}\n\n"
+    add_data_after: "\nHappy end\nupdated at {datetime}\n"
+
+transform:
+    timezone: Europe/Moscow
+    error_policy: default

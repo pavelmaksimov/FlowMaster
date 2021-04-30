@@ -1,0 +1,51 @@
+description: testing
+provider: yandex_metrika_stats
+storage: file
+
+work:
+    update_stale_data: 1
+    schedule:
+        timezone: Europe/Moscow
+        start_time: 00:00:00
+        from_date: 2021-03-20
+        interval: daily
+
+export:
+    credentials:
+        access_token:
+
+    params:
+        ids: 100500
+        metrics:
+            - ym:s:visits
+            - ym:s:users
+        dimensions:
+            - ym:s:date
+        sort:
+            - ym:s:date
+        limit: 2
+        accuracy: 0.01
+        date1: True
+        date2: True
+
+load:
+    encoding: "UTF-8"
+    save_mode: "w" # 'w' or 'a'
+    file_name: "{provider} {name}.tsv"
+    sep: "\t"
+    newline: "\n"
+    with_columns: True
+    add_data_before: "{name}\n{provider}\n\n"
+    add_data_after: "\nHappy end\nupdated at {datetime}\n"
+
+transform:
+    timezone: Europe/Moscow
+    error_policy: default
+
+    column_schema:
+        ym:s:date:
+            name: Date
+            dtype: datetime
+            errors: default
+            dt_format: "%Y-%m-%d"
+            allow_null: True

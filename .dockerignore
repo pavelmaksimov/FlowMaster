@@ -1,0 +1,11 @@
+.git
+.idea
+.vscode
+.pytest_cache
+venv
+*/__pycache__
+*.pyc
+tests2/credentials.yml
+tests/__test_files__
+.pypirc
+TODO.md

@@ -1,0 +1,9 @@
+version: "3"
+
+services:
+    fm:
+        build: .
+        image: flowmaster
+        container_name: fm
+        volumes:
+            - ./myFlowMaster:/usr/src/FlowMaster

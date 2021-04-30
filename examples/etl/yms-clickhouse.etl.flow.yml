@@ -1,0 +1,65 @@
+description: testing
+provider: yandex_metrika_stats
+storage: clickhouse
+
+work:
+    update_stale_data: 1
+    schedule:
+        timezone: Europe/Moscow
+        start_time: 00:00:00
+        from_date: 2021-03-20
+        interval: daily
+
+export:
+    credentials:
+        access_token:
+
+    params:
+        ids: 100500
+        metrics:
+            - ym:s:visits
+            - ym:s:users
+        dimensions:
+            - ym:s:date
+        sort:
+            - ym:s:date
+        limit: 2
+        accuracy: 0.01
+        date1: True
+        date2: True
+
+load:
+    credentials:
+        host:
+        user:
+        password:
+        port:
+
+    table_schema:
+        db: default
+        table: test_flow
+        columns:
+            ym:s:date: Date Date
+            ym:s:visits: Visits Int32
+            ym:s:users: Users UInt32
+        orders:
+            - Date
+        partition:
+            - Date
+
+    data_cleaning_mode: partition
+
+    sql_before:
+        - SELECT 1
+    sql_after:
+        - SELECT 2
+
+transform:
+    timezone: Europe/Moscow
+    error_policy: default
+
+    column_schema:
+        ym:s:date:
+            errors: default
+            dt_format: "%Y-%m-%d"
+            allow_null: False
