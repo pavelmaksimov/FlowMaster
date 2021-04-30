@@ -40,7 +40,7 @@ For Windows
 
 For Linux
 
-    export FLOWMASTER_HOME={YOUR_PATH}/FlowMaster
+    export FLOWMASTER_HOME={YOUR_PATH}
 
 ## Installing
     pip install flowmaster==0.1.0

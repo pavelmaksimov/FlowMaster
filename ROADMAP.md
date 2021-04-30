@@ -3,10 +3,10 @@
 ### ETL
 #### Добавить источники данных
 
-- Яндекс Маркет (in developing)
-- Яндекс Директ (in developing)
-- Google Analytics (in developing)
-- Google Adwords (in developing)
+- Яндекс Маркет
+- Яндекс Директ
+- Google Analytics
+- Google Adwords
 - Mytarget
 - Criteo
 - File
@@ -18,10 +18,10 @@
 
 #### Добавить хранилища
 
-- Postgres (in developing)
-- MySQL (in developing)
-- Google BigQuery (in developing)
-- Google Sheets (in developing)
+- Postgres
+- MySQL
+- Google BigQuery
+- Google Sheets
 
 ### Общее
 - Оператор скрипта Python

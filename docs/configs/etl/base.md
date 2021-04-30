@@ -6,6 +6,8 @@
 Готовые примеры конфигураций потоков находятся [здесь](../../../examples/etl/)
 
 ```yaml
+description: Описание потока
+
 # Поставщик данных.
 provider: Literal[
     "yandex_metrika_stats",
