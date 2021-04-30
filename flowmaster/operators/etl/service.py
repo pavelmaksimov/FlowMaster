@@ -129,9 +129,6 @@ class ETLOperator(BaseOperator):
                 self.Model.retries.name: 0,
                 self.Model.data.name: dict(self.operator_context),
             }
-            self.send_notifications(
-                FlowStatus.success, period=self._get_date_log(start_period, end_period)
-            )
 
         finally:
             yield {
@@ -179,6 +176,10 @@ class ETLOperator(BaseOperator):
             self.logger.exception("Fail flow: %s  %s", self.name, date_log)
             raise
 
+        else:
+            self.send_notifications(
+                FlowStatus.success, period=self._get_date_log(start_period, end_period)
+            )
         finally:
             self.Model.update_items(self.items)
             self.logger.info("End flow: %s  %s", self.name, date_log)
