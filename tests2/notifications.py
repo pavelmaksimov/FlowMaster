@@ -23,7 +23,7 @@ def test_codex_telegram():
         yield ({}, ["date"], [[start_period]])
 
     yml_visits_to_file_config.work.notifications = BaseWorkPolicy.Notifications(
-        codextelegram=BaseWorkPolicy.Notifications.CodexTelegram(
+        codex_telegram=BaseWorkPolicy.Notifications.CodexTelegram(
             links=[credentials["codex_telegram"]],
             on_success=True,
         )
