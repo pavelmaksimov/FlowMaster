@@ -79,7 +79,7 @@ class BaseWorkPolicy(BasePolicy):
         class CodexTelegram(NotificationServicePolicyAbstract):
             links: list[str]
 
-        codextelegram: CodexTelegram = None
+        codex_telegram: CodexTelegram = None
 
     notifications: Optional[Notifications]
     schedule: BaseSchedulePolicy

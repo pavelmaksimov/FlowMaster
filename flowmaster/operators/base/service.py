@@ -27,7 +27,7 @@ class BaseOperator:
             return
 
         if status == FlowStatus.success:
-            codex_tg = self.config.work.notifications.codextelegram
+            codex_tg = self.config.work.notifications.codex_telegram
 
             if codex_tg.on_success:
                 send_codex_telegram_message(codex_tg.links, message)
