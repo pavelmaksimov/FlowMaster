@@ -20,9 +20,7 @@ def test_retries(create_retries, retries, result):
     FlowItem.create(
         **{
             FlowItem.name.name: FLOW_NAME,
-            FlowItem.worktime.name: pendulum.datetime(
-                2020, 1, 1, tz="Europe/Moscow"
-            ),
+            FlowItem.worktime.name: pendulum.datetime(2020, 1, 1, tz="Europe/Moscow"),
             FlowItem.started_utc.name: dt.datetime(2020, 1, 1),
             FlowItem.status.name: FlowStatus.error,
             FlowItem.retries.name: create_retries,
@@ -48,9 +46,7 @@ def test_retry_delay(retry_delay, passed_sec, is_run):
     FlowItem.create(
         **{
             FlowItem.name.name: FLOW_NAME,
-            FlowItem.worktime.name: pendulum.datetime(
-                2020, 1, 1, tz="Europe/Moscow"
-            ),
+            FlowItem.worktime.name: pendulum.datetime(2020, 1, 1, tz="Europe/Moscow"),
             FlowItem.started_utc.name: dt.datetime(2020, 1, 1, 0, 0, 0),
             FlowItem.status.name: FlowStatus.error,
             FlowItem.retries.name: 0,
@@ -257,9 +253,7 @@ def test_create_missing_items():
 
     assert len(items) == 1
 
-    FlowItem.create(
-        **{FlowItem.name.name: FLOW_NAME, FlowItem.worktime.name: worktime}
-    )
+    FlowItem.create(**{FlowItem.name.name: FLOW_NAME, FlowItem.worktime.name: worktime})
 
     FlowItem.create_missing_items(
         flow_name=FLOW_NAME,
@@ -328,7 +322,7 @@ def test_allow_execute_flow():
         flow_name=FLOW_NAME,
         worktime=worktime,
         offset_periods=[-1],
-        interval_timedelta=interval_timedelta
+        interval_timedelta=interval_timedelta,
     )
     assert (
         FlowItem.allow_execute_flow(FLOW_NAME, config_hash="", max_fatal_errors=3)

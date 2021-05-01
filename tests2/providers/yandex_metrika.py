@@ -48,7 +48,7 @@ def test_stats():
     ]
     ymstats_to_file_config.export.params = {
         **dict(ymstats_to_file_config.export.params),
-        **credentials["yandex-metrika-stats"]["params"]
+        **credentials["yandex-metrika-stats"]["params"],
     }
     config = ETLFlowConfig(**dict(ymstats_to_file_config))
     etl_flow = ETLOperator(config)

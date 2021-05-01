@@ -98,9 +98,7 @@ class Work:
         )
 
 
-def order_flow(
-    logger: Logger, dry_run=False
-) -> Union[Iterator["ETLOperator"]]:
+def order_flow(logger: Logger, dry_run=False) -> Union[Iterator["ETLOperator"]]:
     from flowmaster.operators.etl.work import order_etl_flow
 
     yield from order_etl_flow(logger, dry_run)

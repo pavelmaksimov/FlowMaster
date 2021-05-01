@@ -2,7 +2,9 @@ import importlib
 
 from flowmaster.operators.etl.providers.abstract import ProviderAbstract
 from flowmaster.operators.etl.providers.fakedata import FakeDataProvider
-from flowmaster.operators.etl.providers.yandex_metrika_logs import YandexMetrikaLogsProvider
+from flowmaster.operators.etl.providers.yandex_metrika_logs import (
+    YandexMetrikaLogsProvider,
+)
 from flowmaster.operators.etl.providers.yandex_metrika_management import (
     YandexMetrikaManagementProvider,
 )

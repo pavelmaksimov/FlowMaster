@@ -8,7 +8,6 @@ from flowmaster.operators.etl.providers import provider_classes
 
 
 class ETLFlowConfig(BaseFlowConfig):
-
     class Work(ETLWorkPolicy):
         ...
 

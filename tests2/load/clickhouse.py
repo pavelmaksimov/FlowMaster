@@ -28,7 +28,11 @@ def test_real_load_clickhouse():
     flow = ETLOperator(CONFIG)
     flow.Load.Table.drop_table()
     try:
-        list(flow(start_period=dt.datetime(2021, 1, 1), end_period=dt.datetime(2021, 1, 1)))
+        list(
+            flow(
+                start_period=dt.datetime(2021, 1, 1), end_period=dt.datetime(2021, 1, 1)
+            )
+        )
 
         assert flow.Load.Table.select(columns=["Date"]) == [(dt.date(2021, 1, 1),)]
 
@@ -37,7 +41,11 @@ def test_real_load_clickhouse():
         CONFIG.load.data_cleaning_mode = ClickhouseLoad.DataCleaningMode.off
         flow = ETLOperator(CONFIG)
 
-        list(flow(start_period=dt.datetime(2021, 1, 2), end_period=dt.datetime(2021, 1, 2)))
+        list(
+            flow(
+                start_period=dt.datetime(2021, 1, 2), end_period=dt.datetime(2021, 1, 2)
+            )
+        )
 
         assert flow.Load.Table.select(columns=["Date"]) == [
             (dt.date(2021, 1, 1),),
@@ -49,7 +57,11 @@ def test_real_load_clickhouse():
         CONFIG.load.data_cleaning_mode = ClickhouseLoad.DataCleaningMode.partition
         flow = ETLOperator(CONFIG)
 
-        list(flow(start_period=dt.datetime(2021, 1, 2), end_period=dt.datetime(2021, 1, 2)))
+        list(
+            flow(
+                start_period=dt.datetime(2021, 1, 2), end_period=dt.datetime(2021, 1, 2)
+            )
+        )
 
         assert flow.Load.Table.select(columns=["Date"]) == [
             (dt.date(2021, 1, 1),),
@@ -61,7 +73,11 @@ def test_real_load_clickhouse():
         CONFIG.load.data_cleaning_mode = ClickhouseLoad.DataCleaningMode.truncate
         flow = ETLOperator(CONFIG)
 
-        list(flow(start_period=dt.datetime(2021, 1, 2), end_period=dt.datetime(2021, 1, 2)))
+        list(
+            flow(
+                start_period=dt.datetime(2021, 1, 2), end_period=dt.datetime(2021, 1, 2)
+            )
+        )
 
         assert flow.Load.Table.select(columns=["Date"]) == [(dt.date(2021, 1, 2),)]
 
