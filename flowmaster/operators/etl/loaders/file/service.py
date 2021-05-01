@@ -34,7 +34,10 @@ class FileLoad:
         self.with_columns = config.load.with_columns
 
         _template = dict(
-            flow_name=config.name, provider=config.provider, datetime=dt.datetime.now()
+            name=config.name,
+            provider=config.provider,
+            storage=config.storage,
+            datetime=dt.datetime.now(),
         )
         self.file_name = jinja2.Template(config.load.file_name).render(**_template)
         self.add_data_before = jinja2.Template(config.load.add_data_before).render(

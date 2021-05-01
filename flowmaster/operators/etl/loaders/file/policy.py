@@ -6,7 +6,7 @@ from flowmaster.setttings import FILE_STORAGE_DIR
 
 class FileLoadPolicy(BasePolicy):
     save_mode: Literal["a", "w"]
-    file_name: str = "{{provider}} {{flow_name}}.tsv"
+    file_name: str = "{{provider}} {{storage}}  {{name}}.tsv"
     path: str = FILE_STORAGE_DIR
     encoding: str = "UTF-8"
     sep: str = "\t"

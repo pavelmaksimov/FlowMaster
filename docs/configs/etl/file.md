@@ -8,8 +8,8 @@ load:
     # "w" При каждой загрузке файл перезаписывается.
     # "a" Данные вставляются в конец файла.
     save_mode: Literal["a", "w"]
-    # Через шаблонизатор jinja доступны {{provider}} {{flow_name}} {{datetime}}.
-    file_name: str = "{{provider}} {{flow_name}}.tsv"
+    # Через шаблонизатор jinja доступны {{provider}} {{storage}} {{name}} {{datetime}}.
+    file_name: str = "{{provider}} {{storage}}  {{name}}.tsv"
     # Optional:
     # По умолчанию файлы сохраняются в FlowMaster/file_storage
     path: str = FILE_STORAGE_DIR
@@ -19,9 +19,10 @@ load:
     # Добавить названия столбцов в первую строку файла.
     with_columns: bool = True
     # Добавление текста перед вставляемыми данными.
-    # Через шаблонизатор jinja доступны {{provider}} {{flow_name}} {{datetime}}.
+    # Через шаблонизатор jinja доступны {{provider}} {{storage}} {{name}} {{datetime}}.
     add_data_before: str = ""
     # Добавление текста после вставляемых данных.
+    # Через шаблонизатор jinja доступны {{provider}} {{storage}} {{name}} {{datetime}}.
     add_data_after: str = ""
     # Максимальное кол-во одновременных запущенных вставок данных в файл.
     concurrency: int = 1

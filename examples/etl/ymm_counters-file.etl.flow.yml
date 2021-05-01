@@ -58,11 +58,11 @@ export:
 load:
     encoding: "UTF-8"
     save_mode: "w" # 'w' or 'a'
-    file_name: "{provider} {name}.tsv"
+    file_name: "{{name}} {{provider}} {{storage}}.tsv"
     sep: "\t"
     newline: "\n"
     with_columns: True
-    add_data_before: "{name}\n{provider}\n\n"
+    add_data_before: "{{name}}\n{{provider}} {{storage}} {{ datetime.date() }}\n\n"
     add_data_after: "\nHappy end\nupdated at {datetime}\n"
 
 transform:
