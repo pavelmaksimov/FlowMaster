@@ -169,7 +169,7 @@ class Executor:
     def create_worker_in_thread(self, number: int) -> None:
         for n in range(number):
             name = f"FlowMaster worker{n + 1}"
-            worker_thread = threading.Thread(target=self.run_worker, name=name)
+            worker_thread = threading.Thread(target=self.run_worker, name=name, daemon=True)
             self._worker_threads[name] = worker_thread
             worker_thread.start()
 
