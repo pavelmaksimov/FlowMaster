@@ -2,7 +2,7 @@
 import os
 import re
 
-from setuptools import setup
+from setuptools import setup, find_packages
 
 with open("README.md", "r") as fh:
     readme = fh.read()
@@ -33,10 +33,12 @@ setup(
     author="Pavel Maksimov",
     author_email="vur21@ya.ru",
     url="https://github.com/pavelmaksimov/flowmaster",
-    packages=[package],
+    packages=find_packages(),
     include_package_data=True,
     install_requires=[
         "requests",
+        "pytz",
+        "clickhousepy==2021.3.10",
         "DataGun>=0.1.0, <0.2.0",
         "orjson>=3.0.0, <4.0.0",
         "Faker>=5.0.0, <9.0.0",
