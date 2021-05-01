@@ -1,5 +1,8 @@
 # ETL flow framework based on Yaml configs in Python
 
+![Supported Python Versions](https://img.shields.io/static/v1?label=python&message=>=3.9&color=blue)
+![License](https://img.shields.io/static/v1?label=license&message=GPLv3&color=green)
+<a href="https://github.com/psf/black"><img alt="Code style: black" src="https://img.shields.io/badge/code%20style-black-000000.svg"></a>
 
 A light framework for creating data streams. 
 Setting up streams through configuration in the Yaml file.

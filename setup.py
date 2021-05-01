@@ -2,13 +2,10 @@
 import os
 import re
 
-from setuptools import setup, find_packages
+from setuptools import setup
 
 with open("README.md", "r") as fh:
     readme = fh.read()
-
-with open("requirements.in", "r") as f:
-    requirements = f.read().splitlines()
 
 package = "flowmaster"
 
@@ -36,16 +33,28 @@ setup(
     author="Pavel Maksimov",
     author_email="vur21@ya.ru",
     url="https://github.com/pavelmaksimov/flowmaster",
-    packages=find_packages(),
+    packages=[package],
     include_package_data=True,
-    install_requires=requirements,
+    install_requires=[
+        "requests",
+        "DataGun>=0.1.0, <0.2.0",
+        "orjson>=3.0.0, <4.0.0",
+        "Faker>=5.0.0, <9.0.0",
+        "peewee>=3.0.0, <4.0.0",
+        "pendulum>=2.0.0, <3.0.0",
+        "pydantic>=1.0.0, <2.0.0",
+        "PyYAML>=5.0.0, <6.0.0",
+        "tapi-yandex-metrika==2021.2.21",
+        "typer>=0.3.0, <0.4.0",
+        "Jinja2>=2.0.0, <3.0.0",
+    ],
     license="GPLv3",
     keywords="etl,flowmaster,flow,airflow,prefect,schedule,scheduler,tasker",
     test_suite="tests",
-    python_requires='>=3.9',
+    python_requires=">=3.9",
     entry_points={
-        'console_scripts': [
-            'flowmaster=flowmaster.__main__:app',
+        "console_scripts": [
+            "flowmaster=flowmaster.__main__:app",
         ],
     },
 )

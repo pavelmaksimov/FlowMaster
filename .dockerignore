@@ -9,3 +9,5 @@ tests2/credentials.yml
 tests/__test_files__
 .pypirc
 TODO.md
+dist
+*.egg-info

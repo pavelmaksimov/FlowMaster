@@ -11,3 +11,5 @@ tests/__test_files__
 .pypirc
 Makefile
 TODO.md
+dist
+*.egg-info
