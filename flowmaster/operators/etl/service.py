@@ -137,7 +137,7 @@ class ETLOperator(BaseOperator):
             }
 
     @staticmethod
-    def _get_date_log(start_period: dt.datetime, end_period: dt.datetime) -> str:
+    def _get_period_text(start_period: dt.datetime, end_period: dt.datetime) -> str:
         if start_period == end_period:
             return start_period.strftime("%Y-%m-%dT%H:%M:%S").replace("T00:00:00", "")
         else:
@@ -149,7 +149,7 @@ class ETLOperator(BaseOperator):
     def __call__(
         self, start_period: dt.datetime, end_period: dt.datetime, **kwargs
     ) -> Iterator:
-        date_log = self._get_date_log(start_period, end_period)
+        date_log = self._get_period_text(start_period, end_period)
         self.logger.update(self.name, filename=f"{date_log}.log", level=self.loglevel)
         self.logger.info("Start flow: %s  %s", self.name, date_log)
 
@@ -164,6 +164,7 @@ class ETLOperator(BaseOperator):
             data=dict(self.operator_context),
         )
 
+        log_data = {}
         try:
             for log_data in self.iterator(start_period, end_period, **kwargs):
                 if isinstance(log_data, dict):
@@ -174,11 +175,19 @@ class ETLOperator(BaseOperator):
 
         except:
             self.logger.exception("Fail flow: %s  %s", self.name, date_log)
+            self.send_notifications(
+                **{
+                    "status": FlowStatus.error,
+                    "period": self._get_period_text(start_period, end_period),
+                    **log_data,
+                }
+            )
             raise
 
         else:
             self.send_notifications(
-                FlowStatus.success, period=self._get_date_log(start_period, end_period)
+                FlowStatus.success,
+                period=self._get_period_text(start_period, end_period),
             )
         finally:
             self.Model.update_items(self.items)
