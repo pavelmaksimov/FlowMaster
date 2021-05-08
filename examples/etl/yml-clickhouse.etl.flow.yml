@@ -29,10 +29,10 @@ export:
 
 load:
     credentials:
-        host: 109.195.250.170
-        user: admin
-        password: "429220"
-        port: 9000
+        host:
+        user:
+        password:
+        port:
 
     table_schema:
         db: default
