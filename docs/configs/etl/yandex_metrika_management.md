@@ -21,7 +21,7 @@ export:
 ### Экспорт данных клиентов Яндекс.Директа
 https://yandex.ru/dev/metrika/doc/api2/management/direct_clients/getclients.html
 ```yaml
-...
+export:
     resource: clients
     columns: list[Literal["id", "name", "chief_login"]] = [
         "id",
@@ -34,7 +34,7 @@ https://yandex.ru/dev/metrika/doc/api2/management/direct_clients/getclients.html
 ### Экспорт данных по целям
 https://yandex.ru/dev/metrika/doc/api2/management/goals/goals.html
 ```yaml
-...
+export:
     resource: goals
     params: 
         useDeleted: Optional[bool] = None
@@ -70,7 +70,7 @@ https://yandex.ru/dev/metrika/doc/api2/management/goals/goals.html
 ### Экспорт данных по счетчикам
 https://yandex.ru/dev/metrika/doc/api2/management/counters/counters.html
 ```yaml
-...
+export:
     resource: counters
     params: 
         per_page: Optional[int] = None

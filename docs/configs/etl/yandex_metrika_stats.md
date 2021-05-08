@@ -9,7 +9,7 @@ export:
         access_token: str
 
     params:
-        # https://yandex.ru/dev/metrika/doc/api2/api_v1/data.html
+        # Описание параметров https://yandex.ru/dev/metrika/doc/api2/api_v1/data.html
         # Required:
         ids: Union[str, int, List[str], List[int]]
         metrics: Union[str, List[str]]

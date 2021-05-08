@@ -11,7 +11,7 @@ description: Описание потока
 # Поставщик данных.
 provider: Literal[
     "yandex_metrika_stats",
-    "yandex_metrika_yandex_metrika_management",
+    "yandex_metrika_management",
     "yandex_metrika_logs",
 ]
 # Хранилище для вставки данных.
