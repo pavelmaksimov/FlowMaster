@@ -12,7 +12,6 @@ from flowmaster.operators.etl.types import DataOrient
 
 if TYPE_CHECKING:
     from flowmaster.operators.etl.config import ETLFlowConfig
-    from flowmaster.operators.etl.transform.tschema import TransformSchemaDataList
     from flowmaster.operators.etl.dataschema import ExportContext
 
 
@@ -38,10 +37,10 @@ class Transform:
     def processing(
         self,
         data: Any,
-        column_schema: "TransformSchemaDataList",
+        column_schema: list[dict],
         orient: DataOrient.LiteralT,
     ) -> DataSet:
-        return DataSet(data, schema=column_schema.dict()["list"], orient=orient)
+        return DataSet(data, schema=column_schema, orient=orient)
 
     def __call__(
         self, export_context: "ExportContext", storage_data_orient: DataOrient.LiteralT
@@ -51,7 +50,7 @@ class Transform:
 
         dataset = self.processing(
             export_context.data,
-            column_schema=column_schema,
+            column_schema=column_schema.dict()["list"],
             orient=export_context.data_orient,
         )
 
