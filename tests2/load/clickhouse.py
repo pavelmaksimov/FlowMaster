@@ -3,12 +3,14 @@ from typing import Iterator
 
 from mock import Mock
 
+from flowmaster.operators.etl.dataschema import ExportContext
 from flowmaster.operators.etl.loaders.clickhouse.policy import ClickhouseLoadPolicy
 from flowmaster.operators.etl.loaders.clickhouse.service import ClickhouseLoad
 from flowmaster.operators.etl.providers.yandex_metrika_logs.export import (
     YandexMetrikaLogsExport,
 )
 from flowmaster.operators.etl.service import ETLOperator
+from flowmaster.operators.etl.types import DataOrient
 from flowmaster.utils.yaml_helper import YamlHelper
 from tests import get_tests_dir
 from tests.fixtures.yandex_metrika import yml_visits_to_clickhouse_config as CONFIG
@@ -19,7 +21,7 @@ CONFIG.load.credentials = ClickhouseLoadPolicy.Credentials(**credentials["clickh
 
 def test_real_load_clickhouse():
     def export_func(start_period, end_period) -> Iterator[tuple[dict, list, list]]:
-        yield ({}, ["date"], [[start_period]])
+        yield ExportContext(columns=["date"], data=[[start_period]], data_orient=DataOrient.values)
 
     YandexMetrikaLogsExport.__call__ = Mock(side_effect=export_func)
 

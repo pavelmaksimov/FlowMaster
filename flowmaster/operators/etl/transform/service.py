@@ -1,5 +1,5 @@
 from logging import Logger, getLogger
-from typing import TYPE_CHECKING, Any, Optional, Union
+from typing import TYPE_CHECKING, Any, Optional
 
 from datagun import DataSet, NULL_VALUES
 
@@ -8,13 +8,12 @@ from flowmaster.operators.etl.transform.tschema import (
     FileTransformSchema,
     ClickhouseTransformSchema,
 )
+from flowmaster.operators.etl.types import DataOrient
 
 if TYPE_CHECKING:
     from flowmaster.operators.etl.config import ETLFlowConfig
-    from flowmaster.operators.etl.transform import TransformSchemaDataList
-    from flowmaster.operators.etl.types import DataOrient
-
-    DataOrientLiteralT = DataOrient.LiteralT
+    from flowmaster.operators.etl.transform.tschema import TransformSchemaDataList
+    from flowmaster.operators.etl.dataschema import ExportContext
 
 
 class Transform:
@@ -40,36 +39,32 @@ class Transform:
         self,
         data: Any,
         column_schema: "TransformSchemaDataList",
-        orient: "DataOrientLiteralT",
+        orient: DataOrient.LiteralT,
     ) -> DataSet:
         return DataSet(data, schema=column_schema.dict()["list"], orient=orient)
 
     def __call__(
-        self,
-        data: Any,
-        export_columns: Union[list, tuple, set],
-        export_data_orient: "DataOrientLiteralT",
-        load_data_orient: "DataOrientLiteralT",
+        self, export_context: "ExportContext", storage_data_orient: DataOrient.LiteralT
     ) -> TransformContext:
-        from flowmaster.operators.etl import DataOrient
-
-        column_schema = self.Schema.create_column_schema(export_columns)
+        column_schema = self.Schema.create_column_schema(export_context.columns)
         assert column_schema is not None
 
         dataset = self.processing(
-            data, column_schema=column_schema, orient=export_data_orient
+            export_context.data,
+            column_schema=column_schema,
+            orient=export_context.data_orient,
         )
 
         assert isinstance(dataset, DataSet)
 
-        if load_data_orient == DataOrient.values:
+        if storage_data_orient == DataOrient.values:
             data = dataset.to_values()
-        elif load_data_orient == DataOrient.columns:
+        elif storage_data_orient == DataOrient.columns:
             data = dataset.to_list()
-        elif load_data_orient == DataOrient.dict:
+        elif storage_data_orient == DataOrient.dict:
             data = dataset.to_dict()
         else:
-            raise NotImplementedError(f"{load_data_orient=} not supported")
+            raise NotImplementedError(f"{storage_data_orient=} not supported")
 
         if self.partition_columns:
             partitions = dataset[self.partition_columns].distinct().to_values()

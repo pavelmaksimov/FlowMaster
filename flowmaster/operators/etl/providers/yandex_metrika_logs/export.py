@@ -17,7 +17,6 @@ if TYPE_CHECKING:
 
 
 class YandexMetrikaLogsExport(ExportAbstract):
-    data_orient = DataOrient.columns
 
     def __init__(self, config: "ETLFlowConfig", logger: Optional[Logger] = None):
         self.counter_id = config.export.credentials.counter_id
@@ -138,6 +137,7 @@ class YandexMetrikaLogsExport(ExportAbstract):
                     export_kwargs=part().request_kwargs,
                     columns=report.columns,
                     data=part().to_columns(),
+                    data_orient=DataOrient.columns,
                 )
 
             if dry_run is not True:

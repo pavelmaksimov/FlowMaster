@@ -15,7 +15,6 @@ if TYPE_CHECKING:
 
 
 class YandexMetrikaStatsExport(ExportAbstract):
-    data_orient = DataOrient.columns
 
     def __init__(self, config: "ETLFlowConfig", logger: Optional[Logger] = None):
         self.credentials = config.export.credentials.dict()
@@ -60,6 +59,7 @@ class YandexMetrikaStatsExport(ExportAbstract):
                     export_kwargs=result().request_kwargs,
                     columns=report.columns,
                     data=result().to_columns(),
+                    data_orient=DataOrient.columns,
                 )
 
         except YandexMetrikaTokenError as ex:

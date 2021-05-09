@@ -3,17 +3,19 @@ from typing import Iterator
 
 from mock import Mock
 
+from flowmaster.operators.etl.dataschema import ExportContext
 from flowmaster.operators.etl.providers.yandex_metrika_logs.export import (
     YandexMetrikaLogsExport,
 )
 from flowmaster.operators.etl.service import ETLOperator
+from flowmaster.operators.etl.types import DataOrient
 from tests.fixtures.yandex_metrika import yml_visits_to_file_config
 
 
 def test_flow():
-    def export_func(start_date, end_date) -> Iterator[tuple[dict, list, list]]:
-        yield ({}, ["col1"], [[start_date]])
-        yield ({}, ["col1"], [[end_date]])
+    def export_func(start_period, end_period) -> Iterator[tuple[dict, list, list]]:
+        yield ExportContext(columns=["col1"], data=[[start_period]], data_orient=DataOrient.values)
+        yield ExportContext(columns=["col1"], data=[[end_period]], data_orient=DataOrient.values)
 
     YandexMetrikaLogsExport.__call__ = Mock(side_effect=export_func)
 

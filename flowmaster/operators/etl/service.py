@@ -76,10 +76,7 @@ class ETLOperator(BaseOperator):
                     }
                     yield TaskPool(pool_names=self.Work.transform_pool_names)
                     transform_context = self.Provider.Transform(
-                        result.data,
-                        export_columns=result.columns,
-                        export_data_orient=self.Provider.Export.data_orient,
-                        load_data_orient=self.Load.data_orient,
+                        result, storage_data_orient=self.Load.data_orient,
                     )
 
                     # Load step.

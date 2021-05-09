@@ -13,7 +13,7 @@ class BaseExportPolicy(BasePolicy):
         access_token: str
 
     credentials: Credentials
-    resource: Api.Resource.LiteralT
+    resource: Api.ResourceNames.LiteralT
     concurrency: int = 5
 
 
@@ -138,14 +138,14 @@ class YandexMetrikaManagementExportPolicy(BaseModel):
         cls, **kwargs
     ) -> Union[GoalsExportPolicy, CountersExportPolicy, ClientsExportPolicy]:
         resource = kwargs.get("resource")
-        if resource == Api.Resource.goals:
+        if resource == Api.ResourceNames.goals:
             return GoalsExportPolicy(**kwargs)
-        elif resource == Api.Resource.counters:
+        elif resource == Api.ResourceNames.counters:
             return CountersExportPolicy(**kwargs)
-        elif resource == Api.Resource.clients:
+        elif resource == Api.ResourceNames.clients:
             return ClientsExportPolicy(**kwargs)
         else:
             raise NotImplementedError(
                 f"'{resource}' resource not supported. "
-                f"Permitted: {Api.Resource.LiteralT.__args__}"
+                f"Permitted: {Api.ResourceNames.LiteralT.__args__}"
             )

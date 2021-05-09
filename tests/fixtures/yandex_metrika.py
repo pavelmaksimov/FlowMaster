@@ -86,7 +86,7 @@ ymm_goals_to_file_config = ETLFlowConfig(
     storage=FileLoad.name,
     work=work_policy,
     export=YandexMetrikaManagementExportPolicy(
-        resource=YandexMetrikaManagementExport.Resource.goals,
+        resource=YandexMetrikaManagementExport.ResourceNames.goals,
         credentials=YandexMetrikaManagementExportPolicy.Credentials(
             access_token="token"
         ),
@@ -97,13 +97,13 @@ ymm_goals_to_file_config = ETLFlowConfig(
 
 ymm_counters_to_file_config = ETLFlowConfig(**ymm_goals_to_file_config.dict())
 ymm_counters_to_file_config.export = YandexMetrikaManagementExportPolicy(
-    resource=YandexMetrikaManagementExport.Resource.counters,
+    resource=YandexMetrikaManagementExport.ResourceNames.counters,
     credentials=YandexMetrikaManagementExportPolicy.Credentials(access_token="token"),
 )
 
 ymm_clients_to_file_config = ETLFlowConfig(**ymm_goals_to_file_config.dict())
 ymm_clients_to_file_config.export = YandexMetrikaManagementExportPolicy(
-    resource=YandexMetrikaManagementExport.Resource.clients,
+    resource=YandexMetrikaManagementExport.ResourceNames.clients,
     credentials=YandexMetrikaManagementExportPolicy.Credentials(access_token="token"),
 )
 

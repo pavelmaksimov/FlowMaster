@@ -8,11 +8,8 @@ import jinja2
 if TYPE_CHECKING:
     from flowmaster.operators.base.config import PydanticModelT
     from flowmaster.operators.etl.config import ETLFlowConfig
-    from flowmaster.operators.etl.types import DataOrient
     from flowmaster.operators.etl.transform import Transform
     from flowmaster.operators.etl.dataschema import ExportContext
-
-    DataOrientLiteralT = DataOrient.LiteralT
 
 
 class ExportAbstract(ABC):
@@ -22,11 +19,6 @@ class ExportAbstract(ABC):
         self.config = config
         self.logger = logger or logging.getLogger(__name__)
 
-    @property
-    @abstractmethod
-    def data_orient(self) -> "DataOrientLiteralT":
-        ...
-
     @classmethod
     def validate_params(cls, **params: dict) -> None:
         ...
@@ -35,7 +27,6 @@ class ExportAbstract(ABC):
         self, start_period: dt.datetime, end_period: dt.datetime, **params
     ) -> dict:
         new_params = {}
-        # TODO: replace to .dict(exclude_unset=True)
         for key, value in params.items():
             if value is not None:
                 if isinstance(value, list):

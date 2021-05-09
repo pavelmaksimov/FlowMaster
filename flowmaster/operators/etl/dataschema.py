@@ -3,6 +3,8 @@ from typing import Optional, Union
 
 import pydantic
 
+from flowmaster.operators.etl.types import DataOrient
+
 
 class ETLContext(pydantic.BaseModel):
     storage: str
@@ -18,6 +20,7 @@ class ETLContext(pydantic.BaseModel):
 class ExportContext(pydantic.BaseModel):
     columns: Union[list, tuple, set]
     data: list
+    data_orient: DataOrient.LiteralT
     export_kwargs: dict = pydantic.Field(default_factory=dict)
 
 

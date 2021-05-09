@@ -16,9 +16,8 @@ if TYPE_CHECKING:
 
 
 class YandexMetrikaManagementExport(ExportAbstract):
-    data_orient = DataOrient.dict
 
-    class Resource:
+    class ResourceNames:
         counters = "counters"
         clients = "clients"
         goals = "goals"
@@ -38,7 +37,7 @@ class YandexMetrikaManagementExport(ExportAbstract):
     def get_counter_ids(self) -> list:
         result = self.client.counters().get()
         data = self.processing_response_data(
-            self.Resource.counters, result().data, filter_columns=["id"]
+            self.ResourceNames.counters, result().data, filter_columns=["id"]
         )
         counters_ids = [i["id"] for i in data]
         return counters_ids
@@ -49,18 +48,18 @@ class YandexMetrikaManagementExport(ExportAbstract):
         get_params = self.params.copy()
         url_params = {}
 
-        if self.resource == self.Resource.clients:
+        if self.resource == self.ResourceNames.clients:
             get_params.update(counters=self.get_counter_ids())
             yield url_params, super(YandexMetrikaManagementExport, self).collect_params(
                 start_period, end_period, **get_params
             )
 
-        elif self.resource == self.Resource.goals:
+        elif self.resource == self.ResourceNames.goals:
             for counter_id in self.get_counter_ids():
                 url_params.update(counterId=counter_id)
-                yield url_params, super(
+                yield (url_params, super(
                     YandexMetrikaManagementExport, self
-                ).collect_params(start_period, end_period, **get_params)
+                ).collect_params(start_period, end_period, **get_params))
         else:
             yield url_params, super(YandexMetrikaManagementExport, self).collect_params(
                 start_period, end_period, **get_params
@@ -94,6 +93,7 @@ class YandexMetrikaManagementExport(ExportAbstract):
                     export_kwargs=result().request_kwargs,
                     columns=self.columns,
                     data=data,
+                    data_orient=DataOrient.dict,
                 )
 
             except YandexMetrikaTokenError as ex:
