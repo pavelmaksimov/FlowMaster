@@ -42,7 +42,7 @@ class ETLOperator(BaseOperator):
             yield {
                 self.Model.status.name: FlowStatus.run,
                 self.Model.started_utc.name: dt.datetime.utcnow(),
-                self.Model.data.name: dict(self.operator_context),
+                self.Model.data.name: self.operator_context.dict(exclude_unset=True),
             }
 
             with self.Load as load:
@@ -72,11 +72,14 @@ class ETLOperator(BaseOperator):
                     )
                     yield {
                         self.Model.etl_step.name: FlowETLStep.transform,
-                        self.Model.data.name: dict(self.operator_context),
+                        self.Model.data.name: self.operator_context.dict(
+                            exclude_unset=True
+                        ),
                     }
                     yield TaskPool(pool_names=self.Work.transform_pool_names)
                     transform_context = self.Provider.Transform(
-                        result, storage_data_orient=self.Load.data_orient,
+                        result,
+                        storage_data_orient=self.Load.data_orient,
                     )
 
                     # Load step.
@@ -87,7 +90,9 @@ class ETLOperator(BaseOperator):
                     )
                     yield {
                         self.Model.etl_step.name: FlowETLStep.load,
-                        self.Model.data.name: dict(self.operator_context),
+                        self.Model.data.name: self.operator_context.dict(
+                            exclude_unset=True
+                        ),
                         "data_errors": transform_context.data_errors,
                     }
                     yield TaskPool(pool_names=self.Work.load_pool_names)
@@ -124,7 +129,7 @@ class ETLOperator(BaseOperator):
                 self.Model.etl_step.name: None,
                 self.Model.status.name: FlowStatus.success,
                 self.Model.retries.name: 0,
-                self.Model.data.name: dict(self.operator_context),
+                self.Model.data.name: self.operator_context.dict(exclude_unset=True),
             }
 
         finally:
@@ -158,7 +163,7 @@ class ETLOperator(BaseOperator):
             self.name,
             datetime_list,
             operator=FlowOperator.etl,
-            data=dict(self.operator_context),
+            data=self.operator_context.dict(exclude_unset=True),
         )
 
         log_data = {}
