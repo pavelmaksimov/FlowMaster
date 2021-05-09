@@ -18,6 +18,8 @@ At the moment there are connectors to sources
 - Yandex Metrika Management API
 - Yandex Metrika Stats API
 - Yandex Metrika Logs API
+- Yandex Direct API
+- Yandex Direct Report API
 
 Storages
 - Save to file

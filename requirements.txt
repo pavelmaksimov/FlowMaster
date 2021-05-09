@@ -27,6 +27,7 @@ markupsafe==1.1.1
 orjson==3.5.2
     # via
     #   -r requirements.in
+    #   tapi-yandex-direct
     #   tapi-yandex-metrika
 peewee==3.14.4
     # via -r requirements.in
@@ -40,19 +41,24 @@ python-dateutil==2.8.1
     #   faker
     #   pendulum
 pytz==2021.1
-    # via
-    #   clickhouse-driver
-    #   tzlocal
+    # via clickhouse-driver
 pytzdata==2020.1
     # via pendulum
 pyyaml==5.4.1
     # via -r requirements.in
 requests==2.25.1
-    # via tapi-wrapper2
+    # via
+    #   -r requirements.in
+    #   tapi-wrapper2
+    #   tapi-yandex-direct
 six==1.15.0
     # via python-dateutil
-tapi-wrapper2==0.1.0
-    # via tapi-yandex-metrika
+tapi-wrapper2==0.1.1
+    # via
+    #   tapi-yandex-direct
+    #   tapi-yandex-metrika
+tapi-yandex-direct==2021.5.3
+    # via -r requirements.in
 tapi-yandex-metrika==2021.2.21
     # via -r requirements.in
 text-unidecode==1.3

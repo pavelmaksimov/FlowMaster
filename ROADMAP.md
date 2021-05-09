@@ -4,7 +4,6 @@
 #### Добавить источники данных
 
 - Яндекс Маркет
-- Яндекс Директ
 - Google Analytics
 - Google Adwords
 - Mytarget

@@ -13,6 +13,7 @@ provider: Literal[
     "yandex_metrika_stats",
     "yandex_metrika_management",
     "yandex_metrika_logs",
+    "yandex_direct",
 ]
 # Хранилище для вставки данных.
 storage: Literal["clickhouse", "file"]
@@ -91,6 +92,7 @@ transform:
 - [yandex_metrika_stats](yandex_metrika_stats.md)
 - [yandex_metrika_management](yandex_metrika_management.md)
 - [yandex_metrika_logs](yandex_metrika_logs.md)
+- [yandex_direct](yandex_direct.md)
 
 
 ### Политики загрузчика в хранилище (load)
