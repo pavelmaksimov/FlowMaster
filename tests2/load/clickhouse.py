@@ -21,7 +21,9 @@ CONFIG.load.credentials = ClickhouseLoadPolicy.Credentials(**credentials["clickh
 
 def test_real_load_clickhouse():
     def export_func(start_period, end_period) -> Iterator[tuple[dict, list, list]]:
-        yield ExportContext(columns=["date"], data=[[start_period]], data_orient=DataOrient.values)
+        yield ExportContext(
+            columns=["date"], data=[[start_period]], data_orient=DataOrient.values
+        )
 
     YandexMetrikaLogsExport.__call__ = Mock(side_effect=export_func)
 

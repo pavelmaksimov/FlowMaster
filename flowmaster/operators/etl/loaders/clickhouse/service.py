@@ -1,6 +1,6 @@
 import random
 from logging import Logger, getLogger
-from typing import TYPE_CHECKING, Optional, Any, Union
+from typing import TYPE_CHECKING, Optional
 
 import clickhousepy
 
@@ -10,6 +10,7 @@ from flowmaster.operators.etl.types import DataOrient
 
 if TYPE_CHECKING:
     from flowmaster.operators.etl.config import ETLFlowConfig
+    from flowmaster.operators.etl.dataschema import TransformContext
 
 
 class ClickhouseLoad:
@@ -109,23 +110,23 @@ class ClickhouseLoad:
         else:
             raise KeyError(f"'Unknown {self.data_cleaning_mode=}'")
 
-    def __call__(
-        self, data: Any, columns: Union[list, set, tuple], partitions: list
-    ) -> None:
-        self.validate_insert_columns(columns)
+    def __call__(self, context: "TransformContext", *args, **kwargs) -> None:
+        self.validate_insert_columns(context.insert_columns)
         if self.StageTable is None:
             raise Exception("Call through the context manager")
 
-        if data:
-            self.partitions += partitions
+        if context.data:
+            self.partitions += context.partitions
 
-            rows = len(data[0])
+            rows = len(context.data[0])
             rows_before = self.StageTable.get_count_rows()
             self.logger.info(
                 "Iteration of inserting data into a staging table"
                 f"'{self.StageTable.db}.{self.StageTable.table}'"
             )
-            self.StageTable.insert(data, columns, types_check=True, columnar=True)
+            self.StageTable.insert(
+                context.data, context.insert_columns, types_check=True, columnar=True
+            )
             rows_after = self.StageTable.get_count_rows()
 
             if not rows_after - rows_before == rows:

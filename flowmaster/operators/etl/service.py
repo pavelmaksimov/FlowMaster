@@ -96,11 +96,7 @@ class ETLOperator(BaseOperator):
                         "data_errors": transform_context.data_errors,
                     }
                     yield TaskPool(pool_names=self.Work.load_pool_names)
-                    load(
-                        transform_context.data,
-                        transform_context.insert_columns,
-                        transform_context.partitions,
-                    )
+                    load(transform_context)
 
         except FatalError as er:
             yield {

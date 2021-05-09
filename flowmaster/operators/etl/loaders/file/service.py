@@ -13,6 +13,7 @@ from flowmaster.operators.etl.types import DataOrient
 
 if TYPE_CHECKING:
     from flowmaster.operators.etl.config import ETLFlowConfig
+    from flowmaster.operators.etl.dataschema import TransformContext
 
 
 class FileLoad:
@@ -82,13 +83,13 @@ class FileLoad:
 
         self.logger.info(f"Save data to file: {f.name}")
 
-    def __call__(self, data, columns, *args, **kwargs):
+    def __call__(self, context: "TransformContext", *args, **kwargs) -> None:
         if self._enter is False:
             raise Exception("Call through the context manager")
 
-        self.columns = columns
+        self.columns = context.insert_columns
 
-        text = self.values_to_text(data)
+        text = self.values_to_text(context.data)
 
         # Add column names.
         if (
