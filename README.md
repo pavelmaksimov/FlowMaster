@@ -1,3 +1,5 @@
+![logo](docs/img/logoza.ru.png)
+
 # ETL flow framework based on Yaml configs in Python
 
 ![Supported Python Versions](https://img.shields.io/static/v1?label=python&message=>=3.9&color=blue)
