@@ -60,7 +60,10 @@ args
 
 ## Support
 
-[Telegram chat](https://t.me/joinchat/QwbIth4XoR4zYzRi)
+
+[Telegram channel](https://t.me/joinchat/QwbIth4XoR4zYzRi)
+
+[Telegram support chat](https://t.me/joinchat/DhWJYG_yECYyYTEy)
 
 
 ## Author
