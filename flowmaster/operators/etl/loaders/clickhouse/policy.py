@@ -3,6 +3,7 @@ from typing import Union, List, Literal, Optional
 from pydantic import BaseModel, Field
 
 from flowmaster.operators.base.policy import BasePolicy
+from flowmaster.operators.etl.transform.policy import BaseTransformPolicy, ErrorPolicyLiteralT
 
 
 class ClickhouseLoadPolicy(BasePolicy):
@@ -34,3 +35,15 @@ class ClickhouseLoadPolicy(BasePolicy):
                 table_schema["columns"] = list(columns.values())
 
         super(ClickhouseLoadPolicy, self).__init__(**kwargs)
+
+
+class ClickhouseTransformPolicy(BaseTransformPolicy):
+    class ColumnSchema(BaseModel):
+        errors: Optional[ErrorPolicyLiteralT] = None
+        dt_format: Optional[str] = None
+        null_values: Optional[list] = None
+        clear_values: Optional[list] = None
+
+    # {ExportColumnName: InsertColumnName}
+    column_map: dict[str, str]
+    column_schema: dict[str, ColumnSchema] = Field(default_factory=dict)

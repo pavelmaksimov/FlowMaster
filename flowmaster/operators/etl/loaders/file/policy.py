@@ -1,6 +1,9 @@
-from typing import Literal
+from typing import Literal, Optional
+
+from pydantic import BaseModel, Field
 
 from flowmaster.operators.base.policy import BasePolicy
+from flowmaster.operators.etl.transform.policy import BaseTransformPolicy, DTypeLiteralT, ErrorPolicyLiteralT
 from flowmaster.setttings import FILE_STORAGE_DIR
 
 
@@ -15,3 +18,16 @@ class FileLoadPolicy(BasePolicy):
     add_data_before: str = ""
     add_data_after: str = ""
     concurrency: int = 1
+
+
+class FileTransformPolicy(BaseTransformPolicy):
+    class ColumnSchema(BaseModel):
+        name: Optional[str] = None
+        dtype: Optional[DTypeLiteralT] = None
+        errors: Optional[ErrorPolicyLiteralT] = None
+        dt_format: Optional[str] = None
+        allow_null: Optional[bool] = None
+        null_values: Optional[list] = None
+        clear_values: Optional[list] = None
+
+    column_schema: dict[str, ColumnSchema] = Field(default_factory=dict)

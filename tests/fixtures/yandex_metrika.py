@@ -1,5 +1,6 @@
 from flowmaster.operators.etl.config import ETLFlowConfig
 from flowmaster.operators.etl.loaders.clickhouse.policy import ClickhouseLoadPolicy
+from flowmaster.operators.etl.loaders.clickhouse.policy import ClickhouseTransformPolicy
 from flowmaster.operators.etl.loaders.clickhouse.service import ClickhouseLoad
 from flowmaster.operators.etl.loaders.file.service import FileLoad
 from flowmaster.operators.etl.providers import YandexMetrikaLogsProvider
@@ -19,7 +20,6 @@ from flowmaster.operators.etl.providers.yandex_metrika_stats import (
     YandexMetrikaStatsExportPolicy,
     YandexMetrikaStatsProvider,
 )
-from flowmaster.operators.etl.transform.policy import ClickhouseTransformPolicy
 from tests.fixtures import work_policy, file_load_policy, file_transform_policy
 
 yml_visits_to_file_config = ETLFlowConfig(

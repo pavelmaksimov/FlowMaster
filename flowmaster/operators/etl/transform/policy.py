@@ -1,6 +1,6 @@
 from typing import Literal, Optional, TypeVar
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from flowmaster.operators.base.policy import BasePolicy
 
@@ -19,30 +19,5 @@ class BaseTransformPolicy(BasePolicy):
     error_policy: ErrorPolicyLiteralT
     timezone: Optional[str] = None
     partition_columns: Optional[list] = None
-    column_schema: dict[str, BaseModel] = {}
+    column_schema: dict[str, BaseModel] = Field(default_factory=dict)
     concurrency: int = 100
-
-
-class FileTransformPolicy(BaseTransformPolicy):
-    class ColumnSchema(BaseModel):
-        name: Optional[str] = None
-        dtype: Optional[DTypeLiteralT] = None
-        errors: Optional[ErrorPolicyLiteralT] = None
-        dt_format: Optional[str] = None
-        allow_null: Optional[bool] = None
-        null_values: Optional[list] = None
-        clear_values: Optional[list] = None
-
-    column_schema: dict[str, ColumnSchema] = {}
-
-
-class ClickhouseTransformPolicy(BaseTransformPolicy):
-    class ColumnSchema(BaseModel):
-        errors: Optional[ErrorPolicyLiteralT] = None
-        dt_format: Optional[str] = None
-        null_values: Optional[list] = None
-        clear_values: Optional[list] = None
-
-    # {ExportColumnName: InsertColumnName}
-    column_map: dict[str, str]
-    column_schema: dict[str, ColumnSchema] = {}

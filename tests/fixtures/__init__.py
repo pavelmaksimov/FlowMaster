@@ -2,8 +2,7 @@ import datetime as dt
 from pathlib import Path
 
 from flowmaster.operators.etl.config import ETLFlowConfig
-from flowmaster.operators.etl.loaders.file.policy import FileLoadPolicy
-from flowmaster.operators.etl.transform.policy import FileTransformPolicy
+from flowmaster.operators.etl.loaders.file.policy import FileLoadPolicy, FileTransformPolicy
 from tests import get_tests_dir
 
 FILE_TESTS_DIR = get_tests_dir() / "__test_files__"
