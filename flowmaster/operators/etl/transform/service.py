@@ -42,6 +42,18 @@ class Transform:
     ) -> DataSet:
         return DataSet(data, schema=column_schema, orient=orient)
 
+    def changing_data_orient_for_storage(self, dataset, storage_data_orient):
+        if storage_data_orient == DataOrient.values:
+            data = dataset.to_values()
+        elif storage_data_orient == DataOrient.columns:
+            data = dataset.to_list()
+        elif storage_data_orient == DataOrient.dict:
+            data = dataset.to_dict()
+        else:
+            raise NotImplementedError(f"{storage_data_orient=} not supported")
+
+        return data
+
     def __call__(
         self, export_context: "ExportContext", storage_data_orient: DataOrient.LiteralT
     ) -> TransformContext:
@@ -53,37 +65,21 @@ class Transform:
             column_schema=column_schema.dict()["list"],
             orient=export_context.data_orient,
         )
-
         assert isinstance(dataset, DataSet)
 
         dataset.rename_columns({sch.name: sch.new_name for sch in column_schema.list})
 
-        if storage_data_orient == DataOrient.values:
-            data = dataset.to_values()
-        elif storage_data_orient == DataOrient.columns:
-            data = dataset.to_list()
-        elif storage_data_orient == DataOrient.dict:
-            data = dataset.to_dict()
-        else:
-            raise NotImplementedError(f"{storage_data_orient=} not supported")
+        data = self.changing_data_orient_for_storage(dataset, storage_data_orient)
 
         if self.partition_columns:
             partitions = dataset[self.partition_columns].distinct().to_values()
         else:
             partitions = []
 
-        size, insert_columns, partitions, data, data_errors = (
-            dataset.size,
-            dataset.columns,
-            partitions,
-            data,
-            dataset.get_errors().to_values(),
-        )
-
         return TransformContext(
-            size=size,
-            insert_columns=insert_columns,
+            size=dataset.size,
+            insert_columns=dataset.columns,
             partitions=partitions,
             data=data,
-            data_errors=data_errors,
+            data_errors=dataset.get_errors().to_values(),
         )
