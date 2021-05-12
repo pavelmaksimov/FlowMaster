@@ -67,7 +67,7 @@ class FileLoad:
         self._is_add_columns = self.save_mode == "w" or not pathlib.Path.exists(
             self.file_path
         )
-        if not pathlib.Path.exists(self.file_path):
+        if self.save_mode == "w" or not pathlib.Path.exists(self.file_path):
             with self.open_file(mode="w"):
                 ...
 
