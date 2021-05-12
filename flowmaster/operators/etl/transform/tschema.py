@@ -95,7 +95,7 @@ class ClickhouseTransformSchema(StorageTransformSchemaAbstract):
             col_name: {k: v for k, v in col_schema.dict().items() if v is not None}
             for col_name, col_schema in config.transform.column_schema.items()
         }
-        self.column_matching = config.transform.column_matching
+        self.column_map = config.transform.column_map
         self.table_schema_columns = config.load.table_schema.columns
         self.error_policy = config.transform.error_policy
         self.timezone = config.transform.timezone
@@ -103,7 +103,7 @@ class ClickhouseTransformSchema(StorageTransformSchemaAbstract):
         self.null_values = null_values
 
     def get_insert_col_name(self, export_colname: str) -> str:
-        return self.column_matching[export_colname]
+        return self.column_map[export_colname]
 
     def get_data_type(self, export_colname: str) -> DTypeLiteralT:
         dtype_map = {

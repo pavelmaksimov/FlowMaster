@@ -63,7 +63,7 @@ yml_visits_to_clickhouse_config = ETLFlowConfig(
     transform=ClickhouseTransformPolicy(
         error_policy="default",
         partition_columns=["Date"],
-        column_matching={"date": "Date"},
+        column_map={"date": "Date"},
     ),
     load=ClickhouseLoadPolicy(
         credentials=ClickhouseLoadPolicy.Credentials(user="user1", host="localhost"),

@@ -38,17 +38,17 @@ class ETLFlowConfig(BaseFlowConfig):
                 "partition"
             )
 
-    def _set_column_matching(self, **kwargs) -> None:
+    def _set_column_map(self, **kwargs) -> None:
         transform = kwargs.get("transform", {})
         load = kwargs.get("load", {})
 
         # For Clickhouse.
         if kwargs.get("storage") == ClickhouseLoad.name and isinstance(load, dict):
-            if "column_matching" not in transform:
+            if "column_map" not in transform:
                 columns_schema = load.get("table_schema", {}).get("columns", None)
                 if columns_schema:
                     try:
-                        transform["column_matching"] = {
+                        transform["column_map"] = {
                             k: v.split(" ")[0] for k, v in columns_schema.items()
                         }
                     except IndexError:
@@ -56,7 +56,7 @@ class ETLFlowConfig(BaseFlowConfig):
 
     def __init__(self, **kwargs):
         self._set_partition_columns(**kwargs)
-        self._set_column_matching(**kwargs)
+        self._set_column_map(**kwargs)
 
         super().__init__(**kwargs)
 

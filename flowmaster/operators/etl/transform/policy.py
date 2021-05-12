@@ -43,5 +43,6 @@ class ClickhouseTransformPolicy(BaseTransformPolicy):
         null_values: Optional[list] = None
         clear_values: Optional[list] = None
 
-    column_matching: dict[str, str]
+    # {ExportColumnName: InsertColumnName}
+    column_map: dict[str, str]
     column_schema: dict[str, ColumnSchema] = {}
