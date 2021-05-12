@@ -56,6 +56,8 @@ class Transform:
 
         assert isinstance(dataset, DataSet)
 
+        dataset.rename_columns({sch.name: sch.new_name for sch in column_schema.list})
+
         if storage_data_orient == DataOrient.values:
             data = dataset.to_values()
         elif storage_data_orient == DataOrient.columns:

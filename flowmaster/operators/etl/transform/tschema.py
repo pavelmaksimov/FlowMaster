@@ -13,6 +13,7 @@ if TYPE_CHECKING:
 
 class TransformSchemaData(pydantic.BaseModel):
     name: str
+    new_name: str
     errors: ErrorPolicyLiteralT
     allow_null: bool
     null_value: Any
@@ -21,7 +22,7 @@ class TransformSchemaData(pydantic.BaseModel):
     dtype: Optional[DTypeLiteralT] = None
 
 
-class TransformSchemaDataList(pydantic.BaseModel):
+class TransformSchemaListData(pydantic.BaseModel):
     list: list[TransformSchemaData]
 
 
@@ -61,13 +62,17 @@ class FileTransformSchema(StorageTransformSchemaAbstract):
 
     def create_column_schema(
         self, export_columns: Union[list, tuple, set]
-    ) -> TransformSchemaDataList:
+    ) -> TransformSchemaListData:
         column_schema = []
         for export_colname in export_columns:
+            new_colname = self.column_schema.get(export_colname, {}).pop(
+                "name", export_colname
+            )
             column_schema.append(
                 TransformSchemaData(
                     **{
                         "name": export_colname,
+                        "new_name": new_colname,
                         "errors": self.error_policy,
                         "timezone": self.timezone,
                         "allow_null": self.allow_null,
@@ -78,7 +83,7 @@ class FileTransformSchema(StorageTransformSchemaAbstract):
                 )
             )
 
-        return TransformSchemaDataList(list=column_schema)
+        return TransformSchemaListData(list=column_schema)
 
 
 class ClickhouseTransformSchema(StorageTransformSchemaAbstract):
@@ -134,13 +139,14 @@ class ClickhouseTransformSchema(StorageTransformSchemaAbstract):
 
     def create_column_schema(
         self, export_col_names: Union[list, tuple, set]
-    ) -> TransformSchemaDataList:
+    ) -> TransformSchemaListData:
         column_schema = []
         for export_colname in export_col_names:
             column_schema.append(
                 TransformSchemaData(
                     **{
-                        "name": self.get_insert_col_name(export_colname),
+                        "name": export_colname,
+                        "new_name": self.get_insert_col_name(export_colname),
                         "dtype": self.get_data_type(export_colname),
                         "errors": self.error_policy,
                         "timezone": self.timezone,
@@ -152,4 +158,4 @@ class ClickhouseTransformSchema(StorageTransformSchemaAbstract):
                 )
             )
 
-        return TransformSchemaDataList(list=column_schema)
+        return TransformSchemaListData(list=column_schema)
