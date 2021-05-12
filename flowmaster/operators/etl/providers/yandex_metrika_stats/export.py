@@ -15,7 +15,6 @@ if TYPE_CHECKING:
 
 
 class YandexMetrikaStatsExport(ExportAbstract):
-
     def __init__(self, config: "ETLFlowConfig", logger: Optional[Logger] = None):
         self.credentials = config.export.credentials.dict()
         self.params = config.export.params.dict()

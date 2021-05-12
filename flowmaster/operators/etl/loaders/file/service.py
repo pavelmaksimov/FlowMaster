@@ -7,7 +7,10 @@ from typing import TYPE_CHECKING, Optional
 import jinja2
 import orjson
 
-from flowmaster.operators.etl.loaders.file.policy import FileLoadPolicy, FileTransformPolicy
+from flowmaster.operators.etl.loaders.file.policy import (
+    FileLoadPolicy,
+    FileTransformPolicy,
+)
 from flowmaster.operators.etl.types import DataOrient
 
 if TYPE_CHECKING:

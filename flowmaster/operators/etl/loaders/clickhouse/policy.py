@@ -3,7 +3,10 @@ from typing import Union, List, Literal, Optional
 from pydantic import BaseModel, Field
 
 from flowmaster.operators.base.policy import BasePolicy
-from flowmaster.operators.etl.transform.policy import BaseTransformPolicy, ErrorPolicyLiteralT
+from flowmaster.operators.etl.transform.policy import (
+    BaseTransformPolicy,
+    ErrorPolicyLiteralT,
+)
 
 
 class ClickhouseLoadPolicy(BasePolicy):

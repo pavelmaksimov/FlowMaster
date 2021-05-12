@@ -16,7 +16,6 @@ if TYPE_CHECKING:
 
 
 class FakeDataExport(ExportAbstract):
-
     def __init__(self, config: "ETLFlowConfig", logger: Optional[Logger] = None):
         self.rows = config.export.rows
         self.columns = config.export.columns
@@ -30,4 +29,9 @@ class FakeDataExport(ExportAbstract):
         ]
 
         for data in chunker(fake_data, (int(self.rows / 5) or 1)):
-            yield ExportContext(export_kwargs={}, columns=self.columns, data=data, data_orient=DataOrient.values)
+            yield ExportContext(
+                export_kwargs={},
+                columns=self.columns,
+                data=data,
+                data_orient=DataOrient.values,
+            )

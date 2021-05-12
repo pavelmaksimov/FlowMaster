@@ -14,8 +14,12 @@ from tests.fixtures.yandex_metrika import yml_visits_to_file_config
 
 def test_flow():
     def export_func(start_period, end_period) -> Iterator[tuple[dict, list, list]]:
-        yield ExportContext(columns=["col1"], data=[[start_period]], data_orient=DataOrient.values)
-        yield ExportContext(columns=["col1"], data=[[end_period]], data_orient=DataOrient.values)
+        yield ExportContext(
+            columns=["col1"], data=[[start_period]], data_orient=DataOrient.values
+        )
+        yield ExportContext(
+            columns=["col1"], data=[[end_period]], data_orient=DataOrient.values
+        )
 
     YandexMetrikaLogsExport.__call__ = Mock(side_effect=export_func)
 

@@ -4,7 +4,10 @@ from typing import TYPE_CHECKING, Optional
 
 import clickhousepy
 
-from flowmaster.operators.etl.loaders.clickhouse.policy import ClickhouseLoadPolicy, ClickhouseTransformPolicy
+from flowmaster.operators.etl.loaders.clickhouse.policy import (
+    ClickhouseLoadPolicy,
+    ClickhouseTransformPolicy,
+)
 from flowmaster.operators.etl.types import DataOrient
 
 if TYPE_CHECKING:

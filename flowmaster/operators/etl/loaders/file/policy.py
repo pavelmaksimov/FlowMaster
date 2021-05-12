@@ -3,7 +3,11 @@ from typing import Literal, Optional
 from pydantic import BaseModel, Field
 
 from flowmaster.operators.base.policy import BasePolicy
-from flowmaster.operators.etl.transform.policy import BaseTransformPolicy, DTypeLiteralT, ErrorPolicyLiteralT
+from flowmaster.operators.etl.transform.policy import (
+    BaseTransformPolicy,
+    DTypeLiteralT,
+    ErrorPolicyLiteralT,
+)
 from flowmaster.setttings import FILE_STORAGE_DIR
 
 

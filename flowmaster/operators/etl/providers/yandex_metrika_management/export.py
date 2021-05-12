@@ -16,7 +16,6 @@ if TYPE_CHECKING:
 
 
 class YandexMetrikaManagementExport(ExportAbstract):
-
     class ResourceNames:
         counters = "counters"
         clients = "clients"
@@ -57,9 +56,12 @@ class YandexMetrikaManagementExport(ExportAbstract):
         elif self.resource == self.ResourceNames.goals:
             for counter_id in self.get_counter_ids():
                 url_params.update(counterId=counter_id)
-                yield (url_params, super(
-                    YandexMetrikaManagementExport, self
-                ).collect_params(start_period, end_period, **get_params))
+                yield (
+                    url_params,
+                    super(YandexMetrikaManagementExport, self).collect_params(
+                        start_period, end_period, **get_params
+                    ),
+                )
         else:
             yield url_params, super(YandexMetrikaManagementExport, self).collect_params(
                 start_period, end_period, **get_params
