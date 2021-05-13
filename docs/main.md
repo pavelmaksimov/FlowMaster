@@ -18,3 +18,13 @@
 
 Логи сохраняются в `FlowMaster/logs`\
 Сейчас в логировании есть проблемы, иногда логи пишутся в один файл.
+
+Мониторинг
+
+    flowmaster item list {config_filename} --limit 20
+
+Перезапуск потока
+
+    flowmaster item restart {config_filename} -s 2021-01-01 --end 2021-01-31
+    # or
+    flowmaster item restart-errors {config_filename}

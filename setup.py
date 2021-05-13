@@ -10,10 +10,6 @@ with open("README.md", "r") as fh:
 package = "flowmaster"
 
 
-def get_description():
-    return re.match(r"^# (.+)\n", readme).group(1)
-
-
 def get_version(package):
     """
     Return package version as listed in `__version__` in `init.py`.
@@ -27,7 +23,7 @@ def get_version(package):
 setup(
     name="FlowMaster",
     version=get_version(package),
-    description=get_description(),
+    description="ETL flow framework based on Yaml configs in Python",
     long_description=readme,
     long_description_content_type="text/markdown",
     author="Pavel Maksimov",
