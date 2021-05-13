@@ -2,8 +2,7 @@ import datetime as dt
 import hashlib
 from typing import TYPE_CHECKING, Iterator
 
-from tapi_yandex_direct import YandexDirect
-from tapi_yandex_direct import exceptions
+from tapi_yandex_direct import YandexDirect, exceptions
 
 from flowmaster.exceptions import AuthError
 from flowmaster.operators.etl.dataschema import ExportContext
@@ -21,24 +20,16 @@ if TYPE_CHECKING:
 class YandexDirectExport(ExportAbstract):
     def __init__(self, config: "ETLFlowConfig", *args, **kwargs):
         self.export: ExportPolicy = config.export
-        self.credentials = self.export.credentials
-        self.resource = self.export.resource
-        self.body: ExportPolicy.BodyPolicy = self.export.body
-        self.headers: ExportPolicy.HeadersPolicy = self.export.headers
         self.client = YandexDirect(
             wait_report=False,
             processing_mode="offline",
             retry_if_not_enough_units=False,
             retry_if_exceeded_limit=False,
             retries_if_server_error=0,
-            **self.credentials.dict(exclude_none=True),
-            **self.headers.dict(exclude_none=True),
+            **self.export.credentials.dict(exclude_none=True),
+            **self.export.headers.dict(exclude_none=True),
         )
         super(YandexDirectExport, self).__init__(config, *args, **kwargs)
-
-    @classmethod
-    def validate_params(cls, **params: dict) -> None:
-        pass
 
     def exclude_none(self, body: dict) -> dict:
         new_body = {}
@@ -51,26 +42,25 @@ class YandexDirectExport(ExportAbstract):
         return new_body
 
     def create_report_name(self, body):
-        report_params = str((body, self.headers))
-        return hashlib.md5(str(report_params).encode()).hexdigest()
+        return hashlib.md5(str((body, self.export.headers)).encode()).hexdigest()
 
     def collect_params(
         self, start_period: dt.datetime, end_period: dt.datetime, **kwargs
     ) -> dict:
-        body = self.body.dict(exclude_none=True)
+        body = self.export.body.dict(exclude_none=True)
         body = self.exclude_none(body)
 
-        if self.resource == "reports":
+        if self.export.resource == "reports":
+            body["params"]["Format"] = "TSV"
             body["params"]["ReportName"] = self.create_report_name(body)
 
             if body["params"]["DateRangeType"] == "CUSTOM_DATE":
-                body["params"]["SelectionCriteria"][
-                    "DateFrom"
-                ] = start_period.date().isoformat()
-
-                body["params"]["SelectionCriteria"][
-                    "DateTo"
-                ] = end_period.date().isoformat()
+                body["params"]["SelectionCriteria"].update(
+                    {
+                        "DateFrom": start_period.date().isoformat(),
+                        "DateTo": end_period.date().isoformat(),
+                    }
+                )
 
         return super().collect_params(start_period, end_period, **body)
 
@@ -78,8 +68,6 @@ class YandexDirectExport(ExportAbstract):
         self, start_period: dt.datetime, end_period: dt.datetime, **kwargs
     ) -> Iterator[ExportContext]:
         self.logger.info("Exportation data")
-        body = self.collect_params(start_period, end_period)
-        method = getattr(self.client, self.resource)
 
         result = None
         page_iterator = None
@@ -87,12 +75,16 @@ class YandexDirectExport(ExportAbstract):
         while api_error_retries:
             try:
                 if result is None:
+                    body = self.collect_params(start_period, end_period)
+                    method = getattr(self.client, self.export.resource)
                     result = method().post(data=body)
 
-                if self.resource != "reports":
+                if self.export.resource != "reports":
 
                     if page_iterator is None:
-                        page_iterator = result().pages(max_pages=kwargs.get("max_pages"))
+                        page_iterator = result().pages(
+                            max_pages=kwargs.get("max_pages")
+                        )
 
                     page = next(page_iterator)
 
@@ -108,21 +100,23 @@ class YandexDirectExport(ExportAbstract):
                 continue
 
             except exceptions.YandexDirectClientError as exc:
-                if exc.error_code in (52, 1000, 1001, 1002):
+                if api_error_retries and exc.error_code in (52, 1000, 1001, 1002):
                     api_error_retries -= 1
                     yield SleepTask(sleep=10)
                     continue
                 raise
 
             except ConnectionError:
-                api_error_retries -= 1
-                yield SleepTask(sleep=10)
+                if api_error_retries:
+                    api_error_retries -= 1
+                    yield SleepTask(sleep=10)
+                raise
 
             except StopIteration:
                 break
 
             else:
-                if self.resource == "reports":
+                if self.export.resource == "reports":
                     if result.status_code in (201, 202):
                         result = None
                         yield SleepTask(sleep=10)

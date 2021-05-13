@@ -43,6 +43,7 @@ setup(
         "pydantic>=1.0.0, <2.0.0",
         "PyYAML>=5.0.0, <6.0.0",
         "tapi-yandex-metrika==2021.2.21",
+        "tapi-yandex-direct==2021.5.3",
         "typer>=0.3.0, <0.4.0",
         "Jinja2>=2.0.0, <3.0.0",
     ],

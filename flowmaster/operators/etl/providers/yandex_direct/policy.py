@@ -32,7 +32,6 @@ class YandexDirectExportPolicy(BasePolicy):
         """
 
         class ReportParamsPolicy(BaseModel):
-            """https://yandex.ru/dev/direct/doc/reports/spec.html"""
 
             class SelectionCriteriaPolicy(BaseModel):
                 class FilterPolicy(BaseModel):
@@ -40,8 +39,6 @@ class YandexDirectExportPolicy(BasePolicy):
                     Operator: str
                     Values: list[str]
 
-                DateFrom: bool = None
-                DateTo: bool = None
                 Filter: list[FilterPolicy] = Field(default_factory=list)
 
             class PagePolicy(BaseModel):
@@ -55,11 +52,10 @@ class YandexDirectExportPolicy(BasePolicy):
             ReportType: str
             DateRangeType: str
             FieldNames: list[str]
-            Format: str = "TSV"
             IncludeVAT: Literal["YES", "NO"]
             IncludeDiscount: Optional[Literal["YES", "NO"]] = None
             Goals: Optional[list[str]] = None
-            Attribution: Optional[str] = None
+            AttributionModel: Optional[str] = None
             Page: Optional[PagePolicy] = None
             OrderBy: Optional[OrderByPolicy] = None
 
