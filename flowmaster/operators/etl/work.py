@@ -70,7 +70,9 @@ class ETLWork(Work):
 
 
 @catch_exceptions
-def order_etl_flow(logger: Logger, dry_run: bool = False) -> Iterator["ETLOperator"]:
+def order_etl_flow(
+    *, logger: Logger, async_mode: bool = False, dry_run: bool = False
+) -> Iterator:
     """Prepare flow function to be sent to the queue and executed"""
     from flowmaster.operators.etl.service import ETLOperator
     from flowmaster.operators.etl.config import ETLFlowConfig
@@ -95,7 +97,9 @@ def order_etl_flow(logger: Logger, dry_run: bool = False) -> Iterator["ETLOperat
 
         for start_period, end_period in work.iter_period_for_execute():
             etl_flow = ETLOperator(flow_config)
-            etl_flow_iterator = etl_flow(start_period, end_period)
+            etl_flow_iterator = etl_flow(
+                start_period, end_period, async_mode=async_mode, dry_run=dry_run
+            )
 
             # The status is changed so that there is no repeated ordering of tasks.
             FlowItem.change_status(

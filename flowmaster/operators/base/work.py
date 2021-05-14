@@ -1,6 +1,6 @@
 import datetime as dt
 from logging import Logger, getLogger
-from typing import Iterator, Optional, Union, TYPE_CHECKING
+from typing import Iterator, Optional, TYPE_CHECKING
 
 import pendulum
 
@@ -8,8 +8,7 @@ from flowmaster.models import FlowItem
 from flowmaster.utils import iter_range_datetime, iter_period_from_range
 
 if TYPE_CHECKING:
-    from flowmaster.operators.base.config import BaseFlowConfig
-    from flowmaster.operators.etl.service import ETLOperator
+    from flowmaster.operators.base.policy import BaseFlowConfig
 
 
 class Work:
@@ -42,7 +41,6 @@ class Work:
     def current_worktime(self) -> dt.datetime:
         """
         Returns the work datetime at the moment.
-        TODO: rename
         """
         end_time = pendulum.now(self.timezone).at(
             hour=self.start_datetime.hour,
@@ -98,7 +96,11 @@ class Work:
         )
 
 
-def order_flow(logger: Logger, dry_run=False) -> Union[Iterator["ETLOperator"]]:
+def order_flow(
+    *, logger: Logger, async_mode: bool = False, dry_run: bool = False, **kwargs
+) -> Iterator:
     from flowmaster.operators.etl.work import order_etl_flow
 
-    yield from order_etl_flow(logger, dry_run)
+    yield from order_etl_flow(
+        logger=logger, async_mode=async_mode, dry_run=dry_run, **kwargs
+    )

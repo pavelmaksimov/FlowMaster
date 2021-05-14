@@ -5,10 +5,12 @@ from logging import getLogger
 
 from mock import Mock
 
+from flowmaster.operators.etl.dataschema import ExportContext
 from flowmaster.operators.etl.providers.yandex_metrika_logs.export import (
     YandexMetrikaLogsExport,
 )
 from flowmaster.operators.etl.service import ETLOperator
+from flowmaster.operators.etl.types import DataOrient
 from flowmaster.pool import pools
 from flowmaster.utils.executor import catch_exceptions, SleepTask, Executor
 from tests.fixtures.yandex_metrika import yml_visits_to_file_config
@@ -57,7 +59,9 @@ def test_sleep():
 
 def test_executor():
     def export_func(start_date, end_date):
-        yield ({}, ["col1"], [[start_date]])
+        yield ExportContext(
+            columns=["col1"], data=[[start_date]], data_orient=DataOrient.values
+        )
 
     YandexMetrikaLogsExport.__call__ = Mock(side_effect=export_func)
 
@@ -70,14 +74,16 @@ def test_executor():
             yml_visits_to_file_config.load.file_name = f"{test_executor.__name__}.tsv"
 
             flow = ETLOperator(yml_visits_to_file_config)
-            generator = flow(start_period=worktime, end_period=worktime)
+            generator = flow(
+                start_period=worktime, end_period=worktime, async_mode=True
+            )
 
             yield generator
 
-    flow_scheduler = Executor(order_task_func=order_task)
-    flow_scheduler.start(workers=1, order_interval=3, orders=2)
+    executor = Executor(order_task_func=order_task)
+    executor.start(workers=1, order_interval=3, orders=2)
 
-    assert True  # duration >= count_flows * duration_func / size_pools
+    assert True
 
 
 def test_executor_concurrency():
@@ -85,7 +91,9 @@ def test_executor_concurrency():
 
     def export_func(start_date, end_date):
         time.sleep(duration_func)
-        yield ({}, ["col1"], [[start_date]])
+        yield ExportContext(
+            columns=["col1"], data=[[start_date]], data_orient=DataOrient.values
+        )
 
     YandexMetrikaLogsExport.__call__ = Mock(side_effect=export_func)
 
@@ -104,12 +112,14 @@ def test_executor_concurrency():
             yml_visits_to_file_config.load.concurrency = 4
 
             flow = ETLOperator(yml_visits_to_file_config)
-            generator = flow(start_period=worktime, end_period=worktime)
+            generator = flow(
+                start_period=worktime, end_period=worktime, async_mode=True
+            )
 
             yield generator
 
-    flow_scheduler = Executor(order_task_func=order_task)
-    flow_scheduler.start(workers=4, order_interval=1, orders=1)
+    executor = Executor(order_task_func=order_task)
+    executor.start(workers=4, order_interval=1, orders=1)
 
     assert True  # duration >= count_flows * duration_func / concurrency
 
@@ -120,7 +130,9 @@ def test_executor_pools():
     def export_func(start_date, end_date):
         logger_.info("wait export")
         time.sleep(duration_func)
-        yield ({}, ["col1"], [[start_date]])
+        yield ExportContext(
+            columns=["col1"], data=[[start_date]], data_orient=DataOrient.values
+        )
 
     YandexMetrikaLogsExport.__call__ = Mock(side_effect=export_func)
 
@@ -137,11 +149,13 @@ def test_executor_pools():
             yml_visits_to_file_config.export.pools = ["two"]
 
             flow = ETLOperator(yml_visits_to_file_config)
-            generator = flow(start_period=worktime, end_period=worktime)
+            generator = flow(
+                start_period=worktime, end_period=worktime, async_mode=True
+            )
 
             yield generator
 
-    flow_scheduler = Executor(order_task_func=order_task)
-    flow_scheduler.start(workers=4, order_interval=1, orders=1)
+    executor = Executor(order_task_func=order_task)
+    executor.start(workers=4, order_interval=1, orders=1)
 
     assert True  # duration >= count_flows * duration_func / size_pools

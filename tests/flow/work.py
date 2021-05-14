@@ -6,8 +6,8 @@ import pendulum
 
 from flowmaster.models import FlowItem, FlowStatus
 from flowmaster.operators.base.work import Work
+from flowmaster.operators.base.work import order_flow
 from flowmaster.operators.etl.config import ETLFlowConfig
-from flowmaster.operators.etl.work import order_etl_flow
 from flowmaster.utils.yaml_helper import YamlHelper
 from tests.fixtures.yandex_metrika import yml_visits_to_file_config as CONFIG
 
@@ -31,7 +31,7 @@ def test_order_flow():
     rv = [(FLOW_NAME, config)]
     YamlHelper.iter_parse_file_from_dir = mock.Mock(return_value=rv)
 
-    flows = list(order_etl_flow(logger))
+    flows = list(order_flow(logger=logger))
 
     assert len(flows) == 5
     assert FlowItem.count_items(FLOW_NAME, statuses=[FlowStatus.run]) == len(flows)
@@ -53,7 +53,7 @@ def test_order_flow_with_period_length():
     rv = [(FLOW_NAME, config)]
     YamlHelper.iter_parse_file_from_dir = mock.Mock(return_value=rv)
 
-    flows = list(order_etl_flow(logger))
+    flows = list(order_flow(logger=logger))
 
     assert len(flows) == 3
 

@@ -1,6 +1,6 @@
 import datetime as dt
 import time
-from typing import Iterator, Union
+from typing import Iterator, Union, Optional
 
 from flowmaster.exceptions import FatalError
 from flowmaster.models import FlowStatus, FlowETLStep, FlowOperator
@@ -11,7 +11,7 @@ from flowmaster.operators.etl.loaders import storage_classes
 from flowmaster.operators.etl.providers import provider_classes
 from flowmaster.operators.etl.work import ETLWork
 from flowmaster.utils import iter_range_datetime
-from flowmaster.utils.executor import SleepTask, TaskPool
+from flowmaster.utils.executor import SleepTask, TaskPool, AsyncTaskT
 
 
 class ETLOperator(BaseOperator):
@@ -33,7 +33,8 @@ class ETLOperator(BaseOperator):
 
     def iterator(
         self, start_period: dt.datetime, end_period: dt.datetime, **kwargs
-    ) -> Iterator[Union[dict, TaskPool, SleepTask]]:
+    ) -> Iterator[Union[dict, AsyncTaskT]]:
+
         begin_time = time.time()
         self.operator_context.start_period = start_period
         self.operator_context.end_period = end_period
@@ -145,8 +146,15 @@ class ETLOperator(BaseOperator):
             ).replace("T00:00:00", "")
 
     def __call__(
-        self, start_period: dt.datetime, end_period: dt.datetime, **kwargs
-    ) -> Iterator:
+        self,
+        start_period: dt.datetime,
+        end_period: dt.datetime,
+        *,
+        async_mode: bool = False,
+        dry_run: bool = False,
+        **kwargs,
+    ) -> Iterator[Union[dict, Optional[AsyncTaskT]]]:
+
         date_log = self._get_period_text(start_period, end_period)
         self.logger.update(self.name, filename=f"{date_log}.log", level=self.loglevel)
         self.logger.info("Start flow: %s  %s", self.name, date_log)
@@ -164,12 +172,19 @@ class ETLOperator(BaseOperator):
 
         log_data = {}
         try:
-            for log_data in self.iterator(start_period, end_period, **kwargs):
-                if isinstance(log_data, dict):
+            for item in self.iterator(start_period, end_period, **kwargs):
+                if isinstance(item, (SleepTask, TaskPool)):
+                    if async_mode is False:
+                        if isinstance(item, SleepTask):
+                            time.sleep(item.sleep)
+
+                        continue
+                else:
+                    log_data = item
                     self.Model.update_items(self.items, **log_data)
                     self.logger.debug("%s: %s", self.name, log_data)
 
-                yield log_data
+                yield item
 
         except:
             self.logger.exception("Fail flow: %s  %s", self.name, date_log)

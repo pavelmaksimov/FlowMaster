@@ -4,14 +4,14 @@ import logging
 import queue
 import threading
 import time
-from typing import Optional, Iterator, Callable, Union
+from typing import Optional, Iterator, Callable, Union, TypeVar
 
 from pydantic import BaseModel, PrivateAttr
 
 from flowmaster.pool import pools
 from flowmaster.utils.logging_helper import CreateLogger
 
-logger = CreateLogger("executor", "executor.log", level=logging.INFO)
+logger = CreateLogger("thread_executor", "thread_executor.log", level=logging.INFO)
 
 task_queue = queue.Queue()
 sleeptask_queue = queue.Queue()
@@ -59,6 +59,9 @@ class TaskPool(BaseModel):
 
     def put(self):
         pools[self.pool_names] = 1
+
+
+AsyncTaskT = TypeVar("AsyncTaskT", bound=Union[SleepTask, TaskPool])
 
 
 class Executor:
