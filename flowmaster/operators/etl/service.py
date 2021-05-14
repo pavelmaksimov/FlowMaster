@@ -5,9 +5,9 @@ from typing import Iterator, Union, Optional
 from flowmaster.exceptions import FatalError
 from flowmaster.models import FlowStatus, FlowETLStep, FlowOperator
 from flowmaster.operators.base.service import BaseOperator
-from flowmaster.operators.etl.config import ETLFlowConfig
 from flowmaster.operators.etl.dataschema import ETLContext
 from flowmaster.operators.etl.loaders import storage_classes
+from flowmaster.operators.etl.policy import ETLFlowConfig
 from flowmaster.operators.etl.providers import provider_classes
 from flowmaster.operators.etl.work import ETLWork
 from flowmaster.utils import iter_range_datetime

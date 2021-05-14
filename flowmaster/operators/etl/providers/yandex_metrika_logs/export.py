@@ -13,7 +13,7 @@ from flowmaster.operators.etl.types import DataOrient
 from flowmaster.utils.thread_executor import SleepTask
 
 if TYPE_CHECKING:
-    from flowmaster.operators.etl.config import ETLFlowConfig
+    from flowmaster.operators.etl.policy import ETLFlowConfig
 
 
 class YandexMetrikaLogsExport(ExportAbstract):

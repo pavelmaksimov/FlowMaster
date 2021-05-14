@@ -1,7 +1,7 @@
 from pathlib import Path
 
-from flowmaster.operators.etl.config import ETLFlowConfig
 from flowmaster.operators.etl.loaders.file.service import FileLoad
+from flowmaster.operators.etl.policy import ETLFlowConfig
 from flowmaster.operators.etl.providers import FakeDataProvider
 from flowmaster.operators.etl.providers.fakedata import FakeDataExportPolicy
 from tests import get_tests_dir

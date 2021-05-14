@@ -8,7 +8,7 @@ from flowmaster.operators.etl.transform.policy import DTypeLiteralT
 from flowmaster.operators.etl.transform.policy import ErrorPolicyLiteralT
 
 if TYPE_CHECKING:
-    from flowmaster.operators.etl.config import ETLFlowConfig
+    from flowmaster.operators.etl.policy import ETLFlowConfig
 
 
 class TransformSchemaData(pydantic.BaseModel):

@@ -1,6 +1,6 @@
 import datetime as dt
 
-from flowmaster.operators.etl.config import ETLFlowConfig
+from flowmaster.operators.etl.policy import ETLFlowConfig
 from flowmaster.operators.etl.service import ETLOperator
 from flowmaster.utils.yaml_helper import YamlHelper
 from tests import get_tests_dir

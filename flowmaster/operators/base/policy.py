@@ -1,9 +1,11 @@
 import abc
 import datetime as dt
-from typing import Optional, Union, Literal
+from typing import Optional, Union, Literal, TypeVar
 
 import pendulum
 from pydantic import BaseModel, PositiveInt, PrivateAttr, validator
+
+PydanticModelT = TypeVar("PydanticModelT", bound=BaseModel)
 
 
 class BasePolicy(BaseModel):
@@ -85,3 +87,12 @@ class BaseWorkPolicy(BasePolicy):
     schedule: BaseSchedulePolicy
     retries: int = 0
     retry_delay: int = 60
+
+
+class BaseFlowConfig(BaseModel):
+    class Work(BaseWorkPolicy):
+        ...
+
+    name: str
+    work: BaseWorkPolicy
+    description: Optional[str] = None

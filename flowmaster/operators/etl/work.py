@@ -11,7 +11,7 @@ from flowmaster.utils.yaml_helper import YamlHelper
 
 if TYPE_CHECKING:
     from flowmaster.operators.etl.service import ETLOperator
-    from flowmaster.operators.etl.config import ETLFlowConfig
+    from flowmaster.operators.etl.policy import ETLFlowConfig
 
 
 class ETLWork(Work):
@@ -75,7 +75,7 @@ def order_etl_flow(
 ) -> Iterator:
     """Prepare flow function to be sent to the queue and executed"""
     from flowmaster.operators.etl.service import ETLOperator
-    from flowmaster.operators.etl.config import ETLFlowConfig
+    from flowmaster.operators.etl.policy import ETLFlowConfig
 
     for file_name, config in YamlHelper.iter_parse_file_from_dir(
         FLOW_CONFIGS_DIR, match=".etl.flow"

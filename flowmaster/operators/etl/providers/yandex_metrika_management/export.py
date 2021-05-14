@@ -12,7 +12,7 @@ from flowmaster.operators.etl.providers.abstract import ExportAbstract
 from flowmaster.operators.etl.types import DataOrient
 
 if TYPE_CHECKING:
-    from flowmaster.operators.etl.config import ETLFlowConfig
+    from flowmaster.operators.etl.policy import ETLFlowConfig
 
 
 class YandexMetrikaManagementExport(ExportAbstract):

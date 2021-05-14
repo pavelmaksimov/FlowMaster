@@ -12,7 +12,7 @@ fake = Faker()
 fake.seed_instance(0)
 
 if TYPE_CHECKING:
-    from flowmaster.operators.etl.config import ETLFlowConfig
+    from flowmaster.operators.etl.policy import ETLFlowConfig
 
 
 class FakeDataExport(ExportAbstract):

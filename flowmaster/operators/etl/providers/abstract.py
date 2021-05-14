@@ -6,8 +6,8 @@ from typing import TYPE_CHECKING, Iterator, Optional, Type
 import jinja2
 
 if TYPE_CHECKING:
-    from flowmaster.operators.base.config import PydanticModelT
-    from flowmaster.operators.etl.config import ETLFlowConfig
+    from flowmaster.operators.base.policy import PydanticModelT
+    from flowmaster.operators.etl.policy import ETLFlowConfig
     from flowmaster.operators.etl.transform import Transform
     from flowmaster.operators.etl.dataschema import ExportContext
 

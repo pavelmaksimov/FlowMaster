@@ -1,8 +1,8 @@
-from flowmaster.operators.etl.config import ETLFlowConfig
 from flowmaster.operators.etl.loaders.clickhouse.policy import ClickhouseLoadPolicy
 from flowmaster.operators.etl.loaders.clickhouse.policy import ClickhouseTransformPolicy
 from flowmaster.operators.etl.loaders.clickhouse.service import ClickhouseLoad
 from flowmaster.operators.etl.loaders.file.service import FileLoad
+from flowmaster.operators.etl.policy import ETLFlowConfig
 from flowmaster.operators.etl.providers import YandexMetrikaLogsProvider
 from flowmaster.operators.etl.providers.yandex_metrika_logs import (
     YandexMetrikaLogsExportPolicy,

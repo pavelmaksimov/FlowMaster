@@ -2,7 +2,7 @@ import logging
 
 from flowmaster.models import FlowItem, FlowStatus
 from flowmaster.operators.base.work import Work
-from flowmaster.operators.etl.config import ETLFlowConfig
+from flowmaster.operators.etl.policy import ETLFlowConfig
 from flowmaster.utils.logging_helper import CreateLogger
 from flowmaster.utils.notifications import send_codex_telegram_message
 

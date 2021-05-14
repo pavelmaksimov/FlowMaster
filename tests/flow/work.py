@@ -5,9 +5,8 @@ import mock
 import pendulum
 
 from flowmaster.models import FlowItem, FlowStatus
-from flowmaster.operators.base.work import Work
-from flowmaster.operators.base.work import order_flow
-from flowmaster.operators.etl.config import ETLFlowConfig
+from flowmaster.operators.base.work import Work, order_flow
+from flowmaster.operators.etl.policy import ETLFlowConfig
 from flowmaster.utils.yaml_helper import YamlHelper
 from tests.fixtures.yandex_metrika import yml_visits_to_file_config as CONFIG
 

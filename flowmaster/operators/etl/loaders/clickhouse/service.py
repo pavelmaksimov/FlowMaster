@@ -11,7 +11,7 @@ from flowmaster.operators.etl.loaders.clickhouse.policy import (
 from flowmaster.operators.etl.types import DataOrient
 
 if TYPE_CHECKING:
-    from flowmaster.operators.etl.config import ETLFlowConfig
+    from flowmaster.operators.etl.policy import ETLFlowConfig
     from flowmaster.operators.etl.dataschema import TransformContext
 
 

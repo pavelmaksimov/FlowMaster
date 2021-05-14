@@ -17,7 +17,7 @@ def list_config():
 
 @app.command()
 def validate():
-    from flowmaster.operators.etl.config import ETLFlowConfig
+    from flowmaster.operators.etl.policy import ETLFlowConfig
 
     for file_name, config in YamlHelper.iter_parse_file_from_dir(
         setttings.FLOW_CONFIGS_DIR, match=".flow"

@@ -3,8 +3,7 @@ from typing import Iterator
 
 from mock import Mock
 
-from flowmaster.operators.base.policy import BaseWorkPolicy
-from flowmaster.operators.etl.config import ETLFlowConfig
+from flowmaster.operators.etl.policy import ETLFlowConfig
 from flowmaster.operators.etl.providers.yandex_metrika_logs.export import (
     YandexMetrikaLogsExport,
 )
@@ -22,8 +21,8 @@ def test_codex_telegram():
     def export_func(start_period, end_period) -> Iterator[tuple[dict, list, list]]:
         yield ({}, ["date"], [[start_period]])
 
-    yml_visits_to_file_config.work.notifications = BaseWorkPolicy.Notifications(
-        codex_telegram=BaseWorkPolicy.Notifications.CodexTelegram(
+    yml_visits_to_file_config.work.notifications = ETLFlowConfig.Work.Notifications(
+        codex_telegram=ETLFlowConfig.Work.Notifications.CodexTelegram(
             links=[credentials["codex_telegram"]],
             on_success=True,
         )

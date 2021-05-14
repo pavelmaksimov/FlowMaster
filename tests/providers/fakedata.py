@@ -1,6 +1,6 @@
 import datetime as dt
 
-from flowmaster.operators.etl.config import ETLFlowConfig
+from flowmaster.operators.etl.policy import ETLFlowConfig
 from flowmaster.operators.etl.service import ETLOperator
 from tests.fixtures.fakedata import fakedata_to_file_config
 
