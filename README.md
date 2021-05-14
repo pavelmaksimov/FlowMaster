@@ -50,7 +50,7 @@ For Linux
     export FLOWMASTER_HOME={YOUR_PATH}
 
 ## Installing
-    pip install flowmaster==0.2.2
+    pip install flowmaster==0.3.1
 
 ## Run
     flowmaster run
