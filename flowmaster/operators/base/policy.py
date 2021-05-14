@@ -1,4 +1,3 @@
-import abc
 import datetime as dt
 from typing import Optional, Union, Literal, TypeVar
 
@@ -67,7 +66,7 @@ class BaseSchedulePolicy(BaseModel):
         self._set_keep_sequence()
 
 
-class NotificationServicePolicyAbstract(BaseModel, abc.ABC):
+class BaseNotificationServicePolicy(BaseModel):
     on_retry: bool = False
     on_success: bool = False
     # on_failure: bool = True
@@ -78,7 +77,7 @@ class BaseWorkPolicy(BasePolicy):
         ...
 
     class NotificationsPolicy(BaseModel):
-        class CodexTelegramPolicy(NotificationServicePolicyAbstract):
+        class CodexTelegramPolicy(BaseNotificationServicePolicy):
             links: list[str]
 
         codex_telegram: CodexTelegramPolicy = None
