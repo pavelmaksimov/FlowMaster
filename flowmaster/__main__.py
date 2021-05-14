@@ -70,12 +70,12 @@ def run_thread(workers: int = 2, interval: int = 20, dry_run: bool = False):
     prepare_for_run(dry_run=dry_run)
 
     from flowmaster.operators.base.work import order_flow
-    from flowmaster.utils.executor import Executor
+    from flowmaster.utils.thread_executor import ThreadExecutor
 
     typer.echo("Executor: Threading\n")
 
     order_task_func = partial(order_flow, dry_run=dry_run, async_mode=True)
-    executor = Executor(order_task_func=order_task_func)
+    executor = ThreadExecutor(order_task_func=order_task_func)
     executor.start(order_interval=interval, workers=workers)
 
 

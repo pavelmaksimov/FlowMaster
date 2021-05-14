@@ -4,7 +4,7 @@ from flowmaster.operators.etl.providers.yandex_metrika_logs import (
     YandexMetrikaLogsExportPolicy,
 )
 from flowmaster.operators.etl.service import ETLOperator
-from flowmaster.utils.executor import catch_exceptions, Executor
+from flowmaster.utils.thread_executor import catch_exceptions, ThreadExecutor
 from flowmaster.utils.yaml_helper import YamlHelper
 from tests import get_tests_dir
 from tests.fixtures.yandex_metrika import yml_visits_to_file_config as CONFIG
@@ -29,7 +29,7 @@ def test_executor_yandex_metrika_logs():
 
             yield generator
 
-    flow_scheduler = Executor(order_task_func=order_task)
+    flow_scheduler = ThreadExecutor(order_task_func=order_task)
     flow_scheduler.start(workers=4, orders=1)
 
     assert True

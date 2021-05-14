@@ -10,7 +10,7 @@ from flowmaster.exceptions import AuthError
 from flowmaster.operators.etl.dataschema import ExportContext
 from flowmaster.operators.etl.providers.abstract import ExportAbstract
 from flowmaster.operators.etl.types import DataOrient
-from flowmaster.utils.executor import SleepTask
+from flowmaster.utils.thread_executor import SleepTask
 
 if TYPE_CHECKING:
     from flowmaster.operators.etl.config import ETLFlowConfig

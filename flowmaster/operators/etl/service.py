@@ -11,7 +11,7 @@ from flowmaster.operators.etl.loaders import storage_classes
 from flowmaster.operators.etl.providers import provider_classes
 from flowmaster.operators.etl.work import ETLWork
 from flowmaster.utils import iter_range_datetime
-from flowmaster.utils.executor import SleepTask, TaskPool, AsyncTaskT
+from flowmaster.utils.thread_executor import SleepTask, TaskPool, AsyncTaskT
 
 
 class ETLOperator(BaseOperator):

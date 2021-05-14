@@ -11,7 +11,7 @@ from flowmaster.operators.etl.providers.yandex_direct.policy import (
     YandexDirectExportPolicy as ExportPolicy,
 )
 from flowmaster.operators.etl.types import DataOrient
-from flowmaster.utils.executor import SleepTask
+from flowmaster.utils.thread_executor import SleepTask
 
 if TYPE_CHECKING:
     from flowmaster.operators.etl.config import ETLFlowConfig

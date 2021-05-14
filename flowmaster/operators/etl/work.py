@@ -6,7 +6,7 @@ import pydantic
 from flowmaster.models import FlowItem, FlowStatus
 from flowmaster.operators.base.work import Work
 from flowmaster.setttings import FLOW_CONFIGS_DIR
-from flowmaster.utils.executor import catch_exceptions
+from flowmaster.utils.thread_executor import catch_exceptions
 from flowmaster.utils.yaml_helper import YamlHelper
 
 if TYPE_CHECKING:

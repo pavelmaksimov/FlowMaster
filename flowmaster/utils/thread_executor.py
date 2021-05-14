@@ -64,7 +64,7 @@ class TaskPool(BaseModel):
 AsyncTaskT = TypeVar("AsyncTaskT", bound=Union[SleepTask, TaskPool])
 
 
-class Executor:
+class ThreadExecutor:
     def __init__(self, order_task_func: Callable = None, *, dry_run: bool = False):
         self.order_task_func = order_task_func
         self.sleeping_task_storage: list[Union[SleepTask, TaskPool]] = []

@@ -12,13 +12,13 @@ from flowmaster.operators.etl.providers.yandex_metrika_logs.export import (
 from flowmaster.operators.etl.service import ETLOperator
 from flowmaster.operators.etl.types import DataOrient
 from flowmaster.pool import pools
-from flowmaster.utils.executor import catch_exceptions, SleepTask, Executor
+from flowmaster.utils.thread_executor import catch_exceptions, SleepTask, ThreadExecutor
 from tests.fixtures.yandex_metrika import yml_visits_to_file_config
 
 logger_ = getLogger(__name__)
 logger_.level = 20
 
-Executor = functools.partial(Executor, dry_run=True)
+ThreadExecutor = functools.partial(ThreadExecutor, dry_run=True)
 
 
 class TestSleepFunc:
@@ -42,7 +42,7 @@ class TestSleepFunc:
                     yield func()
             self.count += 1
 
-        flow_scheduler = Executor(order_task_func=order_task)
+        flow_scheduler = ThreadExecutor(order_task_func=order_task)
         flow_scheduler.start(workers=1, order_interval=0.5, orders=1)
 
         time.sleep(6)
@@ -80,7 +80,7 @@ def test_executor():
 
             yield generator
 
-    executor = Executor(order_task_func=order_task)
+    executor = ThreadExecutor(order_task_func=order_task)
     executor.start(workers=1, order_interval=3, orders=2)
 
     assert True
@@ -118,7 +118,7 @@ def test_executor_concurrency():
 
             yield generator
 
-    executor = Executor(order_task_func=order_task)
+    executor = ThreadExecutor(order_task_func=order_task)
     executor.start(workers=4, order_interval=1, orders=1)
 
     assert True  # duration >= count_flows * duration_func / concurrency
@@ -155,7 +155,7 @@ def test_executor_pools():
 
             yield generator
 
-    executor = Executor(order_task_func=order_task)
+    executor = ThreadExecutor(order_task_func=order_task)
     executor.start(workers=4, order_interval=1, orders=1)
 
     assert True  # duration >= count_flows * duration_func / size_pools
