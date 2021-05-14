@@ -15,14 +15,16 @@ CONFIG.export.credentials = YandexMetrikaLogsExportPolicy.Credentials(
 )
 
 
-def test_executor_yandex_metrika_logs():
+def test_thread_executor_yandex_metrika_logs():
     @catch_exceptions
     def order_task(*args, **kwargs):
         count_flows = 4
         worktimes = [dt.datetime(2021, 1, i + 1) for i in range(count_flows)]
 
         for worktime in worktimes:
-            CONFIG.load.file_name = f"{test_executor_yandex_metrika_logs.__name__}.tsv"
+            CONFIG.load.file_name = (
+                f"{test_thread_executor_yandex_metrika_logs.__name__}.tsv"
+            )
 
             flow = ETLOperator(CONFIG)
             generator = flow(start_period=worktime, end_period=worktime)
