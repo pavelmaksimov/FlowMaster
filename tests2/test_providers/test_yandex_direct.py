@@ -39,7 +39,9 @@ def test_attributes_to_file():
 
 
 def test_attributes_to_clickhouse():
-    ya_direct_campaigns_to_clickhouse_config.export.credentials = yandex_direct_credentials
+    ya_direct_campaigns_to_clickhouse_config.export.credentials = (
+        yandex_direct_credentials
+    )
     ya_direct_campaigns_to_clickhouse_config.load.credentials = clickhouse_credentials
     config = ETLFlowConfig(**ya_direct_campaigns_to_clickhouse_config.dict())
     etl_flow = ETLOperator(config)

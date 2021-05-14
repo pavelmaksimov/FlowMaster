@@ -45,10 +45,10 @@ ya_direct_report_to_clickhouse_config = ETLFlowConfig(
                 column_map={"CampaignType": "CampaignType", "Cost": "Cost"},
             ),
             load=ClickhouseLoadPolicy(
-                credentials=ClickhouseLoadPolicy.Credentials(
+                credentials=ClickhouseLoadPolicy.CredentialsPolicy(
                     user="user1", host="localhost"
                 ),
-                table_schema=ClickhouseLoadPolicy.TableSchema(
+                table_schema=ClickhouseLoadPolicy.TableSchemaPolicy(
                     db="default",
                     table="flowmaster_ya_direct_report_to_clickhouse_config",
                     columns=["CampaignType String", "Cost Float32"],
@@ -95,10 +95,10 @@ ya_direct_campaigns_to_clickhouse_config = ETLFlowConfig(
                 column_map={"Id": "CampaignID", "Name": "CampaignName"},
             ),
             load=ClickhouseLoadPolicy(
-                credentials=ClickhouseLoadPolicy.Credentials(
+                credentials=ClickhouseLoadPolicy.CredentialsPolicy(
                     user="user1", host="localhost"
                 ),
-                table_schema=ClickhouseLoadPolicy.TableSchema(
+                table_schema=ClickhouseLoadPolicy.TableSchemaPolicy(
                     db="default",
                     table="flowmaster_test_ya_direct_campaigns_to_clickhouse_config",
                     columns=["CampaignName String", "CampaignID UInt64"],

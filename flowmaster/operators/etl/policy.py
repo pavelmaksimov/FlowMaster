@@ -16,12 +16,12 @@ class ETLWorkPolicy(BaseWorkPolicy):
 
 
 class ETLFlowConfig(BaseFlowConfig):
-    class Work(ETLWorkPolicy):
+    class WorkPolicy(ETLWorkPolicy):
         ...
 
     provider: str
     storage: str
-    work: Work
+    work: ETLWorkPolicy
     export: PydanticModelT
     load: PydanticModelT
     transform: PydanticModelT

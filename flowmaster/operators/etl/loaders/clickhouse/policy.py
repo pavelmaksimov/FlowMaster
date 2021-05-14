@@ -10,21 +10,21 @@ from flowmaster.operators.etl.transform.policy import (
 
 
 class ClickhouseLoadPolicy(BasePolicy):
-    class Credentials(BaseModel):
+    class CredentialsPolicy(BaseModel):
         user: str
         host: str
         port: int = 9000
         password: Optional[Union[str, int]] = None
 
-    class TableSchema(BaseModel):
+    class TableSchemaPolicy(BaseModel):
         db: str
         table: str
         columns: List[str]
         orders: List[str]
         partition: Optional[Union[List[str], str]] = None
 
-    credentials: Credentials
-    table_schema: TableSchema
+    credentials: CredentialsPolicy
+    table_schema: TableSchemaPolicy
     data_cleaning_mode: Literal["partition", "off", "truncate"]
     sql_after: Optional[list[str]] = Field(default_factory=list)
     sql_before: Optional[list[str]] = Field(default_factory=list)
@@ -41,7 +41,7 @@ class ClickhouseLoadPolicy(BasePolicy):
 
 
 class ClickhouseTransformPolicy(BaseTransformPolicy):
-    class ColumnSchema(BaseModel):
+    class ColumnSchemaPolicy(BaseModel):
         errors: Optional[ErrorPolicyLiteralT] = None
         dt_format: Optional[str] = None
         null_values: Optional[list] = None
@@ -49,4 +49,4 @@ class ClickhouseTransformPolicy(BaseTransformPolicy):
 
     # {ExportColumnName: InsertColumnName}
     column_map: dict[str, str]
-    column_schema: dict[str, ColumnSchema] = Field(default_factory=dict)
+    column_schema: dict[str, ColumnSchemaPolicy] = Field(default_factory=dict)

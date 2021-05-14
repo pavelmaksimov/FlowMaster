@@ -9,16 +9,16 @@ from flowmaster.operators.etl.providers.yandex_metrika_management.export import 
 
 
 class BaseExportPolicy(BasePolicy):
-    class Credentials(BaseModel):
+    class CredentialsPolicy(BaseModel):
         access_token: str
 
-    credentials: Credentials
+    credentials: CredentialsPolicy
     resource: Api.ResourceNames.LiteralT
     concurrency: int = 5
 
 
 class CountersExportPolicy(BaseExportPolicy):
-    class Params(BaseModel):
+    class ParamsPolicy(BaseModel):
         per_page: Optional[int] = None
         connect_status: Optional[
             Literal["NOT_CONNECTED", "READY_TO_CONNECT", "CONNECTED"]
@@ -34,7 +34,7 @@ class CountersExportPolicy(BaseExportPolicy):
         status: Optional[Literal["Active", "Deleted"]] = None
         type: Optional[Literal["simple", "partner"]] = None
 
-    params: Params = BaseModel()
+    params: ParamsPolicy = BaseModel()
     columns: list[
         Literal[
             "code_options",
@@ -93,10 +93,10 @@ class CountersExportPolicy(BaseExportPolicy):
 
 
 class GoalsExportPolicy(BaseExportPolicy):
-    class Params(BaseModel):
+    class ParamsPolicy(BaseModel):
         useDeleted: Optional[bool] = None
 
-    params: Params = BaseModel()
+    params: ParamsPolicy = BaseModel()
     columns: Optional[
         list[
             Literal[

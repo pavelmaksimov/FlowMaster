@@ -11,8 +11,8 @@ from tests import get_tests_dir
 FILE_TESTS_DIR = get_tests_dir() / "__test_files__"
 Path.mkdir(FILE_TESTS_DIR, exist_ok=True)
 
-work_policy = ETLFlowConfig.Work(
-    schedule=ETLFlowConfig.Work.Schedule(
+work_policy = ETLFlowConfig.WorkPolicy(
+    schedule=ETLFlowConfig.WorkPolicy.SchedulePolicy(
         timezone="Europe/Moscow",
         start_time="00:00:00",
         from_date=dt.date.today() - dt.timedelta(5),

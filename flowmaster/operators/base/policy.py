@@ -74,23 +74,23 @@ class NotificationServicePolicyAbstract(BaseModel, abc.ABC):
 
 
 class BaseWorkPolicy(BasePolicy):
-    class Schedule(BaseSchedulePolicy):
+    class SchedulePolicy(BaseSchedulePolicy):
         ...
 
-    class Notifications(BaseModel):
-        class CodexTelegram(NotificationServicePolicyAbstract):
+    class NotificationsPolicy(BaseModel):
+        class CodexTelegramPolicy(NotificationServicePolicyAbstract):
             links: list[str]
 
-        codex_telegram: CodexTelegram = None
+        codex_telegram: CodexTelegramPolicy = None
 
-    notifications: Optional[Notifications]
+    notifications: Optional[NotificationsPolicy]
     schedule: BaseSchedulePolicy
     retries: int = 0
     retry_delay: int = 60
 
 
 class BaseFlowConfig(BaseModel):
-    class Work(BaseWorkPolicy):
+    class WorkPolicy(BaseWorkPolicy):
         ...
 
     name: str

@@ -28,10 +28,10 @@ yml_visits_to_file_config = ETLFlowConfig(
     storage=FileLoad.name,
     work=work_policy,
     export=YandexMetrikaLogsExportPolicy(
-        credentials=YandexMetrikaLogsExportPolicy.Credentials(
+        credentials=YandexMetrikaLogsExportPolicy.CredentialsPolicy(
             counter_id=0, access_token="token"
         ),
-        params=YandexMetrikaLogsExportPolicy.Params(
+        params=YandexMetrikaLogsExportPolicy.ParamsPolicy(
             source="visits",
             columns=[
                 "ym:s:counterID",
@@ -55,10 +55,10 @@ yml_visits_to_clickhouse_config = ETLFlowConfig(
     storage=ClickhouseLoad.name,
     work=work_policy,
     export=YandexMetrikaLogsExportPolicy(
-        credentials=YandexMetrikaLogsExportPolicy.Credentials(
+        credentials=YandexMetrikaLogsExportPolicy.CredentialsPolicy(
             counter_id=0, access_token="token"
         ),
-        params=YandexMetrikaLogsExportPolicy.Params(source="visits", columns=[""]),
+        params=YandexMetrikaLogsExportPolicy.ParamsPolicy(source="visits", columns=[""]),
     ),
     transform=ClickhouseTransformPolicy(
         error_policy="default",
@@ -66,8 +66,8 @@ yml_visits_to_clickhouse_config = ETLFlowConfig(
         column_map={"date": "Date"},
     ),
     load=ClickhouseLoadPolicy(
-        credentials=ClickhouseLoadPolicy.Credentials(user="user1", host="localhost"),
-        table_schema=ClickhouseLoadPolicy.TableSchema(
+        credentials=ClickhouseLoadPolicy.CredentialsPolicy(user="user1", host="localhost"),
+        table_schema=ClickhouseLoadPolicy.TableSchemaPolicy(
             db="default",
             table="test_masterflow",
             columns=["Date Date"],
@@ -87,7 +87,7 @@ ymm_goals_to_file_config = ETLFlowConfig(
     work=work_policy,
     export=YandexMetrikaManagementExportPolicy(
         resource=YandexMetrikaManagementExport.ResourceNames.goals,
-        credentials=YandexMetrikaManagementExportPolicy.Credentials(
+        credentials=YandexMetrikaManagementExportPolicy.CredentialsPolicy(
             access_token="token"
         ),
     ),
@@ -98,13 +98,13 @@ ymm_goals_to_file_config = ETLFlowConfig(
 ymm_counters_to_file_config = ETLFlowConfig(**ymm_goals_to_file_config.dict())
 ymm_counters_to_file_config.export = YandexMetrikaManagementExportPolicy(
     resource=YandexMetrikaManagementExport.ResourceNames.counters,
-    credentials=YandexMetrikaManagementExportPolicy.Credentials(access_token="token"),
+    credentials=YandexMetrikaManagementExportPolicy.CredentialsPolicy(access_token="token"),
 )
 
 ymm_clients_to_file_config = ETLFlowConfig(**ymm_goals_to_file_config.dict())
 ymm_clients_to_file_config.export = YandexMetrikaManagementExportPolicy(
     resource=YandexMetrikaManagementExport.ResourceNames.clients,
-    credentials=YandexMetrikaManagementExportPolicy.Credentials(access_token="token"),
+    credentials=YandexMetrikaManagementExportPolicy.CredentialsPolicy(access_token="token"),
 )
 
 ymstats_to_file_config = ETLFlowConfig(
@@ -113,8 +113,8 @@ ymstats_to_file_config = ETLFlowConfig(
     storage=FileLoad.name,
     work=work_policy,
     export=YandexMetrikaStatsExportPolicy(
-        credentials=YandexMetrikaStatsExportPolicy.Credentials(access_token="token"),
-        params=YandexMetrikaStatsExportPolicy.Params(
+        credentials=YandexMetrikaStatsExportPolicy.CredentialsPolicy(access_token="token"),
+        params=YandexMetrikaStatsExportPolicy.ParamsPolicy(
             ids=0,
             metrics=["ym:s:visits"],
             date1=True,

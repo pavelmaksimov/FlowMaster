@@ -10,7 +10,7 @@ from tests import get_tests_dir
 from tests.fixtures.yandex_metrika import yml_visits_to_file_config as CONFIG
 
 credentials = YamlHelper.parse_file(get_tests_dir("tests2") / "credentials.yml")
-CONFIG.export.credentials = YandexMetrikaLogsExportPolicy.Credentials(
+CONFIG.export.credentials = YandexMetrikaLogsExportPolicy.CredentialsPolicy(
     **credentials["yandex-metrika-logs"]
 )
 

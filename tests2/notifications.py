@@ -21,8 +21,8 @@ def test_codex_telegram():
     def export_func(start_period, end_period) -> Iterator[tuple[dict, list, list]]:
         yield ({}, ["date"], [[start_period]])
 
-    yml_visits_to_file_config.work.notifications = ETLFlowConfig.Work.Notifications(
-        codex_telegram=ETLFlowConfig.Work.Notifications.CodexTelegram(
+    yml_visits_to_file_config.work.notifications = ETLFlowConfig.WorkPolicy.NotificationsPolicy(
+        codex_telegram=ETLFlowConfig.WorkPolicy.NotificationsPolicy.CodexTelegramPolicy(
             links=[credentials["codex_telegram"]],
             on_success=True,
         )

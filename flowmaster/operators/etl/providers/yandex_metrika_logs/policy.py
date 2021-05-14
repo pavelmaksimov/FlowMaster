@@ -6,15 +6,15 @@ from flowmaster.operators.base.policy import BasePolicy
 
 
 class YandexMetrikaLogsExportPolicy(BasePolicy):
-    class Credentials(BaseModel):
+    class CredentialsPolicy(BaseModel):
         counter_id: int
         access_token: str
 
-    class Params(BaseModel):
+    class ParamsPolicy(BaseModel):
         source: Literal["visits", "hits"]
         columns: list[str]
 
-    credentials: Credentials
-    params: Params
+    credentials: CredentialsPolicy
+    params: ParamsPolicy
     initial_interval_check_report: int = 60
     concurrency: int = 3

@@ -6,10 +6,10 @@ from flowmaster.operators.base.policy import BasePolicy
 
 
 class YandexMetrikaStatsExportPolicy(BasePolicy):
-    class Credentials(BaseModel):
+    class CredentialsPolicy(BaseModel):
         access_token: str
 
-    class Params(BaseModel):
+    class ParamsPolicy(BaseModel):
         # https://yandex.ru/dev/metrika/doc/api2/api_v1/data.html
         ids: Union[str, int, List[str], List[int]]
         metrics: Union[str, List[str]]
@@ -28,6 +28,6 @@ class YandexMetrikaStatsExportPolicy(BasePolicy):
         sort: Optional[Union[str, List[str]]] = None
         timezone: Optional[str] = None
 
-    credentials: Credentials
-    params: Params
+    credentials: CredentialsPolicy
+    params: ParamsPolicy
     concurrency: int = 3
