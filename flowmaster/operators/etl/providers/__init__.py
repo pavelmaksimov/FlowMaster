@@ -1,6 +1,7 @@
 import importlib
 
 from flowmaster.operators.etl.providers.abstract import ProviderAbstract
+from flowmaster.operators.etl.providers.csv import CSVProvider
 from flowmaster.operators.etl.providers.fakedata import FakeDataProvider
 from flowmaster.operators.etl.providers.yandex_direct import YandexDirectProvider
 from flowmaster.operators.etl.providers.yandex_metrika_logs import (
@@ -20,7 +21,8 @@ provider_classes = {
     YandexMetrikaStatsProvider.name: YandexMetrikaStatsProvider,
     YandexMetrikaManagementProvider.name: YandexMetrikaManagementProvider,
     YandexMetrikaLogsProvider.name: YandexMetrikaLogsProvider,
-    YandexDirectProvider.name: YandexDirectProvider
+    YandexDirectProvider.name: YandexDirectProvider,
+    CSVProvider.name: CSVProvider,
 }
 
 # Fetching custom providers.

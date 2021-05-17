@@ -12,8 +12,7 @@ from flowmaster.operators.etl.types import DataOrient
 
 if TYPE_CHECKING:
     from flowmaster.operators.etl.policy import ETLFlowConfig
-    from flowmaster.operators.etl.dataschema import TransformContext
-
+    from flowmaster.operators.etl.dataschema import TransformContext, ETLContext
 
 class ClickhouseLoad:
     class DataCleaningMode:
@@ -43,6 +42,10 @@ class ClickhouseLoad:
         )
         self.partitions = []
         self.logger = logger or getLogger("ClickhouseLoad")
+
+    def set_context(self, model: "ETLContext"):
+        model.db = self.Table.db
+        model.table = self.Table.table
 
     @property
     def client(self) -> clickhousepy.Client:

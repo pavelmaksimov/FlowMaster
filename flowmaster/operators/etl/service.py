@@ -36,6 +36,7 @@ class ETLOperator(BaseOperator):
         begin_time = time.time()
         self.operator_context.start_period = start_period
         self.operator_context.end_period = end_period
+        self.Load.set_context(self.operator_context)
 
         try:
             yield {

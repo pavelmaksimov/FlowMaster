@@ -15,7 +15,7 @@ from flowmaster.operators.etl.types import DataOrient
 
 if TYPE_CHECKING:
     from flowmaster.operators.etl.policy import ETLFlowConfig
-    from flowmaster.operators.etl.dataschema import TransformContext
+    from flowmaster.operators.etl.dataschema import TransformContext, ETLContext
 
 
 class FileLoad:
@@ -56,6 +56,9 @@ class FileLoad:
         self.insert_counter = 0
         self.file_path = pathlib.Path(self.path) / self.file_name
         self.open_file = partial(open, self.file_path, encoding=self.encoding)
+
+    def set_context(self, model: "ETLContext"):
+        model.path = str(self.file_path)
 
     def values_to_text(self, data):
         func_dump_value = lambda value: orjson.dumps(value).decode()
