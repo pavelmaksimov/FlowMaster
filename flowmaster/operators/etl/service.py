@@ -27,9 +27,7 @@ class ETLOperator(BaseOperator):
         self.Provider = provider_meta_class(config, self.logger)
         self.Load = load_class(config, self.logger)
 
-        self.operator_context = ETLContext(
-            storage=self.config.storage, provider=self.config.provider
-        )
+        self.operator_context = ETLContext(storage=self.config.storage)
 
     def iterator(
         self, start_period: dt.datetime, end_period: dt.datetime, **kwargs

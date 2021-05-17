@@ -8,7 +8,6 @@ from flowmaster.operators.etl.types import DataOrient
 
 class ETLContext(pydantic.BaseModel):
     storage: str
-    provider: str
     start_period: dt.datetime = None
     end_period: dt.datetime = None
     size: Optional[pydantic.PositiveInt] = 0
