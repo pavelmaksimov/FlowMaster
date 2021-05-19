@@ -8,7 +8,7 @@ from flowmaster.models import FlowItem, FlowStatus
 from flowmaster.operators.base.work import Work, order_flow
 from flowmaster.operators.etl.policy import ETLFlowConfig
 from flowmaster.utils.yaml_helper import YamlHelper
-from tests.fixtures.yandex_metrika import yml_visits_to_file_config as CONFIG
+from tests.fixtures.yandex_metrika import yml_visits_to_csv_config as CONFIG
 
 FLOW_NAME = "test_work"
 

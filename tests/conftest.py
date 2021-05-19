@@ -2,11 +2,11 @@ import datetime as dt
 
 import pytest
 
-from flowmaster.operators.etl.loaders.file.policy import (
-    FileLoadPolicy,
-    FileTransformPolicy,
+from flowmaster.operators.etl.loaders.csv.policy import (
+    CSVLoadPolicy,
+    CSVTransformPolicy,
 )
-from flowmaster.operators.etl.loaders.file.service import FileLoad
+from flowmaster.operators.etl.loaders.csv.service import CSVLoader
 from flowmaster.operators.etl.policy import ETLFlowConfig
 from flowmaster.operators.etl.providers import CSVProvider
 from flowmaster.operators.etl.providers.csv.policy import CSVExportPolicy
@@ -26,14 +26,14 @@ def work_policy():
 
 @pytest.fixture()
 def csv_load_policy(tmp_path):
-    return FileLoadPolicy(
+    return CSVLoadPolicy(
         path=str(tmp_path), file_name="csv_load_policy.csv", save_mode="w"
     )
 
 
 @pytest.fixture()
 def csv_transform_policy():
-    return FileTransformPolicy(error_policy="default")
+    return CSVTransformPolicy(error_policy="default")
 
 
 @pytest.fixture()
@@ -51,14 +51,14 @@ def config_csv_to_csv_with_columns(tmp_path, work_policy, csv_transform_policy):
             "1\t2\n"
         )
 
-    csv_load_policy = FileLoadPolicy(
+    csv_load_policy = CSVLoadPolicy(
         path=str(tmp_path), file_name="load_data.csv", save_mode="w"
     )
 
     return ETLFlowConfig(
         name="csv_to_csv_with_columns",
         provider=CSVProvider.name,
-        storage=FileLoad.name,
+        storage=CSVLoader.name,
         work=work_policy,
         export=CSVExportPolicy(
             file_path=str(export_filepath),

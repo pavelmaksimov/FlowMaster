@@ -11,7 +11,7 @@ load:
     # Через шаблонизатор jinja доступны {{provider}} {{storage}} {{name}} {{datetime}}.
     file_name: str = "{{provider}} {{storage}}  {{name}}.tsv"
     # Optional:
-    # По умолчанию файлы сохраняются в FlowMaster/file_storage
+    # По умолчанию файлы сохраняются в FlowMaster/storage
     path: str = FILE_STORAGE_DIR
     encoding: str = "UTF-8"
     sep: str = "\t"

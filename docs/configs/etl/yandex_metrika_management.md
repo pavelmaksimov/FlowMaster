@@ -29,7 +29,7 @@ export:
         "chief_login",
     ]
 ```
-Пример [конфигиурации](../../../examples/etl/ymm_clients-file.etl.flow.yml)
+Пример [конфигиурации](../../../examples/etl/ymm_clients-csv.etl.flow.yml)
 
 ### Экспорт данных по целям
 https://yandex.ru/dev/metrika/doc/api2/management/goals/goals.html
@@ -65,7 +65,7 @@ export:
         "default_price",
     ]
 ```
-Пример [конфигиурации](../../../examples/etl/ymm_goals-file.etl.flow.yml)
+Пример [конфигиурации](../../../examples/etl/ymm_goals-csv.etl.flow.yml)
 
 ### Экспорт данных по счетчикам
 https://yandex.ru/dev/metrika/doc/api2/management/counters/counters.html
@@ -144,4 +144,4 @@ export:
         "webvisor",
     ]
 ```
-Пример [конфигиурации](../../../examples/etl/ymm_counters-file.etl.flow.yml)
+Пример [конфигиурации](../../../examples/etl/ymm_counters-csv.etl.flow.yml)

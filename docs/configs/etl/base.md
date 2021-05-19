@@ -16,7 +16,7 @@ provider: Literal[
     "yandex_direct",
 ]
 # Хранилище для вставки данных.
-storage: Literal["clickhouse", "file"]
+storage: Literal["clickhouse", "csv"]
 
 # Политики работы потока.
 work:
@@ -93,12 +93,13 @@ transform:
 - [yandex_metrika_management](yandex_metrika_management.md)
 - [yandex_metrika_logs](yandex_metrika_logs.md)
 - [yandex_direct](yandex_direct.md)
+- [csv](provider-csv.md)
 
 
 ### Политики загрузчика в хранилище (load)
 Описание доступно по ссылкам
 - [clickhouse](clickhouse.md)
-- [file](file.md)
+- [csv](loader-csv.md)
 
 
 ### Политики оповещения о работе потока (work.notifications)

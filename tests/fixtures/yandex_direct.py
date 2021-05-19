@@ -1,18 +1,18 @@
 from flowmaster.operators.etl.loaders.clickhouse.policy import ClickhouseLoadPolicy
 from flowmaster.operators.etl.loaders.clickhouse.policy import ClickhouseTransformPolicy
 from flowmaster.operators.etl.loaders.clickhouse.service import ClickhouseLoad
-from flowmaster.operators.etl.loaders.file.service import FileLoad
+from flowmaster.operators.etl.loaders.csv.service import CSVLoader
 from flowmaster.operators.etl.policy import ETLFlowConfig
 from flowmaster.operators.etl.providers import YandexDirectProvider
 from flowmaster.operators.etl.providers.yandex_direct.policy import (
     YandexDirectExportPolicy as ExportPolicy,
 )
-from tests.fixtures import work_policy, file_load_policy, file_transform_policy
+from tests.fixtures import work_policy, csv_load_policy, csv_transform_policy
 
-ya_direct_report_to_file_config = ETLFlowConfig(
-    name="ya_direct_report_to_file",
+ya_direct_report_to_csv_config = ETLFlowConfig(
+    name="ya_direct_report_to_csv",
     provider=YandexDirectProvider.name,
-    storage=FileLoad.name,
+    storage=CSVLoader.name,
     work=work_policy,
     export=ExportPolicy(
         credentials=ExportPolicy.CredentialsPolicy(access_token="token"),
@@ -30,15 +30,15 @@ ya_direct_report_to_file_config = ETLFlowConfig(
             ),
         ),
     ),
-    transform=file_transform_policy,
-    load=file_load_policy,
+    transform=csv_transform_policy,
+    load=csv_load_policy,
 )
 
 ya_direct_report_to_clickhouse_config = ETLFlowConfig(
     **{
-        **ya_direct_report_to_file_config.dict(),
+        **ya_direct_report_to_csv_config.dict(),
         **dict(
-            name="ya_direct_report_to_clickhouse_config",
+            name="ya_direct_report_to_clickhouse",
             storage=ClickhouseLoad.name,
             transform=ClickhouseTransformPolicy(
                 error_policy="default",
@@ -62,11 +62,11 @@ ya_direct_report_to_clickhouse_config = ETLFlowConfig(
     }
 )
 
-ya_direct_campaigns_to_file_config = ETLFlowConfig(
+ya_direct_campaigns_to_csv_config = ETLFlowConfig(
     **{
-        **ya_direct_report_to_file_config.dict(),
+        **ya_direct_report_to_csv_config.dict(),
         **dict(
-            name="ya_direct_campaigns_to_file_config",
+            name="ya_direct_campaigns_to_csv",
             export=ExportPolicy(
                 credentials=ExportPolicy.CredentialsPolicy(access_token="token"),
                 resource="campaigns",
@@ -86,9 +86,9 @@ ya_direct_campaigns_to_file_config = ETLFlowConfig(
 
 ya_direct_campaigns_to_clickhouse_config = ETLFlowConfig(
     **{
-        **ya_direct_campaigns_to_file_config.dict(),
+        **ya_direct_campaigns_to_csv_config.dict(),
         **dict(
-            name="ya_direct_campaigns_to_clickhouse_config",
+            name="ya_direct_campaigns_to_clickhouse",
             storage=ClickhouseLoad.name,
             transform=ClickhouseTransformPolicy(
                 error_policy="default",

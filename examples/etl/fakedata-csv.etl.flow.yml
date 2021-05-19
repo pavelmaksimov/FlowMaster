@@ -1,6 +1,6 @@
 description: fakedata
 provider: fakedata
-storage: file
+storage: csv
 
 work:
     schedule:

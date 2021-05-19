@@ -1,7 +1,7 @@
 # Конфигурация экспорта из отчетов Яндекс Метрика
 
 - Пример [конфигиурации](../../../examples/etl/yms-clickhouse.etl.flow.yml) загрузки в Clickhouse
-- Пример [конфигиурации](../../../examples/etl/yms-file.etl.flow.yml) сохранение в файл
+- Пример [конфигиурации](../../../examples/etl/yms-csv.etl.flow.yml) сохранение в файл
 
 ```yaml
 export:

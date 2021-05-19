@@ -1,7 +1,7 @@
 from flowmaster.operators.etl.loaders.clickhouse.policy import ClickhouseLoadPolicy
 from flowmaster.operators.etl.loaders.clickhouse.policy import ClickhouseTransformPolicy
 from flowmaster.operators.etl.loaders.clickhouse.service import ClickhouseLoad
-from flowmaster.operators.etl.loaders.file.service import FileLoad
+from flowmaster.operators.etl.loaders.csv.service import CSVLoader
 from flowmaster.operators.etl.policy import ETLFlowConfig
 from flowmaster.operators.etl.providers import YandexMetrikaLogsProvider
 from flowmaster.operators.etl.providers.yandex_metrika_logs import (
@@ -20,12 +20,12 @@ from flowmaster.operators.etl.providers.yandex_metrika_stats import (
     YandexMetrikaStatsExportPolicy,
     YandexMetrikaStatsProvider,
 )
-from tests.fixtures import work_policy, file_load_policy, file_transform_policy
+from tests.fixtures import work_policy, csv_load_policy, csv_transform_policy
 
-yml_visits_to_file_config = ETLFlowConfig(
-    name="ymlogs_to_file",
+yml_visits_to_csv_config = ETLFlowConfig(
+    name="ymlogs_to_csv",
     provider=YandexMetrikaLogsProvider.name,
-    storage=FileLoad.name,
+    storage=CSVLoader.name,
     work=work_policy,
     export=YandexMetrikaLogsExportPolicy(
         credentials=YandexMetrikaLogsExportPolicy.CredentialsPolicy(
@@ -45,8 +45,8 @@ yml_visits_to_file_config = ETLFlowConfig(
             ],
         ),
     ),
-    transform=file_transform_policy,
-    load=file_load_policy,
+    transform=csv_transform_policy,
+    load=csv_load_policy,
 )
 
 yml_visits_to_clickhouse_config = ETLFlowConfig(
@@ -80,10 +80,10 @@ yml_visits_to_clickhouse_config = ETLFlowConfig(
     ),
 )
 
-ymm_goals_to_file_config = ETLFlowConfig(
-    name="ymm_goals_to_file_config",
+ymm_goals_to_csv_config = ETLFlowConfig(
+    name="ymm_goals_to_csv_config",
     provider=YandexMetrikaManagementProvider.name,
-    storage=FileLoad.name,
+    storage=CSVLoader.name,
     work=work_policy,
     export=YandexMetrikaManagementExportPolicy(
         resource=YandexMetrikaManagementExport.ResourceNames.goals,
@@ -91,26 +91,26 @@ ymm_goals_to_file_config = ETLFlowConfig(
             access_token="token"
         ),
     ),
-    transform=file_transform_policy,
-    load=file_load_policy,
+    transform=csv_transform_policy,
+    load=csv_load_policy,
 )
 
-ymm_counters_to_file_config = ETLFlowConfig(**ymm_goals_to_file_config.dict())
-ymm_counters_to_file_config.export = YandexMetrikaManagementExportPolicy(
+ymm_counters_to_csv_config = ETLFlowConfig(**ymm_goals_to_csv_config.dict())
+ymm_counters_to_csv_config.export = YandexMetrikaManagementExportPolicy(
     resource=YandexMetrikaManagementExport.ResourceNames.counters,
     credentials=YandexMetrikaManagementExportPolicy.CredentialsPolicy(access_token="token"),
 )
 
-ymm_clients_to_file_config = ETLFlowConfig(**ymm_goals_to_file_config.dict())
-ymm_clients_to_file_config.export = YandexMetrikaManagementExportPolicy(
+ymm_clients_to_csv_config = ETLFlowConfig(**ymm_goals_to_csv_config.dict())
+ymm_clients_to_csv_config.export = YandexMetrikaManagementExportPolicy(
     resource=YandexMetrikaManagementExport.ResourceNames.clients,
     credentials=YandexMetrikaManagementExportPolicy.CredentialsPolicy(access_token="token"),
 )
 
-ymstats_to_file_config = ETLFlowConfig(
-    name="ymstats_to_file_config",
+ymstats_to_csv_config = ETLFlowConfig(
+    name="ymstats_to_csv_config",
     provider=YandexMetrikaStatsProvider.name,
-    storage=FileLoad.name,
+    storage=CSVLoader.name,
     work=work_policy,
     export=YandexMetrikaStatsExportPolicy(
         credentials=YandexMetrikaStatsExportPolicy.CredentialsPolicy(access_token="token"),
@@ -121,6 +121,6 @@ ymstats_to_file_config = ETLFlowConfig(
             date2=True,
         ),
     ),
-    transform=file_transform_policy,
-    load=file_load_policy,
+    transform=csv_transform_policy,
+    load=csv_load_policy,
 )

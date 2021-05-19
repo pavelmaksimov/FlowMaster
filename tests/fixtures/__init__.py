@@ -1,9 +1,9 @@
 import datetime as dt
 from pathlib import Path
 
-from flowmaster.operators.etl.loaders.file.policy import (
-    FileLoadPolicy,
-    FileTransformPolicy,
+from flowmaster.operators.etl.loaders.csv.policy import (
+    CSVLoadPolicy,
+    CSVTransformPolicy,
 )
 from flowmaster.operators.etl.policy import ETLFlowConfig
 from tests import get_tests_dir
@@ -19,5 +19,5 @@ work_policy = ETLFlowConfig.WorkPolicy(
         interval="daily",
     )
 )
-file_load_policy = FileLoadPolicy(path=str(FILE_TESTS_DIR), save_mode="w")
-file_transform_policy = FileTransformPolicy(error_policy="default")
+csv_load_policy = CSVLoadPolicy(path=str(FILE_TESTS_DIR), save_mode="w")
+csv_transform_policy = CSVTransformPolicy(error_policy="default")

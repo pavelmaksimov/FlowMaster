@@ -7,9 +7,9 @@ from typing import TYPE_CHECKING, Optional
 import jinja2
 import orjson
 
-from flowmaster.operators.etl.loaders.file.policy import (
-    FileLoadPolicy,
-    FileTransformPolicy,
+from flowmaster.operators.etl.loaders.csv.policy import (
+    CSVLoadPolicy,
+    CSVTransformPolicy,
 )
 from flowmaster.operators.etl.types import DataOrient
 
@@ -18,10 +18,10 @@ if TYPE_CHECKING:
     from flowmaster.operators.etl.dataschema import TransformContext, ETLContext
 
 
-class FileLoad:
-    name = "file"
-    policy_model = FileLoadPolicy
-    transform_policy_model = FileTransformPolicy
+class CSVLoader:
+    name = "csv"
+    policy_model = CSVLoadPolicy
+    transform_policy_model = CSVTransformPolicy
     data_orient = DataOrient.values
 
     _enter = False
@@ -50,17 +50,17 @@ class FileLoad:
             **_template
         )
 
-        self.logger = logger or getLogger("FileLoad")
+        self.logger = logger or getLogger("CSVLoader")
 
         self.columns = None
         self.insert_counter = 0
         self.file_path = pathlib.Path(self.path) / self.file_name
         self.open_file = partial(open, self.file_path, encoding=self.encoding)
 
-    def set_context(self, model: "ETLContext"):
+    def set_context(self, model: "ETLContext") -> None:
         model.path = str(self.file_path)
 
-    def values_to_text(self, data):
+    def values_to_text(self, data: list) -> str:
         func_dump_value = lambda value: orjson.dumps(value).decode()
         func_row_to_line = lambda row: self.sep.join(map(func_dump_value, row))
         data = self.newline.join(map(func_row_to_line, data))
@@ -68,7 +68,7 @@ class FileLoad:
 
         return data
 
-    def __enter__(self):
+    def __enter__(self) -> "CSVLoader":
         self._enter = True
         self._is_add_columns = self.save_mode == "w" or not pathlib.Path.exists(
             self.file_path

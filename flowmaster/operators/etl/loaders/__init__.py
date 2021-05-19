@@ -1,4 +1,4 @@
 from flowmaster.operators.etl.loaders.clickhouse.service import ClickhouseLoad
-from flowmaster.operators.etl.loaders.file.service import FileLoad
+from flowmaster.operators.etl.loaders.csv.service import CSVLoader
 
-storage_classes = {ClickhouseLoad.name: ClickhouseLoad, FileLoad.name: FileLoad}
+storage_classes = {ClickhouseLoad.name: ClickhouseLoad, CSVLoader.name: CSVLoader}

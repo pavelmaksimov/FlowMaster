@@ -1,6 +1,6 @@
 description: testing
 provider: yandex_metrika_management
-storage: file
+storage: csv
 
 work:
     update_stale_data: 1

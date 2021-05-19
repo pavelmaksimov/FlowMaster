@@ -9,7 +9,7 @@ from flowmaster.operators.etl.providers.yandex_metrika_logs.export import (
 )
 from flowmaster.operators.etl.service import ETLOperator
 from flowmaster.operators.etl.types import DataOrient
-from tests.fixtures.yandex_metrika import yml_visits_to_file_config
+from tests.fixtures.yandex_metrika import yml_visits_to_csv_config
 
 
 def test_flow():
@@ -23,9 +23,9 @@ def test_flow():
 
     YandexMetrikaLogsExport.__call__ = Mock(side_effect=export_func)
 
-    yml_visits_to_file_config.load.file_name = f"{test_flow.__name__}.tsv"
-    yml_visits_to_file_config.load.with_columns = True
+    yml_visits_to_csv_config.load.file_name = f"{test_flow.__name__}.tsv"
+    yml_visits_to_csv_config.load.with_columns = True
 
-    flow = ETLOperator(yml_visits_to_file_config)
+    flow = ETLOperator(yml_visits_to_csv_config)
 
     list(flow(start_period=dt.datetime(2021, 1, 1), end_period=dt.datetime(2021, 1, 2)))

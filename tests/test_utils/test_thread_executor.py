@@ -13,7 +13,7 @@ from flowmaster.operators.etl.service import ETLOperator
 from flowmaster.operators.etl.types import DataOrient
 from flowmaster.pool import pools
 from flowmaster.utils.thread_executor import catch_exceptions, SleepTask, ThreadExecutor
-from tests.fixtures.yandex_metrika import yml_visits_to_file_config
+from tests.fixtures.yandex_metrika import yml_visits_to_csv_config
 
 logger_ = getLogger(__name__)
 logger_.level = 20
@@ -71,9 +71,9 @@ def test_executor():
         worktimes = [dt.datetime(2021, 1, i + 1) for i in range(count_flows)]
 
         for worktime in worktimes:
-            yml_visits_to_file_config.load.file_name = f"{test_executor.__name__}.tsv"
+            yml_visits_to_csv_config.load.file_name = f"{test_executor.__name__}.tsv"
 
-            flow = ETLOperator(yml_visits_to_file_config)
+            flow = ETLOperator(yml_visits_to_csv_config)
             generator = flow(
                 start_period=worktime, end_period=worktime, async_mode=True
             )
@@ -103,15 +103,15 @@ def test_executor_concurrency():
         worktimes = [dt.datetime(2021, 1, i + 1) for i in range(count_flows)]
 
         for worktime in worktimes:
-            yml_visits_to_file_config.load.file_name = (
+            yml_visits_to_csv_config.load.file_name = (
                 f"{test_executor_concurrency.__name__}.tsv"
             )
-            yml_visits_to_file_config.work.concurrency = 1
-            yml_visits_to_file_config.export.concurrency = 4
-            yml_visits_to_file_config.transform.concurrency = 4
-            yml_visits_to_file_config.load.concurrency = 4
+            yml_visits_to_csv_config.work.concurrency = 1
+            yml_visits_to_csv_config.export.concurrency = 4
+            yml_visits_to_csv_config.transform.concurrency = 4
+            yml_visits_to_csv_config.load.concurrency = 4
 
-            flow = ETLOperator(yml_visits_to_file_config)
+            flow = ETLOperator(yml_visits_to_csv_config)
             generator = flow(
                 start_period=worktime, end_period=worktime, async_mode=True
             )
@@ -143,12 +143,12 @@ def test_executor_pools():
 
         for worktime in worktimes:
             pools.append_pools({"two": 2})
-            yml_visits_to_file_config.load.file_name = (
+            yml_visits_to_csv_config.load.file_name = (
                 f"{test_executor_pools.__name__}.tsv"
             )
-            yml_visits_to_file_config.export.pools = ["two"]
+            yml_visits_to_csv_config.export.pools = ["two"]
 
-            flow = ETLOperator(yml_visits_to_file_config)
+            flow = ETLOperator(yml_visits_to_csv_config)
             generator = flow(
                 start_period=worktime, end_period=worktime, async_mode=True
             )

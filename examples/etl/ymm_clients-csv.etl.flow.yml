@@ -1,25 +1,24 @@
 description: testing
-provider: yandex_metrika_logs
-storage: file
+provider: yandex_metrika_management
+storage: csv
 
 work:
     update_stale_data: 1
     schedule:
         timezone: Europe/Moscow
         start_time: 00:00:00
-        from_date: 2021-03-20
         interval: daily
 
 export:
     credentials:
-        counter_id:
         access_token:
 
-    params:
-        source: visits
-        columns:
-            - ym:s:date
-            - ym:s:pageViews
+    # https://yandex.ru/dev/metrika/doc/api2/management/direct_clients/getclients.html
+    resource: clients
+    columns:
+        - id
+        - name
+        - chief_login
 
 load:
     encoding: "UTF-8"

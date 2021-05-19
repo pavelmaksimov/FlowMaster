@@ -1,24 +1,32 @@
 description: testing
-provider: yandex_metrika_management
-storage: file
+provider: yandex_metrika_stats
+storage: csv
 
 work:
     update_stale_data: 1
     schedule:
         timezone: Europe/Moscow
         start_time: 00:00:00
+        from_date: 2021-03-20
         interval: daily
 
 export:
     credentials:
         access_token:
 
-    # https://yandex.ru/dev/metrika/doc/api2/management/direct_clients/getclients.html
-    resource: clients
-    columns:
-        - id
-        - name
-        - chief_login
+    params:
+        ids: 100500
+        metrics:
+            - ym:s:visits
+            - ym:s:users
+        dimensions:
+            - ym:s:date
+        sort:
+            - ym:s:date
+        limit: 2
+        accuracy: 0.01
+        date1: True
+        date2: True
 
 load:
     encoding: "UTF-8"
@@ -33,3 +41,11 @@ load:
 transform:
     timezone: Europe/Moscow
     error_policy: default
+
+    column_schema:
+        ym:s:date:
+            name: Date
+            dtype: datetime
+            errors: default
+            dt_format: "%Y-%m-%d"
+            allow_null: True

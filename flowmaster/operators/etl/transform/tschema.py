@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING, Any, Optional, Union
 
 import pydantic
 
-from flowmaster.operators.etl.loaders import FileLoad, ClickhouseLoad
+from flowmaster.operators.etl.loaders import CSVLoader, ClickhouseLoad
 from flowmaster.operators.etl.transform.policy import DTypeLiteralT
 from flowmaster.operators.etl.transform.policy import ErrorPolicyLiteralT
 
@@ -45,7 +45,7 @@ class StorageTransformSchemaAbstract(ABC):
 
 
 class FileTransformSchema(StorageTransformSchemaAbstract):
-    name = FileLoad.name
+    name = CSVLoader.name
     allow_null = False
     null_default_value = ""
 

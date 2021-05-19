@@ -11,7 +11,7 @@ from flowmaster.operators.etl.transform.policy import (
 from flowmaster.setttings import FILE_STORAGE_DIR
 
 
-class FileLoadPolicy(BasePolicy):
+class CSVLoadPolicy(BasePolicy):
     save_mode: Literal["a", "w"]
     file_name: str = "{{provider}} {{storage}}  {{name}}.tsv"
     path: str = FILE_STORAGE_DIR
@@ -24,8 +24,8 @@ class FileLoadPolicy(BasePolicy):
     concurrency: int = 1
 
 
-class FileTransformPolicy(BaseTransformPolicy):
-    class ColumnSchema(BaseModel):
+class CSVTransformPolicy(BaseTransformPolicy):
+    class ColumnSchemaPolicy(BaseModel):
         name: Optional[str] = None
         dtype: Optional[DTypeLiteralT] = None
         errors: Optional[ErrorPolicyLiteralT] = None
@@ -34,4 +34,4 @@ class FileTransformPolicy(BaseTransformPolicy):
         null_values: Optional[list] = None
         clear_values: Optional[list] = None
 
-    column_schema: dict[str, ColumnSchema] = Field(default_factory=dict)
+    column_schema: dict[str, ColumnSchemaPolicy] = Field(default_factory=dict)

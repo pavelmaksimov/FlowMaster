@@ -22,7 +22,7 @@ At the moment there are connectors to sources
 - Yandex Direct Report API
 
 Storages
-- Save to file
+- Save to csv file
 - Clickhouse
 
 
