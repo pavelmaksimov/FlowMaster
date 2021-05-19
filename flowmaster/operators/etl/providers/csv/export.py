@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING, Iterator
 from flowmaster.operators.etl.dataschema import ExportContext
 from flowmaster.operators.etl.providers.abstract import ExportAbstract
 from flowmaster.operators.etl.types import DataOrient
+from flowmaster.utils import chunker
 
 if TYPE_CHECKING:
     from flowmaster.operators.etl.policy import ETLFlowConfig
@@ -14,21 +15,6 @@ class CSVExport(ExportAbstract):
     def __init__(self, config: "ETLFlowConfig", *args, **kwargs):
         self.export: "CSVExportPolicy" = config.export
         super(CSVExport, self).__init__(config, *args, **kwargs)
-
-    def chunker(self, iterator: Iterator, chunk_size: int) -> Iterator[list[dict]]:
-        while True:
-            data = []
-            try:
-                while len(data) < chunk_size:
-                    row = next(iterator)
-                    data.append(row)
-
-            except StopIteration:
-                break
-
-            finally:
-                if data:
-                    yield data
 
     def __call__(self, *args, **kwargs) -> Iterator[ExportContext]:
         self.logger.info("Exportation data")
@@ -61,9 +47,9 @@ class CSVExport(ExportAbstract):
             if self.export.with_columns:
                 next(row_iterator)
 
-            for chunk in self.chunker(
+            for chunk in chunker(
                 row_iterator,
-                chunk_size=self.export.chunk_size,
+                size=self.export.chunk_size,
             ):
                 yield ExportContext(
                     export_kwargs={},
