@@ -95,7 +95,7 @@ class ThreadExecutor:
         """Adds new function to the queue"""
         count = 0
         with self.lock:
-            for func in self.order_task_func(logger):
+            for func in self.order_task_func(logger=logger):
                 task_queue.put(func)
                 count += 1
 
@@ -111,6 +111,7 @@ class ThreadExecutor:
                 with self.lock:
                     pool = result
                     if not pool.allow():
+                        logger.warning("The pool is overflowing")
                         self.func_to_sleep(generator, result)
                         break
                     else:
