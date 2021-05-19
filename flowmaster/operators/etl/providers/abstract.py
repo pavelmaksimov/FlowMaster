@@ -4,6 +4,7 @@ from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Iterator, Optional, Type
 
 import jinja2
+from pydantic import BaseModel
 
 if TYPE_CHECKING:
     from flowmaster.operators.base.policy import PydanticModelT
@@ -46,6 +47,29 @@ class ExportAbstract(ABC):
         self.validate_params(**new_params)
 
         return new_params
+
+    def model_templating(
+        self, start_period: dt.datetime, end_period: dt.datetime, model: BaseModel
+    ):
+        new_model_dict = {}
+        for key, value in model.dict(exclude_unset=True).items():
+            new_model_dict[key] = value
+
+            if isinstance(value, str):
+                new_model_dict[key] = jinja2.Template(value).render(
+                    **{
+                        "start_period": start_period,
+                        "end_period": end_period,
+                        "datetime": dt.datetime.now(),
+                        "name": self.config.name,
+                        "provider": self.config.provider,
+                        "storage": self.config.storage,
+                    }
+                )
+
+        self.validate_params(**new_model_dict)
+
+        return model.parse_obj(new_model_dict)
 
     @abstractmethod
     def __call__(self, *args, **kwargs) -> Iterator["ExportContext"]:

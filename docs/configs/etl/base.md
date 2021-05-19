@@ -14,6 +14,8 @@ provider: Literal[
     "yandex_metrika_management",
     "yandex_metrika_logs",
     "yandex_direct",
+    "csv",
+    "sqlite",
 ]
 # Хранилище для вставки данных.
 storage: Literal["clickhouse", "csv"]
@@ -94,6 +96,7 @@ transform:
 - [yandex_metrika_logs](yandex_metrika_logs.md)
 - [yandex_direct](yandex_direct.md)
 - [csv](provider-csv.md)
+- [sqlite](provider-sqlite.md)
 
 
 ### Политики загрузчика в хранилище (load)

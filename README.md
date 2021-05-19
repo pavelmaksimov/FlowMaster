@@ -15,6 +15,8 @@ Flow run in parallel via threading library.
 Internally SQLite Database.
 
 At the moment there are connectors to sources
+- CSV file
+- SQLite database
 - Yandex Metrika Management API
 - Yandex Metrika Stats API
 - Yandex Metrika Logs API
