@@ -1,6 +1,6 @@
 from flowmaster.operators.etl.loaders.clickhouse.policy import ClickhouseLoadPolicy
 from flowmaster.operators.etl.loaders.clickhouse.policy import ClickhouseTransformPolicy
-from flowmaster.operators.etl.loaders.clickhouse.service import ClickhouseLoad
+from flowmaster.operators.etl.loaders.clickhouse.service import ClickhouseLoader
 from flowmaster.operators.etl.loaders.csv.service import CSVLoader
 from flowmaster.operators.etl.policy import ETLFlowConfig
 from flowmaster.operators.etl.providers import YandexDirectProvider
@@ -38,8 +38,8 @@ ya_direct_report_to_clickhouse_config = ETLFlowConfig(
     **{
         **ya_direct_report_to_csv_config.dict(),
         **dict(
-            name="ya_direct_report_to_clickhouse",
-            storage=ClickhouseLoad.name,
+            name="ya_direct_report_to_clickhouse_config",
+            storage=ClickhouseLoader.name,
             transform=ClickhouseTransformPolicy(
                 error_policy="default",
                 column_map={"CampaignType": "CampaignType", "Cost": "Cost"},
@@ -54,7 +54,7 @@ ya_direct_report_to_clickhouse_config = ETLFlowConfig(
                     columns=["CampaignType String", "Cost Float32"],
                     orders=["CampaignType"],
                 ),
-                data_cleaning_mode=ClickhouseLoad.DataCleaningMode.truncate,
+                data_cleaning_mode=ClickhouseLoader.DataCleaningMode.truncate,
                 sql_before=["SELECT 1"],
                 sql_after=["SELECT 2"],
             ),
@@ -89,7 +89,7 @@ ya_direct_campaigns_to_clickhouse_config = ETLFlowConfig(
         **ya_direct_campaigns_to_csv_config.dict(),
         **dict(
             name="ya_direct_campaigns_to_clickhouse",
-            storage=ClickhouseLoad.name,
+            storage=ClickhouseLoader.name,
             transform=ClickhouseTransformPolicy(
                 error_policy="default",
                 column_map={"Id": "CampaignID", "Name": "CampaignName"},
@@ -104,7 +104,7 @@ ya_direct_campaigns_to_clickhouse_config = ETLFlowConfig(
                     columns=["CampaignName String", "CampaignID UInt64"],
                     orders=["CampaignID"],
                 ),
-                data_cleaning_mode=ClickhouseLoad.DataCleaningMode.truncate,
+                data_cleaning_mode=ClickhouseLoader.DataCleaningMode.truncate,
                 sql_before=["SELECT 1"],
                 sql_after=["SELECT 2"],
             ),

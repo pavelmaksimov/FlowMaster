@@ -7,7 +7,7 @@ from flowmaster.operators.base.policy import (
     BaseFlowConfig,
     PydanticModelT,
 )
-from flowmaster.operators.etl.loaders import storage_classes, ClickhouseLoad
+from flowmaster.operators.etl.loaders import storage_classes, ClickhouseLoader
 from flowmaster.operators.etl.providers import provider_classes
 
 
@@ -41,7 +41,7 @@ class ETLFlowConfig(BaseFlowConfig):
         load = kwargs.get("load", {})
 
         # For Clickhouse.
-        if kwargs.get("storage") == ClickhouseLoad.name and isinstance(load, dict):
+        if kwargs.get("storage") == ClickhouseLoader.name and isinstance(load, dict):
             transform["partition_columns"] = load.get("table_schema", {}).get(
                 "partition"
             )
@@ -51,7 +51,7 @@ class ETLFlowConfig(BaseFlowConfig):
         load = kwargs.get("load", {})
 
         # For Clickhouse.
-        if kwargs.get("storage") == ClickhouseLoad.name and isinstance(load, dict):
+        if kwargs.get("storage") == ClickhouseLoader.name and isinstance(load, dict):
             if "column_map" not in transform:
                 columns_schema = load.get("table_schema", {}).get("columns", None)
                 if columns_schema:

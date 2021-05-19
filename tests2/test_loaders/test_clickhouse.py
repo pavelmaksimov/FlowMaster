@@ -5,7 +5,7 @@ from mock import Mock
 
 from flowmaster.operators.etl.dataschema import ExportContext
 from flowmaster.operators.etl.loaders.clickhouse.policy import ClickhouseLoadPolicy
-from flowmaster.operators.etl.loaders.clickhouse.service import ClickhouseLoad
+from flowmaster.operators.etl.loaders.clickhouse.service import ClickhouseLoader
 from flowmaster.operators.etl.providers.yandex_metrika_logs.export import (
     YandexMetrikaLogsExport,
 )
@@ -42,7 +42,7 @@ def test_real_load_clickhouse():
 
         # test data_cleaning_mode off
 
-        CONFIG.load.data_cleaning_mode = ClickhouseLoad.DataCleaningMode.off
+        CONFIG.load.data_cleaning_mode = ClickhouseLoader.DataCleaningMode.off
         flow = ETLOperator(CONFIG)
 
         list(
@@ -58,7 +58,7 @@ def test_real_load_clickhouse():
 
         # test data_cleaning_mode partition
 
-        CONFIG.load.data_cleaning_mode = ClickhouseLoad.DataCleaningMode.partition
+        CONFIG.load.data_cleaning_mode = ClickhouseLoader.DataCleaningMode.partition
         flow = ETLOperator(CONFIG)
 
         list(
@@ -74,7 +74,7 @@ def test_real_load_clickhouse():
 
         # test data_cleaning_mode truncate
 
-        CONFIG.load.data_cleaning_mode = ClickhouseLoad.DataCleaningMode.truncate
+        CONFIG.load.data_cleaning_mode = ClickhouseLoader.DataCleaningMode.truncate
         flow = ETLOperator(CONFIG)
 
         list(

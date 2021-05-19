@@ -1,6 +1,6 @@
 from flowmaster.operators.etl.loaders.clickhouse.policy import ClickhouseLoadPolicy
 from flowmaster.operators.etl.loaders.clickhouse.policy import ClickhouseTransformPolicy
-from flowmaster.operators.etl.loaders.clickhouse.service import ClickhouseLoad
+from flowmaster.operators.etl.loaders.clickhouse.service import ClickhouseLoader
 from flowmaster.operators.etl.loaders.csv.service import CSVLoader
 from flowmaster.operators.etl.policy import ETLFlowConfig
 from flowmaster.operators.etl.providers import YandexMetrikaLogsProvider
@@ -52,7 +52,7 @@ yml_visits_to_csv_config = ETLFlowConfig(
 yml_visits_to_clickhouse_config = ETLFlowConfig(
     name="ymlogs_to_clickhouse",
     provider=YandexMetrikaLogsProvider.name,
-    storage=ClickhouseLoad.name,
+    storage=ClickhouseLoader.name,
     work=work_policy,
     export=YandexMetrikaLogsExportPolicy(
         credentials=YandexMetrikaLogsExportPolicy.CredentialsPolicy(
@@ -74,7 +74,7 @@ yml_visits_to_clickhouse_config = ETLFlowConfig(
             orders=["Date"],
             partition=["Date"],
         ),
-        data_cleaning_mode=ClickhouseLoad.DataCleaningMode.off,
+        data_cleaning_mode=ClickhouseLoader.DataCleaningMode.off,
         sql_before=["SELECT 1"],
         sql_after=["SELECT 2"],
     ),

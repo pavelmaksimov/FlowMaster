@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING, Any, Optional, Union
 
 import pydantic
 
-from flowmaster.operators.etl.loaders import CSVLoader, ClickhouseLoad
+from flowmaster.operators.etl.loaders import CSVLoader, ClickhouseLoader
 from flowmaster.operators.etl.transform.policy import DTypeLiteralT
 from flowmaster.operators.etl.transform.policy import ErrorPolicyLiteralT
 
@@ -87,7 +87,7 @@ class FileTransformSchema(StorageTransformSchemaAbstract):
 
 
 class ClickhouseTransformSchema(StorageTransformSchemaAbstract):
-    name = ClickhouseLoad.name
+    name = ClickhouseLoader.name
     null_default_value = None
 
     def __init__(self, config: "ETLFlowConfig", null_values: Union[list, tuple, set]):

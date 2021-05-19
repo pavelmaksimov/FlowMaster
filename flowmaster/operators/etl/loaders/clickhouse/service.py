@@ -14,7 +14,8 @@ if TYPE_CHECKING:
     from flowmaster.operators.etl.policy import ETLFlowConfig
     from flowmaster.operators.etl.dataschema import TransformContext, ETLContext
 
-class ClickhouseLoad:
+
+class ClickhouseLoader:
     class DataCleaningMode:
         """Clears the table before inserting data."""
 
@@ -41,9 +42,9 @@ class ClickhouseLoad:
             self.create_table_config["db"], self.create_table_config["table"]
         )
         self.partitions = []
-        self.logger = logger or getLogger("ClickhouseLoad")
+        self.logger = logger or getLogger("ClickhouseLoader")
 
-    def set_context(self, model: "ETLContext"):
+    def set_context(self, model: "ETLContext") -> None:
         model.db = self.Table.db
         model.table = self.Table.table
 
@@ -117,6 +118,7 @@ class ClickhouseLoad:
 
     def __call__(self, context: "TransformContext", *args, **kwargs) -> None:
         self.validate_insert_columns(context.insert_columns)
+
         if self.StageTable is None:
             raise Exception("Call through the context manager")
 
@@ -139,7 +141,7 @@ class ClickhouseLoad:
         else:
             self.logger.info("Not data for insert")
 
-    def __enter__(self):
+    def __enter__(self) -> "ClickhouseLoader":
         stage_table_name = "{}_{}".format(
             self.create_table_config["table"], random.getrandbits(32)
         )
@@ -153,7 +155,7 @@ class ClickhouseLoad:
 
         return self
 
-    def __exit__(self, exc_type, exc_val, exc_tb):
+    def __exit__(self, exc_type, exc_val, exc_tb) -> None:
         is_identic = True
         try:
             if not exc_val:
