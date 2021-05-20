@@ -52,7 +52,7 @@ For Linux
     export FLOWMASTER_HOME={YOUR_PATH}
 
 ## Installing
-    pip install flowmaster==0.3.1
+    pip install flowmaster==0.4.0
 
 ## Run
     flowmaster run
@@ -60,6 +60,9 @@ For Linux
 args
 
     flowmaster run --help
+
+
+## [CHANGELOG](CHANGELOG.md)
 
 
 ## Support
