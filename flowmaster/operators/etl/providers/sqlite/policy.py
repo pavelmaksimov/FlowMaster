@@ -21,7 +21,9 @@ class SQLiteExportPolicy(BasePolicy):
     def validator_sql(cls, sql: str, **kwargs) -> str:
         if sql is not None:
             if any((kwargs["where"] == "", kwargs["order_by"] == "")):
-                raise ValueError("When the 'sql' field is full, the 'where' and 'order_by' must be empty")
+                raise ValueError(
+                    "When the 'sql' field is full, the 'where' and 'order_by' must be empty"
+                )
 
         return sql
 

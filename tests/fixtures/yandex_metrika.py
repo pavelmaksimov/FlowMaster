@@ -58,7 +58,9 @@ yml_visits_to_clickhouse_config = ETLFlowConfig(
         credentials=YandexMetrikaLogsExportPolicy.CredentialsPolicy(
             counter_id=0, access_token="token"
         ),
-        params=YandexMetrikaLogsExportPolicy.ParamsPolicy(source="visits", columns=[""]),
+        params=YandexMetrikaLogsExportPolicy.ParamsPolicy(
+            source="visits", columns=[""]
+        ),
     ),
     transform=ClickhouseTransformPolicy(
         error_policy="default",
@@ -66,7 +68,9 @@ yml_visits_to_clickhouse_config = ETLFlowConfig(
         column_map={"date": "Date"},
     ),
     load=ClickhouseLoadPolicy(
-        credentials=ClickhouseLoadPolicy.CredentialsPolicy(user="user1", host="localhost"),
+        credentials=ClickhouseLoadPolicy.CredentialsPolicy(
+            user="user1", host="localhost"
+        ),
         table_schema=ClickhouseLoadPolicy.TableSchemaPolicy(
             db="default",
             table="test_masterflow",
@@ -98,13 +102,17 @@ ymm_goals_to_csv_config = ETLFlowConfig(
 ymm_counters_to_csv_config = ETLFlowConfig(**ymm_goals_to_csv_config.dict())
 ymm_counters_to_csv_config.export = YandexMetrikaManagementExportPolicy(
     resource=YandexMetrikaManagementExport.ResourceNames.counters,
-    credentials=YandexMetrikaManagementExportPolicy.CredentialsPolicy(access_token="token"),
+    credentials=YandexMetrikaManagementExportPolicy.CredentialsPolicy(
+        access_token="token"
+    ),
 )
 
 ymm_clients_to_csv_config = ETLFlowConfig(**ymm_goals_to_csv_config.dict())
 ymm_clients_to_csv_config.export = YandexMetrikaManagementExportPolicy(
     resource=YandexMetrikaManagementExport.ResourceNames.clients,
-    credentials=YandexMetrikaManagementExportPolicy.CredentialsPolicy(access_token="token"),
+    credentials=YandexMetrikaManagementExportPolicy.CredentialsPolicy(
+        access_token="token"
+    ),
 )
 
 ymstats_to_csv_config = ETLFlowConfig(
@@ -113,7 +121,9 @@ ymstats_to_csv_config = ETLFlowConfig(
     storage=CSVLoader.name,
     work=work_policy,
     export=YandexMetrikaStatsExportPolicy(
-        credentials=YandexMetrikaStatsExportPolicy.CredentialsPolicy(access_token="token"),
+        credentials=YandexMetrikaStatsExportPolicy.CredentialsPolicy(
+            access_token="token"
+        ),
         params=YandexMetrikaStatsExportPolicy.ParamsPolicy(
             ids=0,
             metrics=["ym:s:visits"],

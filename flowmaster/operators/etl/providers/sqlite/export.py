@@ -19,7 +19,9 @@ class SQLiteExport(ExportAbstract):
     def __call__(self, *args, **kwargs) -> Iterator[ExportContext]:
         self.logger.info("Exportation data")
 
-        self.export: "SQLiteExportPolicy" = self.model_templating(*args, model=self.config.export)
+        self.export: "SQLiteExportPolicy" = self.model_templating(
+            *args, model=self.config.export
+        )
 
         db = peewee.SqliteDatabase(self.export.db_path)
         db.connect()

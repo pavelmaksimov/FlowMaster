@@ -6,7 +6,6 @@ from flowmaster.operators.base.policy import BasePolicy
 
 
 class YandexDirectExportPolicy(BasePolicy):
-
     class CredentialsPolicy(BaseModel):
         access_token: str
         # Login of the advertiser - the client of the advertising agency.
@@ -23,6 +22,7 @@ class YandexDirectExportPolicy(BasePolicy):
         """
         Example body for get campaigns: https://yandex.ru/dev/direct/doc/ref-v5/campaigns/get.html#input
         """
+
         method: str
         params: dict
 
@@ -32,7 +32,6 @@ class YandexDirectExportPolicy(BasePolicy):
         """
 
         class ReportParamsPolicy(BaseModel):
-
             class SelectionCriteriaPolicy(BaseModel):
                 class FilterPolicy(BaseModel):
                     Field: str

@@ -16,7 +16,9 @@ from tests import get_tests_dir
 from tests.fixtures.yandex_metrika import yml_visits_to_clickhouse_config as CONFIG
 
 credentials = YamlHelper.parse_file(get_tests_dir("tests2") / "credentials.yml")
-CONFIG.load.credentials = ClickhouseLoadPolicy.CredentialsPolicy(**credentials["clickhouse"])
+CONFIG.load.credentials = ClickhouseLoadPolicy.CredentialsPolicy(
+    **credentials["clickhouse"]
+)
 
 
 def test_real_load_clickhouse():
