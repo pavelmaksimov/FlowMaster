@@ -7,6 +7,7 @@ from tests.fixtures.fakedata import fakedata_to_csv_config
 
 
 def test_local_executor():
+    FlowItem.clear("test_local_executor")
     config = fakedata_to_csv_config.dict()
     config.pop("name")
     YamlHelper.iter_parse_file_from_dir = mock.Mock(

@@ -4,11 +4,12 @@ storage: clickhouse
 
 work:
     update_stale_data: 1
-    schedule:
-        timezone: Europe/Moscow
-        start_time: 00:00:00
-        from_date: 2021-03-20
-        interval: daily
+    triggers:
+        schedule:
+            timezone: Europe/Moscow
+            start_time: 00:00:00
+            from_date: 2021-03-20
+            interval: daily
 
 export:
     credentials:

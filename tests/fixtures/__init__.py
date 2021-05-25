@@ -12,11 +12,13 @@ FILE_TESTS_DIR = get_tests_dir() / "__test_files__"
 Path.mkdir(FILE_TESTS_DIR, exist_ok=True)
 
 work_policy = ETLFlowConfig.WorkPolicy(
-    schedule=ETLFlowConfig.WorkPolicy.SchedulePolicy(
-        timezone="Europe/Moscow",
-        start_time="00:00:00",
-        from_date=dt.date.today() - dt.timedelta(5),
-        interval="daily",
+    triggers=ETLFlowConfig.WorkPolicy.TriggersPolicy(
+        schedule=ETLFlowConfig.WorkPolicy.TriggersPolicy.SchedulePolicy(
+            timezone="Europe/Moscow",
+            start_time="00:00:00",
+            from_date=dt.date.today() - dt.timedelta(5),
+            interval="daily",
+        )
     )
 )
 csv_load_policy = CSVLoadPolicy(path=str(FILE_TESTS_DIR), save_mode="w")

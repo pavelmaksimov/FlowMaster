@@ -4,10 +4,11 @@ storage: csv
 
 work:
     update_stale_data: 1
-    schedule:
-        timezone: Europe/Moscow
-        start_time: 00:00:00
-        interval: daily
+    triggers:
+        schedule:
+            timezone: Europe/Moscow
+            start_time: 00:00:00
+            interval: daily
 
 export:
     credentials:

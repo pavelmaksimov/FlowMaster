@@ -3,11 +3,12 @@ provider: fakedata
 storage: csv
 
 work:
-    schedule:
-        timezone: Europe/Moscow
-        start_time: 00:00:00
-        from_date: 2021-03-28
-        interval: daily
+    triggers:
+        schedule:
+            timezone: Europe/Moscow
+            start_time: 00:00:00
+            from_date: 2021-03-28
+            interval: daily
 
 export:
     rows: 10

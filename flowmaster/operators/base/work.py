@@ -8,19 +8,19 @@ from flowmaster.models import FlowItem
 from flowmaster.utils import iter_range_datetime, iter_period_from_range
 
 if TYPE_CHECKING:
-    from flowmaster.operators.base.policy import BaseFlowConfig
+    from flowmaster.operators.base.policy import FlowConfig
 
 
 class Work:
-    def __init__(self, config: "BaseFlowConfig", logger: Optional[Logger] = None):
+    def __init__(self, config: "FlowConfig", logger: Optional[Logger] = None):
         self.config = config
         self.name = config.name
-        self.interval_timedelta = config.work.schedule._interval_timedelta
-        self.is_second_interval = config.work.schedule._is_second_interval
-        self.period_length = config.work.schedule.period_length
-        self.timezone = config.work.schedule.timezone
-        self.start_datetime = config.work.schedule._start_datetime
-        self.keep_sequence = config.work.schedule.keep_sequence
+        self.interval_timedelta = config.work.triggers.schedule._interval_timedelta
+        self.is_second_interval = config.work.triggers.schedule._is_second_interval
+        self.period_length = config.work.triggers.schedule.period_length
+        self.timezone = config.work.triggers.schedule.timezone
+        self.start_datetime = config.work.triggers.schedule._start_datetime
+        self.keep_sequence = config.work.triggers.schedule.keep_sequence
         self.retry_delay = config.work.retry_delay
         self.retries = config.work.retries
 

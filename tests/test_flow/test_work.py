@@ -18,11 +18,13 @@ logger = logging.getLogger(__name__)
 def test_order_flow():
     FlowItem.delete().where(FlowItem.name == FLOW_NAME).execute()
 
-    CONFIG.work.schedule = ETLFlowConfig.WorkPolicy.SchedulePolicy(
-        timezone="Europe/Moscow",
-        start_time="00:00:00",
-        from_date=dt.date.today() - dt.timedelta(5),
-        interval="daily",
+    CONFIG.work.triggers.schedule = (
+        ETLFlowConfig.WorkPolicy.TriggersPolicy.SchedulePolicy(
+            timezone="Europe/Moscow",
+            start_time="00:00:00",
+            from_date=dt.date.today() - dt.timedelta(5),
+            interval="daily",
+        )
     )
     config = dict(CONFIG)
     config.pop("name")
@@ -39,12 +41,14 @@ def test_order_flow():
 def test_order_flow_with_period_length():
     FlowItem.delete().where(FlowItem.name == FLOW_NAME).execute()
 
-    CONFIG.work.schedule = ETLFlowConfig.WorkPolicy.SchedulePolicy(
-        timezone="Europe/Moscow",
-        start_time="00:00:00",
-        from_date=dt.date.today() - dt.timedelta(5),
-        interval="daily",
-        period_length=2,
+    CONFIG.work.triggers.schedule = (
+        ETLFlowConfig.WorkPolicy.TriggersPolicy.SchedulePolicy(
+            timezone="Europe/Moscow",
+            start_time="00:00:00",
+            from_date=dt.date.today() - dt.timedelta(5),
+            interval="daily",
+            period_length=2,
+        )
     )
     config = dict(CONFIG)
     config.pop("name")
@@ -59,17 +63,21 @@ def test_order_flow_with_period_length():
 
 def test_worktime():
     tz = "Europe/Moscow"
-    CONFIG.work.schedule = ETLFlowConfig.WorkPolicy.SchedulePolicy(
-        timezone=tz, start_time="01:00:00", from_date=None, interval="daily"
+    CONFIG.work.triggers.schedule = (
+        ETLFlowConfig.WorkPolicy.TriggersPolicy.SchedulePolicy(
+            timezone=tz, start_time="01:00:00", from_date=None, interval="daily"
+        )
     )
     work = Work(CONFIG)
     assert work.current_worktime == pendulum.yesterday(tz).replace(hour=1)
 
-    CONFIG.work.schedule = ETLFlowConfig.WorkPolicy.SchedulePolicy(
-        timezone="Europe/Moscow",
-        start_time="01:00:00",
-        from_date=dt.date.today() - dt.timedelta(5),
-        interval="daily",
+    CONFIG.work.triggers.schedule = (
+        ETLFlowConfig.WorkPolicy.TriggersPolicy.SchedulePolicy(
+            timezone="Europe/Moscow",
+            start_time="01:00:00",
+            from_date=dt.date.today() - dt.timedelta(5),
+            interval="daily",
+        )
     )
     work = Work(CONFIG)
     assert work.current_worktime == pendulum.yesterday(tz).replace(hour=1)
@@ -77,17 +85,21 @@ def test_worktime():
 
 def test_worktime_second_interval():
     tz = "Europe/Moscow"
-    CONFIG.work.schedule = ETLFlowConfig.WorkPolicy.SchedulePolicy(
-        timezone=tz, start_time="01:00:00", from_date=None, interval=86400
+    CONFIG.work.triggers.schedule = (
+        ETLFlowConfig.WorkPolicy.TriggersPolicy.SchedulePolicy(
+            timezone=tz, start_time="01:00:00", from_date=None, interval=86400
+        )
     )
     work = Work(CONFIG)
     assert work.current_worktime == pendulum.today(tz).replace(hour=1)
 
-    CONFIG.work.schedule = ETLFlowConfig.WorkPolicy.SchedulePolicy(
-        timezone="Europe/Moscow",
-        start_time="01:00:00",
-        from_date=dt.date.today() - dt.timedelta(5),
-        interval=86400,
+    CONFIG.work.triggers.schedule = (
+        ETLFlowConfig.WorkPolicy.TriggersPolicy.SchedulePolicy(
+            timezone="Europe/Moscow",
+            start_time="01:00:00",
+            from_date=dt.date.today() - dt.timedelta(5),
+            interval=86400,
+        )
     )
     work = Work(CONFIG)
     assert work.current_worktime == pendulum.today(tz).replace(hour=1)

@@ -12,7 +12,13 @@ class BasePolicy(BaseModel):
     concurrency: Optional[int] = None
 
 
-class BaseSchedulePolicy(BaseModel):
+class BaseNotificationServicePolicy(BaseModel):
+    on_retry: bool = False
+    on_success: bool = False
+    # on_failure: bool = True
+
+
+class _SchedulePolicy(BaseModel):
     interval: Union[PositiveInt, Literal["daily", "hourly"]]
     timezone: str
     start_time: str
@@ -66,32 +72,25 @@ class BaseSchedulePolicy(BaseModel):
         self._set_keep_sequence()
 
 
-class BaseNotificationServicePolicy(BaseModel):
-    on_retry: bool = False
-    on_success: bool = False
-    # on_failure: bool = True
+class FlowConfig(BaseModel):
+    class WorkPolicy(BasePolicy):
+        class TriggersPolicy(BaseModel):
+            class SchedulePolicy(_SchedulePolicy):
+                ...
 
+            schedule: SchedulePolicy
 
-class BaseWorkPolicy(BasePolicy):
-    class SchedulePolicy(BaseSchedulePolicy):
-        ...
+        class NotificationsPolicy(BaseModel):
+            class CodexTelegramPolicy(BaseNotificationServicePolicy):
+                links: list[str]
 
-    class NotificationsPolicy(BaseModel):
-        class CodexTelegramPolicy(BaseNotificationServicePolicy):
-            links: list[str]
+            codex_telegram: CodexTelegramPolicy = None
 
-        codex_telegram: CodexTelegramPolicy = None
-
-    notifications: Optional[NotificationsPolicy]
-    schedule: BaseSchedulePolicy
-    retries: int = 0
-    retry_delay: int = 60
-
-
-class BaseFlowConfig(BaseModel):
-    class WorkPolicy(BaseWorkPolicy):
-        ...
+        triggers: TriggersPolicy
+        notifications: Optional[NotificationsPolicy]
+        retries: int = 0
+        retry_delay: int = 60
 
     name: str
-    work: BaseWorkPolicy
     description: Optional[str] = None
+    work: WorkPolicy
