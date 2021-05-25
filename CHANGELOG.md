@@ -1,5 +1,9 @@
 # CHANGELOG
 
+# v0.5.0
+### 2021.05.25
+Add work.triggers policy and moving work.schedule to work.triggers.schedule policy
+
 # v0.4.0 
 ### 2021.05.20
 There are backward incompatible changes

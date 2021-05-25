@@ -22,11 +22,13 @@ class ExportAbstract(ABC):
 
     @classmethod
     def validate_params(cls, **params: dict) -> None:
+        # TODO: drop method
         ...
 
     def collect_params(
         self, start_period: dt.datetime, end_period: dt.datetime, **params
     ) -> dict:
+        # TODO: drop method
         new_params = {}
         for key, value in params.items():
             if value is not None:
@@ -51,6 +53,7 @@ class ExportAbstract(ABC):
     def model_templating(
         self, start_period: dt.datetime, end_period: dt.datetime, model: BaseModel
     ):
+        # TODO: replace method with function
         new_model_dict = {}
         for key, value in model.dict(exclude_unset=True).items():
             new_model_dict[key] = value
