@@ -1,0 +1,38 @@
+description: items of flows
+provider: flowmaster
+storage: csv
+
+work:
+    triggers:
+        schedule:
+            timezone: Europe/Moscow
+            start_time: 00:00:00
+            interval: 1800
+
+export:
+    resource: "items"
+    columns:
+        - name
+        - worktime
+        - operator
+        - status
+        - etl_step
+        - data
+        - config_hash
+        - retries
+        - duration
+        - log
+        - started_utc
+        - finished_utc
+        - created
+        - updated
+
+    export_mode: "all"
+
+load:
+    save_mode: "w" # 'w' or 'a'
+    file_name: "{{name}} {{provider}} {{storage}}.tsv"
+
+transform:
+    timezone: Europe/Moscow
+    error_policy: default

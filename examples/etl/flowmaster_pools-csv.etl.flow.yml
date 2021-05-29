@@ -1,0 +1,26 @@
+description: state of pools
+provider: flowmaster
+storage: csv
+
+work:
+    triggers:
+        schedule:
+            timezone: Europe/Moscow
+            start_time: 00:00:00
+            interval: 60
+
+export:
+    resource: "pools"
+    columns:
+        - name
+        - size
+        - limit
+        - datetime
+
+load:
+    save_mode: "a" # 'w' or 'a'
+    file_name: "{{name}} {{provider}} {{storage}}.tsv"
+
+transform:
+    timezone: Europe/Moscow
+    error_policy: default

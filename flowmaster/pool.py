@@ -1,6 +1,8 @@
 from collections import defaultdict
 from typing import Literal
 
+import pendulum
+
 from flowmaster.setttings import POOL_CONFIG_FILEPATH
 from flowmaster.utils.logging_helper import CreateLogger
 from flowmaster.utils.yaml_helper import YamlHelper
@@ -33,37 +35,51 @@ class Pool:
         self.sizes = {}
         self.append_pools(pools)
 
-    def append_pools(self, pools: dict[str, int]):
+    def append_pools(self, pools: dict[str, int]) -> None:
         for tag, limit in pools.items():
             tag = self._get_uniq_tagname(tag)
             self.limits[tag] = limit
             self.sizes[tag] = Counter()
 
-    def update_pools(self, pools: dict[str, int]):
+    def update_pools(self, pools: dict[str, int]) -> None:
         for tag, limit in pools.items():
             self.limits[tag] = limit
             if tag not in self.sizes:
                 self.sizes[tag] = Counter()
 
-    def allow(self, tags: list[str]):
+    def allow(self, tags: list[str]) -> bool:
         return all([self.sizes[tag][tag] < self.limits[tag] for tag in tags])
 
-    def _get_uniq_tagname(self, tag: str):
+    def _get_uniq_tagname(self, tag: str) -> str:
         if tag in self.limits:
             tag += "_"
             return self._get_uniq_tagname(tag)
         return tag
 
-    def __setitem__(self, tags: list[str], switch: Literal[1, -1]):
+    def __setitem__(self, tags: list[str], switch: Literal[1, -1]) -> None:
         for tag in tags:
             counter = self.sizes[tag]
             counter[tag] = switch
 
-    def __getitem__(self, tag: str):
-        counter = self.sizes[tag]
+    def __getitem__(self, tag: str) -> int:
+        counter: Counter = self.sizes[tag]
         return counter[tag]
 
-    def __str__(self):
+    def info(self) -> list[dict]:
+        data = []
+        for tag, limit in self.limits.items():
+            data.append(
+                {
+                    "name": tag,
+                    "size": self[tag],
+                    "limit": limit,
+                    "datetime": pendulum.now(),
+                }
+            )
+
+        return data
+
+    def __str__(self) -> str:
         text = ""
         for tag, limit in self.limits.items():
             text += f"{tag}: {self[tag]}, limit={limit}\n"

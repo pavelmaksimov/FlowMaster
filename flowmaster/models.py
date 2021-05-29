@@ -72,6 +72,8 @@ class DateTimeTZField(playhouse.sqlite_ext.DateTimeField):
 
 
 class FlowItem(BaseModel):
+    """When changing fields, update to operators.etl.providers.flowmaster_data.policy.FlowmasterDataExportPolicy"""
+
     name = playhouse.sqlite_ext.CharField()
     worktime = DateTimeTZField()
 

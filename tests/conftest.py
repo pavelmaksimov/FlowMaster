@@ -9,6 +9,7 @@ from flowmaster.operators.etl.loaders.csv.policy import (
 from flowmaster.operators.etl.loaders.csv.service import CSVLoader
 from flowmaster.operators.etl.policy import ETLFlowConfig
 from flowmaster.operators.etl.providers import CSVProvider
+from flowmaster.operators.etl.providers import FlowmasterDataProvider
 from flowmaster.operators.etl.providers.csv.policy import CSVExportPolicy
 from flowmaster.operators.etl.providers.sqlite import SQLiteProvider
 from flowmaster.operators.etl.providers.sqlite.policy import SQLiteExportPolicy
@@ -78,7 +79,7 @@ def config_csv_to_csv_with_columns(work_policy, csv_transform_policy, csv_export
 
 
 @pytest.fixture()
-def config_csv_to_csv_without_columns(tmp_path, config_csv_to_csv_with_columns):
+def config_csv_to_csv_without_columns(config_csv_to_csv_with_columns):
     with open(config_csv_to_csv_with_columns.export.file_path, "w") as file:
         # fmt: off
         file.write(
@@ -119,13 +120,68 @@ def sqlite_export_policy(tmp_path):
 
 
 @pytest.fixture()
-def sqlite_to_csv_config(tmp_path, work_policy, sqlite_export_policy, csv_transform_policy, csv_load_policy):
+def sqlite_to_csv_config(work_policy, sqlite_export_policy, csv_transform_policy, csv_load_policy):
     return ETLFlowConfig(
         name="sqlite_to_csv",
         provider=SQLiteProvider.name,
         storage=CSVLoader.name,
         work=work_policy,
         export=sqlite_export_policy,
+        transform=csv_transform_policy,
+        load=csv_load_policy,
+    )
+
+
+@pytest.fixture()
+def flowmasterdata_items_export_policy():
+    return FlowmasterDataProvider.policy_model(
+        resource="items",
+        columns=[
+            "name",
+            "worktime",
+            "operator",
+            "status",
+            "etl_step",
+            "data",
+            "config_hash",
+            "retries",
+            "duration",
+            "log",
+            "started_utc",
+            "finished_utc",
+            "created",
+            "updated",
+        ],
+        export_mode="all"
+    )
+
+
+@pytest.fixture()
+def flowmasterdata_pools_export_policy():
+    return FlowmasterDataProvider.policy_model(
+        resource="pools",
+        columns=["name", "size", "limit", "datetime"],
+        export_mode="all"
+    )
+
+
+@pytest.fixture()
+def flowmasterdata_queues_export_policy():
+    return FlowmasterDataProvider.policy_model(
+        resource="queues",
+        columns=["name", "size", "datetime"],
+        export_mode="all"
+    )
+
+
+@pytest.fixture()
+def flowmasterdata_items_to_csv_config(tmp_path, work_policy, flowmasterdata_items_export_policy, csv_transform_policy, csv_load_policy):
+    return ETLFlowConfig(
+        name="flowmasterdata_items_to_csv",
+        provider=FlowmasterDataProvider.name,
+        storage=CSVLoader.name,
+        work=work_policy,
+        export=flowmasterdata_items_export_policy,
         transform=csv_transform_policy,
         load=csv_load_policy,
     )

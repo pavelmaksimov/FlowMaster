@@ -16,6 +16,7 @@ provider: Literal[
     "yandex_direct",
     "csv",
     "sqlite",
+    "flowmaster",
 ]
 # Хранилище для вставки данных.
 storage: Literal["clickhouse", "csv"]
@@ -99,6 +100,7 @@ transform:
 - [yandex_direct](yandex_direct.md)
 - [csv](provider-csv.md)
 - [sqlite](provider-sqlite.md)
+- [flowmaster](provider-flowmasterdata.md)
 
 
 ### Политики загрузчика в хранилище (load)
