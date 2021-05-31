@@ -176,7 +176,7 @@ class FlowItem(BaseModel):
         interval_timedelta: dt.timedelta,
         worktime: dt.datetime,
     ) -> Optional["FlowItem"]:
-        last_executed_item = cls.last_item(flow_name)
+        last_executed_item = cls.last_item(flow_name, for_updated=True)
         if cls.is_create_next(flow_name, interval_timedelta, worktime):
             next_execute_datetime = last_executed_item.worktime + interval_timedelta
             try:
@@ -311,7 +311,7 @@ class FlowItem(BaseModel):
         update_stale_data: Optional[
             Union[pydantic.PositiveInt, list[pydantic.NegativeInt]]
         ] = None,
-    ) -> list["FlowItem"]:
+    ) -> Optional[list["FlowItem"]]:
         if cls.allow_execute_flow(
             flow_name, config_hash=config_hash, max_fatal_errors=max_fatal_errors
         ):

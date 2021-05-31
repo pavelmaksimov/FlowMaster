@@ -103,3 +103,27 @@ def test_worktime_second_interval():
     )
     work = Work(CONFIG)
     assert work.current_worktime == pendulum.today(tz).replace(hour=1)
+
+
+def test_flow_sanity_interval_seconds(flowitem_model):
+    now = pendulum.datetime(2021, 1, 1)
+    pendulum.set_test_now(now)
+
+    for _ in range(5):
+        CONFIG.work.triggers.schedule = (
+            ETLFlowConfig.WorkPolicy.TriggersPolicy.SchedulePolicy(
+                timezone="UTC", start_time="00:00:00", from_date=None, interval=60
+            )
+        )
+
+        config = CONFIG.dict()
+        config.pop("name")
+        rv = [(flowitem_model.config_name, config)]
+        YamlHelper.iter_parse_file_from_dir = mock.Mock(return_value=rv)
+
+        list(order_flow(logger=logger))
+
+        now += dt.timedelta(seconds=60)
+        pendulum.set_test_now(now)
+
+    assert FlowItem.count_items(flowitem_model.config_name) == 5

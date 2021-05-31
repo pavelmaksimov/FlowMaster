@@ -42,26 +42,25 @@ class Work:
         """
         Returns the work datetime at the moment.
         """
-        end_time = pendulum.now(self.timezone).at(
-            hour=self.start_datetime.hour,
-            minute=self.start_datetime.minute,
-            second=self.start_datetime.second,
-        )
-        if self.is_second_interval is False:
-            end_time = end_time - self.interval_timedelta
+        end_time = pendulum.now(self.timezone)
 
         if self.start_datetime > end_time:
             start_time = self.start_datetime - self.interval_timedelta
         else:
             start_time = self.start_datetime
 
-        return list(
+        worktime = list(
             iter_range_datetime(
                 start_time=start_time,
                 end_time=end_time,
                 timedelta=self.interval_timedelta,
             )
         )[-1]
+
+        if self.is_second_interval is False:
+            worktime = worktime - self.interval_timedelta
+
+        return worktime
 
     def iter_items_for_execute(self) -> Iterator[FlowItem]:
         """

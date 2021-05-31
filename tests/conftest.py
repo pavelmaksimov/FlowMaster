@@ -13,6 +13,14 @@ from flowmaster.operators.etl.providers import FlowmasterDataProvider
 from flowmaster.operators.etl.providers.csv.policy import CSVExportPolicy
 from flowmaster.operators.etl.providers.sqlite import SQLiteProvider
 from flowmaster.operators.etl.providers.sqlite.policy import SQLiteExportPolicy
+from models import FlowItem
+
+
+@pytest.fixture()
+def flowitem_model():
+    FlowItem.delete().where(FlowItem.name == "conftest").execute()
+    FlowItem.config_name = "conftest"
+    return FlowItem
 
 
 @pytest.fixture()
