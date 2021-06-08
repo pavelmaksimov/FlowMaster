@@ -3,6 +3,12 @@ import time
 from typing import Iterator, Union, Optional
 
 from flowmaster.exceptions import FatalError
+from flowmaster.executors import (
+    SleepIteration,
+    NextIterationInPools,
+    AsyncIterationT,
+    ExecutorIterationTask,
+)
 from flowmaster.models import FlowStatus, FlowETLStep, FlowOperator
 from flowmaster.operators.base.service import BaseOperator
 from flowmaster.operators.etl.dataschema import ETLContext
@@ -11,7 +17,6 @@ from flowmaster.operators.etl.policy import ETLFlowConfig
 from flowmaster.operators.etl.providers import provider_classes
 from flowmaster.operators.etl.work import ETLWork
 from flowmaster.utils import iter_range_datetime
-from flowmaster.utils.thread_executor import SleepTask, TaskPool, AsyncTaskT
 
 
 class ETLOperator(BaseOperator):
@@ -31,7 +36,7 @@ class ETLOperator(BaseOperator):
 
     def iterator(
         self, start_period: dt.datetime, end_period: dt.datetime, **kwargs
-    ) -> Iterator[Union[dict, AsyncTaskT]]:
+    ) -> Iterator[Union[dict, AsyncIterationT]]:
 
         begin_time = time.time()
         self.operator_context.start_period = start_period
@@ -53,11 +58,11 @@ class ETLOperator(BaseOperator):
                 while True:
                     # Export step.
                     yield {self.Model.etl_step.name: FlowETLStep.export}
-                    yield TaskPool(pool_names=self.Work.export_pool_names)
+                    yield NextIterationInPools(pool_names=self.Work.export_pool_names)
                     try:
                         result = next(export_iterator)
 
-                        if isinstance(result, SleepTask):
+                        if isinstance(result, SleepIteration):
                             sleep_task = result
                             yield sleep_task
                             continue
@@ -76,7 +81,9 @@ class ETLOperator(BaseOperator):
                             exclude_unset=True
                         ),
                     }
-                    yield TaskPool(pool_names=self.Work.transform_pool_names)
+                    yield NextIterationInPools(
+                        pool_names=self.Work.transform_pool_names
+                    )
                     transform_context = self.Provider.Transform(
                         result,
                         storage_data_orient=self.Load.data_orient,
@@ -95,7 +102,7 @@ class ETLOperator(BaseOperator):
                         ),
                         "data_errors": transform_context.data_errors,
                     }
-                    yield TaskPool(pool_names=self.Work.load_pool_names)
+                    yield NextIterationInPools(pool_names=self.Work.load_pool_names)
                     load(transform_context)
 
         except FatalError as er:
@@ -144,15 +151,14 @@ class ETLOperator(BaseOperator):
                 end_period.strftime("%Y-%m-%dT%H:%M:%S"),
             ).replace("T00:00:00", "")
 
-    def __call__(
+    def task_generator(
         self,
         start_period: dt.datetime,
         end_period: dt.datetime,
         *,
-        async_mode: bool = False,
         dry_run: bool = False,
         **kwargs,
-    ) -> Iterator[Union[dict, Optional[AsyncTaskT]]]:
+    ) -> Iterator[Union[dict, Optional[AsyncIterationT]]]:
 
         date_log = self._get_period_text(start_period, end_period)
         self.logger.update(self.name, filename=f"{date_log}.log", level=self.loglevel)
@@ -172,13 +178,7 @@ class ETLOperator(BaseOperator):
         log_data = {}
         try:
             for item in self.iterator(start_period, end_period, **kwargs):
-                if isinstance(item, (SleepTask, TaskPool)):
-                    if async_mode is False:
-                        if isinstance(item, SleepTask):
-                            time.sleep(item.sleep)
-
-                        continue
-                else:
+                if isinstance(item, dict):
                     log_data = item
                     self.Model.update_items(self.items, **log_data)
                     self.logger.debug("%s: %s", self.name, log_data)
@@ -187,20 +187,37 @@ class ETLOperator(BaseOperator):
 
         except:
             self.logger.exception("Fail flow: %s  %s", self.name, date_log)
-            self.send_notifications(
-                **{
-                    "status": FlowStatus.error,
-                    "period": self._get_period_text(start_period, end_period),
-                    **log_data,
-                }
-            )
+            if dry_run is False:
+                self.send_notifications(
+                    **{
+                        "status": FlowStatus.error,
+                        "period": self._get_period_text(start_period, end_period),
+                        **log_data,
+                    }
+                )
             raise
 
         else:
-            self.send_notifications(
-                FlowStatus.success,
-                period=self._get_period_text(start_period, end_period),
-            )
+            if dry_run is False:
+                self.send_notifications(
+                    FlowStatus.success,
+                    period=self._get_period_text(start_period, end_period),
+                )
+
         finally:
             self.Model.update_items(self.items)
             self.logger.info("End flow: %s  %s", self.name, date_log)
+
+    def __call__(
+        self,
+        start_period: dt.datetime,
+        end_period: dt.datetime,
+        *,
+        dry_run: bool = False,
+        **kwargs,
+    ) -> ExecutorIterationTask:
+        return ExecutorIterationTask(
+            self.task_generator(start_period, end_period, dry_run=dry_run, **kwargs),
+            expires=self.Work.expires,
+            soft_time_limit_seconds=self.Work.soft_time_limit_seconds,
+        )

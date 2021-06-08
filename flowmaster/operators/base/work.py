@@ -9,6 +9,7 @@ from flowmaster.utils import iter_range_datetime, iter_period_from_range
 
 if TYPE_CHECKING:
     from flowmaster.operators.base.policy import FlowConfig
+    from flowmaster.executors import ExecutorIterationTask
 
 
 class Work:
@@ -23,6 +24,17 @@ class Work:
         self.keep_sequence = config.work.triggers.schedule.keep_sequence
         self.retry_delay = config.work.retry_delay
         self.retries = config.work.retries
+        self.soft_time_limit_seconds = config.work.soft_time_limit_seconds
+        if config.work.time_limit_seconds_from_worktime is not None:
+            self.expires = self.current_worktime + dt.timedelta(
+                seconds=config.work.time_limit_seconds_from_worktime
+            )
+        elif self.is_second_interval:
+            self.expires = self.current_worktime + dt.timedelta(
+                seconds=self.interval_timedelta.total_seconds()
+            )
+        else:
+            self.expires = None
 
         self.Model = FlowItem
         self.logger = logger or getLogger(__name__)
@@ -95,11 +107,9 @@ class Work:
         )
 
 
-def order_flow(
-    *, logger: Logger, async_mode: bool = False, dry_run: bool = False, **kwargs
-) -> Iterator:
-    from flowmaster.operators.etl.work import order_etl_flow
+def ordering_flow_tasks(
+    *, logger: Logger, dry_run: bool = False, **kwargs
+) -> Iterator["ExecutorIterationTask"]:
+    from flowmaster.operators.etl.work import ordering_etl_flow_tasks
 
-    yield from order_etl_flow(
-        logger=logger, async_mode=async_mode, dry_run=dry_run, **kwargs
-    )
+    yield from ordering_etl_flow_tasks(logger=logger, dry_run=dry_run, **kwargs)

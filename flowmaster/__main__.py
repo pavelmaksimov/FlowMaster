@@ -58,25 +58,25 @@ def prepare_for_run(dry_run: bool = False):
 def run(interval: int = 20, dry_run: bool = False):
     prepare_for_run(dry_run=dry_run)
 
-    from flowmaster.utils.local_executor import start_executor
+    from flowmaster.utils.local_executor import sync_executor
 
-    typer.echo("Executor: Local\n")
+    typer.echo("Executor: sync_executor\n")
 
-    start_executor(interval=interval, dry_run=dry_run)
+    sync_executor(interval=interval, dry_run=dry_run)
 
 
 @app.command()
 def run_thread(workers: int = 2, interval: int = 20, dry_run: bool = False):
     prepare_for_run(dry_run=dry_run)
 
-    from flowmaster.operators.base.work import order_flow
-    from flowmaster.utils.thread_executor import ThreadExecutor
+    from flowmaster.operators.base.work import ordering_flow_tasks
+    from flowmaster.executors import ThreadAsyncExecutor
 
-    typer.echo("Executor: Threading\n")
+    typer.echo("Executor: ThreadAsyncExecutor\n")
 
-    order_task_func = partial(order_flow, dry_run=dry_run, async_mode=True)
-    executor = ThreadExecutor(order_task_func=order_task_func)
-    executor.start(order_interval=interval, workers=workers)
+    order_task_func = partial(ordering_flow_tasks, dry_run=dry_run)
+    executor = ThreadAsyncExecutor(ordering_task_func=order_task_func)
+    executor.start(interval=interval, workers=workers)
 
 
 if __name__ == "__main__":

@@ -1,17 +1,17 @@
 import datetime as dt
 import hashlib
-from typing import TYPE_CHECKING, Iterator
+from typing import TYPE_CHECKING, Iterator, Union
 
 from tapi_yandex_direct import YandexDirect, exceptions
 
 from flowmaster.exceptions import AuthError
+from flowmaster.executors import SleepIteration
 from flowmaster.operators.etl.dataschema import ExportContext
 from flowmaster.operators.etl.providers.abstract import ExportAbstract
 from flowmaster.operators.etl.providers.yandex_direct.policy import (
     YandexDirectExportPolicy as ExportPolicy,
 )
 from flowmaster.operators.etl.types import DataOrient
-from flowmaster.utils.thread_executor import SleepTask
 
 if TYPE_CHECKING:
     from flowmaster.operators.etl.policy import ETLFlowConfig
@@ -66,7 +66,7 @@ class YandexDirectExport(ExportAbstract):
 
     def __call__(
         self, start_period: dt.datetime, end_period: dt.datetime, **kwargs
-    ) -> Iterator[ExportContext]:
+    ) -> Iterator[Union[ExportContext, SleepIteration]]:
         self.logger.info("Exportation data")
 
         result = None
@@ -92,24 +92,24 @@ class YandexDirectExport(ExportAbstract):
                 raise AuthError(exc)
 
             except exceptions.YandexDirectNotEnoughUnitsError:
-                yield SleepTask(sleep=60 * 5)
+                yield SleepIteration(sleep=60 * 5)
                 continue
 
             except exceptions.YandexDirectRequestsLimitError:
-                yield SleepTask(sleep=10)
+                yield SleepIteration(sleep=10)
                 continue
 
             except exceptions.YandexDirectClientError as exc:
                 if api_error_retries and exc.error_code in (52, 1000, 1001, 1002):
                     api_error_retries -= 1
-                    yield SleepTask(sleep=10)
+                    yield SleepIteration(sleep=10)
                     continue
                 raise
 
             except ConnectionError:
                 if api_error_retries:
                     api_error_retries -= 1
-                    yield SleepTask(sleep=10)
+                    yield SleepIteration(sleep=10)
                 raise
 
             except StopIteration:
@@ -119,7 +119,7 @@ class YandexDirectExport(ExportAbstract):
                 if self.export.resource == "reports":
                     if result.status_code in (201, 202):
                         result = None
-                        yield SleepTask(sleep=10)
+                        yield SleepIteration(sleep=10)
                         continue
 
                     data = result().to_values()

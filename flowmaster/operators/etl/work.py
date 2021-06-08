@@ -3,10 +3,10 @@ from typing import Optional, TYPE_CHECKING, Iterator
 
 import pydantic
 
+from flowmaster.executors import catch_exceptions, ExecutorIterationTask
 from flowmaster.models import FlowItem, FlowStatus
 from flowmaster.operators.base.work import Work
 from flowmaster.setttings import FLOW_CONFIGS_DIR
-from flowmaster.utils.thread_executor import catch_exceptions
 from flowmaster.utils.yaml_helper import YamlHelper
 
 if TYPE_CHECKING:
@@ -70,9 +70,9 @@ class ETLWork(Work):
 
 
 @catch_exceptions
-def order_etl_flow(
-    *, logger: Logger, async_mode: bool = False, dry_run: bool = False
-) -> Iterator:
+def ordering_etl_flow_tasks(
+    *, logger: Logger, dry_run: bool = False
+) -> Iterator[ExecutorIterationTask]:
     """Prepare flow function to be sent to the queue and executed"""
     from flowmaster.operators.etl.service import ETLOperator
     from flowmaster.operators.etl.policy import ETLFlowConfig
@@ -97,9 +97,7 @@ def order_etl_flow(
 
         for start_period, end_period in work.iter_period_for_execute():
             etl_flow = ETLOperator(flow_config)
-            etl_flow_iterator = etl_flow(
-                start_period, end_period, async_mode=async_mode, dry_run=dry_run
-            )
+            etl_flow_task = etl_flow(start_period, end_period, dry_run=dry_run)
 
             # The status is changed so that there is no repeated ordering of tasks.
             FlowItem.change_status(
@@ -112,4 +110,4 @@ def order_etl_flow(
                 "Order ETL flow [%s]: %s %s", etl_flow.name, start_period, end_period
             )
 
-            yield etl_flow_iterator
+            yield etl_flow_task

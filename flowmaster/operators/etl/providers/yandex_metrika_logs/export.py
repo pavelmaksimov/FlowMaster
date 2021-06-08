@@ -1,16 +1,16 @@
 import datetime as dt
 import time
 from logging import Logger
-from typing import TYPE_CHECKING, Optional, Iterator
+from typing import TYPE_CHECKING, Optional, Iterator, Union
 
 from tapi_yandex_metrika import YandexMetrikaLogsapi
 from tapi_yandex_metrika.exceptions import YandexMetrikaTokenError
 
 from flowmaster.exceptions import AuthError
+from flowmaster.executors import SleepIteration
 from flowmaster.operators.etl.dataschema import ExportContext
 from flowmaster.operators.etl.providers.abstract import ExportAbstract
 from flowmaster.operators.etl.types import DataOrient
-from flowmaster.utils.thread_executor import SleepTask
 
 if TYPE_CHECKING:
     from flowmaster.operators.etl.policy import ETLFlowConfig
@@ -75,7 +75,7 @@ class YandexMetrikaLogsExport(ExportAbstract):
         end_period: dt.datetime,
         dry_run=False,
         **kwargs,
-    ) -> Iterator[ExportContext]:
+    ) -> Iterator[Union[ExportContext, SleepIteration]]:
         try:
             params = self.collect_params(start_period, end_period)
 
@@ -96,7 +96,7 @@ class YandexMetrikaLogsExport(ExportAbstract):
                         if dry_run is True:
                             raise Exception("The report store is full")
 
-                        yield SleepTask(sleep=sleeptime)
+                        yield SleepIteration(sleep=sleeptime)
                     else:
                         # Create report.
                         result = self.client.create().post(params=params)
@@ -124,7 +124,7 @@ class YandexMetrikaLogsExport(ExportAbstract):
                     self.logger.info(f"Wait report {sleeptime} sec.")
                     if dry_run is True:
                         time.sleep(10)
-                    yield SleepTask(sleep=sleeptime)
+                    yield SleepIteration(sleep=sleeptime)
 
                 repeat_number += 1
 

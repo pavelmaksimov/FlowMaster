@@ -5,7 +5,7 @@ import mock
 import pendulum
 
 from flowmaster.models import FlowItem, FlowStatus
-from flowmaster.operators.base.work import Work, order_flow
+from flowmaster.operators.base.work import Work, ordering_flow_tasks
 from flowmaster.operators.etl.policy import ETLFlowConfig
 from flowmaster.utils.yaml_helper import YamlHelper
 from tests.fixtures.yandex_metrika import yml_visits_to_csv_config as CONFIG
@@ -32,7 +32,7 @@ def test_order_flow():
     rv = [(FLOW_NAME, config)]
     YamlHelper.iter_parse_file_from_dir = mock.Mock(return_value=rv)
 
-    flows = list(order_flow(logger=logger))
+    flows = list(ordering_flow_tasks(logger=logger))
 
     assert len(flows) == 5
     assert FlowItem.count_items(FLOW_NAME, statuses=[FlowStatus.run]) == len(flows)
@@ -56,7 +56,7 @@ def test_order_flow_with_period_length():
     rv = [(FLOW_NAME, config)]
     YamlHelper.iter_parse_file_from_dir = mock.Mock(return_value=rv)
 
-    flows = list(order_flow(logger=logger))
+    flows = list(ordering_flow_tasks(logger=logger))
 
     assert len(flows) == 3
 
@@ -121,7 +121,7 @@ def test_flow_sanity_interval_seconds(flowitem_model):
         rv = [(flowitem_model.config_name, config)]
         YamlHelper.iter_parse_file_from_dir = mock.Mock(return_value=rv)
 
-        list(order_flow(logger=logger))
+        list(ordering_flow_tasks(logger=logger))
 
         now += dt.timedelta(seconds=60)
         pendulum.set_test_now(now)

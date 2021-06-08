@@ -90,6 +90,8 @@ class FlowConfig(BaseModel):
         notifications: Optional[NotificationsPolicy]
         retries: int = 0
         retry_delay: int = 60
+        time_limit_seconds_from_worktime: Optional[int] = None
+        soft_time_limit_seconds: Optional[int] = None
 
     name: str
     description: Optional[str] = None

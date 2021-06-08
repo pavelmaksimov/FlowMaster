@@ -1,7 +1,7 @@
+import datetime as dt
 from typing import TYPE_CHECKING, Iterator
 
 import peewee
-import pendulum
 
 from flowmaster.models import FlowItem
 from flowmaster.operators.etl.dataschema import ExportContext
@@ -19,7 +19,9 @@ class FlowmasterDataExport(ExportAbstract):
     def __init__(self, config: "ETLFlowConfig", *args, **kwargs):
         super(FlowmasterDataExport, self).__init__(config, *args, **kwargs)
 
-    def resource_items(self, start_period, end_period, **kwargs):
+    def resource_items(
+        self, start_period, end_period, **kwargs
+    ) -> Iterator[ExportContext]:
         query: peewee.ModelSelect = FlowItem.select()
 
         if self.export.export_mode == "by_date":
@@ -34,7 +36,7 @@ class FlowmasterDataExport(ExportAbstract):
             data_orient=DataOrient.dict,
         )
 
-    def resource_pools(self):
+    def resource_pools(self) -> Iterator[ExportContext]:
         from flowmaster.pool import pools
 
         yield ExportContext(
@@ -44,19 +46,20 @@ class FlowmasterDataExport(ExportAbstract):
             data_orient=DataOrient.dict,
         )
 
-    def resource_queues(self):
-        from flowmaster.utils.thread_executor import task_queue, sleeptask_queue
+    def resource_queues(self) -> Iterator[ExportContext]:
+        from flowmaster.executors import sleeptask_queue
+        from flowmaster.executors import task_queue
 
         data = [
             {
                 "name": "tasks",
                 "size": task_queue.qsize(),
-                "datetime": pendulum.now(),
+                "datetime": dt.datetime.now(),
             },
             {
                 "name": "sleeptasks",
                 "size": sleeptask_queue.qsize(),
-                "datetime": pendulum.now(),
+                "datetime": dt.datetime.now(),
             },
         ]
 

@@ -1,9 +1,8 @@
+import datetime as dt
 from collections import defaultdict
 from typing import Literal
 
-import pendulum
-
-from flowmaster.setttings import POOL_CONFIG_FILEPATH
+from flowmaster.setttings import Settings
 from flowmaster.utils.logging_helper import CreateLogger
 from flowmaster.utils.yaml_helper import YamlHelper
 
@@ -48,7 +47,14 @@ class Pool:
                 self.sizes[tag] = Counter()
 
     def allow(self, tags: list[str]) -> bool:
-        return all([self.sizes[tag][tag] < self.limits[tag] for tag in tags])
+        results = []
+        for tag in tags:
+            is_free = self.sizes[tag][tag] < self.limits[tag]
+            results.append(is_free)
+            if is_free is False:
+                logger.debug(f"Pool '{tag}' full")
+
+        return all(results)
 
     def _get_uniq_tagname(self, tag: str) -> str:
         if tag in self.limits:
@@ -73,7 +79,7 @@ class Pool:
                     "name": tag,
                     "size": self[tag],
                     "limit": limit,
-                    "datetime": pendulum.now(),
+                    "datetime": dt.datetime.now(),
                 }
             )
 

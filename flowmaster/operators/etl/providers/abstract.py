@@ -1,7 +1,7 @@
 import datetime as dt
 import logging
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, Iterator, Optional, Type
+from typing import TYPE_CHECKING, Iterator, Optional, Type, Union
 
 import jinja2
 from pydantic import BaseModel
@@ -11,6 +11,7 @@ if TYPE_CHECKING:
     from flowmaster.operators.etl.policy import ETLFlowConfig
     from flowmaster.operators.etl.transform import Transform
     from flowmaster.operators.etl.dataschema import ExportContext
+    from flowmaster.executors import SleepIteration
 
 
 class ExportAbstract(ABC):
@@ -75,7 +76,9 @@ class ExportAbstract(ABC):
         return model.parse_obj(new_model_dict)
 
     @abstractmethod
-    def __call__(self, *args, **kwargs) -> Iterator["ExportContext"]:
+    def __call__(
+        self, *args, **kwargs
+    ) -> Iterator[Union["ExportContext", "SleepIteration"]]:
         ...
 
 
