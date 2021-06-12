@@ -87,6 +87,7 @@ class FlowItem(BaseModel):
     retries = playhouse.sqlite_ext.IntegerField(default=0)
     duration = playhouse.sqlite_ext.IntegerField(null=True)
     log = playhouse.sqlite_ext.TextField(null=True)
+    expires_utc = playhouse.sqlite_ext.DateTimeField(null=True)
     started_utc = playhouse.sqlite_ext.DateTimeField(null=True)
     finished_utc = playhouse.sqlite_ext.DateTimeField(null=True)
 
@@ -335,8 +336,11 @@ class FlowItem(BaseModel):
 
             return (
                 cls.select()
-                .where(cls.name == flow_name)
-                .where(cls.status == FlowStatus.add)
+                .where(
+                    cls.name == flow_name,
+                    cls.status == FlowStatus.add,
+                    (dt.datetime.utcnow() <= cls.expires_utc | cls.expires_utc == None),
+                )
                 .order_by(cls.worktime.desc())
             )
 
