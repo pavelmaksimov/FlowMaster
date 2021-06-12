@@ -26,8 +26,9 @@ def pools():
 def flowitem_model():
     from flowmaster.models import FlowItem
 
-    FlowItem.delete().where(FlowItem.name == "conftest").execute()
-    FlowItem.config_name = "conftest"
+    FlowItem.delete().where(FlowItem.name == "test").execute()
+    FlowItem.name_for_test = "test"
+
     return FlowItem
 
 

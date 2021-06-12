@@ -159,7 +159,7 @@ class FlowItem(BaseModel):
         interval_timedelta: dt.timedelta,
         worktime: dt.datetime,
     ) -> bool:
-        last_executed_item = cls.last_item(flow_name)
+        last_executed_item = cls.last_item(flow_name, for_updated=True)
         return (
             last_executed_item
             and worktime - last_executed_item.worktime >= interval_timedelta
@@ -176,8 +176,8 @@ class FlowItem(BaseModel):
         interval_timedelta: dt.timedelta,
         worktime: dt.datetime,
     ) -> Optional["FlowItem"]:
-        last_executed_item = cls.last_item(flow_name, for_updated=True)
         if cls.is_create_next(flow_name, interval_timedelta, worktime):
+            last_executed_item = cls.last_item(flow_name, for_updated=True)
             next_execute_datetime = last_executed_item.worktime + interval_timedelta
             try:
                 return cls.create(

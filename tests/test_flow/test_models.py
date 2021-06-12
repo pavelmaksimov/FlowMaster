@@ -64,14 +64,12 @@ def test_retry_delay(retry_delay, passed_sec, is_run):
     assert len(items) == int(is_run)
 
 
-def test_create_next_execute_item():
-    FlowItem.delete().where(FlowItem.name == FLOW_NAME).execute()
-
+def test_create_next_execute_item(flowitem_model):
     worktime = pendulum.datetime(2020, 1, 1, tz="Europe/Moscow")
     interval_timedelta = dt.timedelta(1)
 
     item = FlowItem.create_next_execute_item(
-        flow_name=FLOW_NAME,
+        flow_name=flowitem_model.name_for_test,
         worktime=worktime,
         interval_timedelta=interval_timedelta,
     )
@@ -80,12 +78,12 @@ def test_create_next_execute_item():
 
     FlowItem.create(
         **{
-            FlowItem.name.name: FLOW_NAME,
+            FlowItem.name.name: flowitem_model.name_for_test,
             FlowItem.worktime.name: worktime - dt.timedelta(1),
         }
     )
     item = FlowItem.create_next_execute_item(
-        flow_name=FLOW_NAME,
+        flow_name=flowitem_model.name_for_test,
         worktime=worktime,
         interval_timedelta=interval_timedelta,
     )
@@ -93,7 +91,7 @@ def test_create_next_execute_item():
     assert item
 
     item = FlowItem.create_next_execute_item(
-        flow_name=FLOW_NAME,
+        flow_name=flowitem_model.name_for_test,
         worktime=worktime,
         interval_timedelta=interval_timedelta,
     )

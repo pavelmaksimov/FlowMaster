@@ -118,7 +118,7 @@ def test_flow_sanity_interval_seconds(flowitem_model):
 
         config = CONFIG.dict()
         config.pop("name")
-        rv = [(flowitem_model.config_name, config)]
+        rv = [(flowitem_model.name_for_test, config)]
         YamlHelper.iter_parse_file_from_dir = mock.Mock(return_value=rv)
 
         list(ordering_flow_tasks(logger=logger))
@@ -126,4 +126,4 @@ def test_flow_sanity_interval_seconds(flowitem_model):
         now += dt.timedelta(seconds=60)
         pendulum.set_test_now(now)
 
-    assert FlowItem.count_items(flowitem_model.config_name) == 5
+    assert FlowItem.count_items(flowitem_model.name_for_test) == 5
