@@ -326,3 +326,45 @@ def test_allow_execute_flow():
         FlowItem.allow_execute_flow(FLOW_NAME, config_hash="", max_fatal_errors=3)
         is True
     )
+
+
+def test_items_for_execute_seconds_interval_without_keep_sequence(flowitem_model):
+    worktime = pendulum.datetime(2020, 1, 1, tz="Europe/Moscow")
+
+    FlowItem.create_items(
+        flowitem_model.name_for_test,
+        worktime_list=[worktime - dt.timedelta(minutes=4)],
+        **{flowitem_model.status.name: FlowStatus.success}
+    )
+
+    items = FlowItem.get_items_for_execute(
+        flow_name=flowitem_model.name_for_test,
+        worktime=worktime,
+        start_time=worktime - dt.timedelta(minutes=10),
+        interval_timedelta=dt.timedelta(minutes=1),
+        keep_sequence=False,
+        retries=0,
+        retry_delay=0,
+        config_hash="",
+        max_fatal_errors=3,
+    )
+
+    assert len(items) == 1
+
+
+def test_items_for_execute_seconds_interval_with_keep_sequence(flowitem_model):
+    worktime = pendulum.datetime(2020, 1, 1, tz="Europe/Moscow")
+
+    items = FlowItem.get_items_for_execute(
+        flow_name=flowitem_model.name_for_test,
+        worktime=worktime,
+        start_time=worktime - dt.timedelta(minutes=9),
+        interval_timedelta=dt.timedelta(minutes=1),
+        keep_sequence=True,
+        retries=2,
+        retry_delay=0,
+        config_hash="",
+        max_fatal_errors=1,
+    )
+
+    assert len(items) == 10

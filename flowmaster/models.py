@@ -255,13 +255,14 @@ class FlowItem(BaseModel):
         item = cls.last_item(flow_name, for_updated=True)
 
         if item and item.config_hash == config_hash:
+            # Check limit fatal errors.
             items = (
                 cls.select()
-                .where(cls.name == flow_name)
+                .where(cls.name == flow_name, cls.status == FlowStatus.fatal_error)
                 .order_by(cls.updated.desc())
                 .limit(max_fatal_errors)
             )
-            return not all([i.status == FlowStatus.fatal_error for i in items])
+            return len(items) < max_fatal_errors
         else:
             return True
 
