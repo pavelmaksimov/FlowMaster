@@ -7,4 +7,5 @@ app = typer.Typer()
 def reset():
     from flowmaster.models import FlowItem
 
-    FlowItem.truncate_table()
+    FlowItem.drop_table()
+    FlowItem.create_table()
