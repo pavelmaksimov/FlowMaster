@@ -346,6 +346,10 @@ class FlowItem(BaseModel):
 
     @classmethod
     def clear_statuses_of_lost_items(cls) -> None:
+        cls.update(
+            **{cls.status.name: FlowStatus.error, cls.log.name: "ExpiredError"}
+        ).where(dt.datetime.utcnow() <= cls.expires_utc).execute()
+
         cls.update(**{cls.status.name: FlowStatus.add}).where(
             cls.status.in_([FlowStatus.run])
         ).execute()
