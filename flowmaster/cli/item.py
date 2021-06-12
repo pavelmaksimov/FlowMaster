@@ -4,7 +4,7 @@ import pendulum
 import typer
 
 from flowmaster.models import FlowItem, FlowStatus
-from flowmaster.setttings import FLOW_CONFIGS_DIR
+from flowmaster.setttings import Settings
 from flowmaster.utils.yaml_helper import YamlHelper
 
 app = typer.Typer()
@@ -58,7 +58,7 @@ def restart(
         if start_time or end_time:
             # Apply timezone.
             for file_name, config in YamlHelper.iter_parse_file_from_dir(
-                FLOW_CONFIGS_DIR, match=name_
+                Settings.FLOW_CONFIGS_DIR, match=name_
             ):
                 tz = config["work"]["schedule"]["timezone"]
 

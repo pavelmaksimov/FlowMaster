@@ -9,12 +9,12 @@ import playhouse.sqlite_ext
 import pydantic
 from playhouse.sqliteq import SqliteQueueDatabase
 
-from flowmaster.setttings import APP_HOME
+from flowmaster.setttings import Settings
 from flowmaster.utils import iter_period_from_range, iter_range_datetime
 
 database = SqliteQueueDatabase(
     # http://docs.peewee-orm.com/en/latest/peewee/playhouse.html#sqliteq
-    APP_HOME / "db.sqlite_ext",
+    Settings.APP_HOME / "db.sqlite_ext",
     pragmas=(
         ("cache_size", -1024 * 64),  # 64MB page-cache.
         ("journal_mode", "wal"),  # Use WAL-mode (you should always use this!).

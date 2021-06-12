@@ -8,13 +8,13 @@ from flowmaster.operators.etl.transform.policy import (
     DTypeLiteralT,
     ErrorPolicyLiteralT,
 )
-from flowmaster.setttings import FILE_STORAGE_DIR
+from flowmaster.setttings import Settings
 
 
 class CSVLoadPolicy(BasePolicy):
     save_mode: Literal["a", "w"]
     file_name: str = "{{provider}} {{storage}}  {{name}}.tsv"
-    path: str = FILE_STORAGE_DIR
+    path: str = Settings.FILE_STORAGE_DIR
     encoding: str = "UTF-8"
     sep: str = "\t"
     newline: str = "\n"

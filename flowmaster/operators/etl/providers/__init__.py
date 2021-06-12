@@ -15,7 +15,7 @@ from flowmaster.operators.etl.providers.yandex_metrika_management import (
 from flowmaster.operators.etl.providers.yandex_metrika_stats import (
     YandexMetrikaStatsProvider,
 )
-from flowmaster.setttings import PLUGINS_DIRNAME
+from flowmaster.setttings import Settings
 from flowmaster.utils.import_helper import iter_module_objects
 
 provider_classes = {
@@ -30,7 +30,7 @@ provider_classes = {
 }
 
 # Fetching custom providers.
-for object in iter_module_objects(importlib.import_module(PLUGINS_DIRNAME)):
+for object in iter_module_objects(importlib.import_module(Settings.PLUGINS_DIRNAME)):
     if (
         isinstance(object, type)
         and object.__name__ != ProviderAbstract.__name__

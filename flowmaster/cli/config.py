@@ -1,7 +1,7 @@
 import typer
 
-import flowmaster.setttings as setttings
 from flowmaster.models import FlowItem, FlowStatus
+from flowmaster.setttings import Settings
 from flowmaster.utils.yaml_helper import YamlHelper
 
 app = typer.Typer()
@@ -10,7 +10,7 @@ app = typer.Typer()
 @app.command("list")
 def list_config():
     for file_name, config in YamlHelper.iter_parse_file_from_dir(
-        setttings.FLOW_CONFIGS_DIR, match=".flow"
+        Settings.FLOW_CONFIGS_DIR, match=".flow"
     ):
         typer.echo(f"  {file_name}")
 
@@ -20,7 +20,7 @@ def validate():
     from flowmaster.operators.etl.policy import ETLFlowConfig
 
     for file_name, config in YamlHelper.iter_parse_file_from_dir(
-        setttings.FLOW_CONFIGS_DIR, match=".flow"
+        Settings.FLOW_CONFIGS_DIR, match=".flow"
     ):
         ETLFlowConfig(name=file_name, **config)
         typer.echo(f"  {file_name} OK")

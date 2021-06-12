@@ -1,7 +1,7 @@
 import logging
 from pathlib import Path
 
-from flowmaster.setttings import LOGS_DIR
+from flowmaster.setttings import Settings
 
 _log_format = (
     f"%(asctime)s [%(levelname)s] %(name)s.%(funcName)s:%(lineno)d  %(message)s"
@@ -11,11 +11,11 @@ _log_format = (
 def get_file_handler(
     level: int, filename: str, relative_path: str = None
 ) -> logging.Handler:
-    Path.mkdir(LOGS_DIR, exist_ok=True)
-    path = LOGS_DIR
+    Path.mkdir(Settings.LOGS_DIR, exist_ok=True)
+    path = Settings.LOGS_DIR
 
     if relative_path is not None:
-        path = LOGS_DIR / relative_path
+        path = Settings.LOGS_DIR / relative_path
         Path.mkdir(path, exist_ok=True)
 
     full_path = path / filename

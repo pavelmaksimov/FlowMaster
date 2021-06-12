@@ -6,14 +6,7 @@ import typer
 import flowmaster.cli.config
 import flowmaster.cli.db
 import flowmaster.cli.item
-from flowmaster.setttings import (
-    APP_HOME,
-    FLOW_CONFIGS_DIR,
-    POOL_CONFIG_FILEPATH,
-    FILE_STORAGE_DIR,
-    LOGS_DIR,
-    PLUGINS_DIR,
-)
+from flowmaster.setttings import Settings
 
 app = typer.Typer()
 app.add_typer(flowmaster.cli.config.app, name="config")
@@ -25,16 +18,16 @@ app.add_typer(flowmaster.cli.item.app, name="item")
 def init():
     from flowmaster.models import database, FlowItem
 
-    typer.echo(f"\nAPP_HOME={APP_HOME}")
+    typer.echo(f"\nAPP_HOME={Settings.APP_HOME}")
 
-    pathlib.Path.mkdir(APP_HOME, exist_ok=True)
-    pathlib.Path.mkdir(FILE_STORAGE_DIR, exist_ok=True)
-    pathlib.Path.mkdir(LOGS_DIR, exist_ok=True)
-    pathlib.Path.mkdir(FLOW_CONFIGS_DIR, exist_ok=True)
-    pathlib.Path.mkdir(PLUGINS_DIR, exist_ok=True)
+    pathlib.Path.mkdir(Settings.APP_HOME, exist_ok=True)
+    pathlib.Path.mkdir(Settings.FILE_STORAGE_DIR, exist_ok=True)
+    pathlib.Path.mkdir(Settings.LOGS_DIR, exist_ok=True)
+    pathlib.Path.mkdir(Settings.FLOW_CONFIGS_DIR, exist_ok=True)
+    pathlib.Path.mkdir(Settings.PLUGINS_DIR, exist_ok=True)
 
-    if not pathlib.Path.exists(POOL_CONFIG_FILEPATH):
-        with open(POOL_CONFIG_FILEPATH, "w") as f:
+    if not pathlib.Path.exists(Settings.POOL_CONFIG_FILEPATH):
+        with open(Settings.POOL_CONFIG_FILEPATH, "w") as f:
             f.write("flows: 100\n")
 
     database.create_tables([FlowItem])

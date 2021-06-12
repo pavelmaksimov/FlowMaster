@@ -93,5 +93,5 @@ class Pool:
         return str(text)
 
 
-pools_dict = YamlHelper.parse_file(str(POOL_CONFIG_FILEPATH))
+pools_dict = YamlHelper.parse_file(str(Settings.POOL_CONFIG_FILEPATH))
 pools = Pool(pools_dict)

@@ -6,7 +6,7 @@ import pydantic
 from flowmaster.executors import catch_exceptions, ExecutorIterationTask
 from flowmaster.models import FlowItem, FlowStatus
 from flowmaster.operators.base.work import Work
-from flowmaster.setttings import FLOW_CONFIGS_DIR
+from flowmaster.setttings import Settings
 from flowmaster.utils.yaml_helper import YamlHelper
 
 if TYPE_CHECKING:
@@ -78,7 +78,7 @@ def ordering_etl_flow_tasks(
     from flowmaster.operators.etl.policy import ETLFlowConfig
 
     for file_name, config in YamlHelper.iter_parse_file_from_dir(
-        FLOW_CONFIGS_DIR, match=".etl.flow"
+        Settings.FLOW_CONFIGS_DIR, match=".etl.flow"
     ):
         if dry_run:
             if config.get("provider") != "fakedata":
