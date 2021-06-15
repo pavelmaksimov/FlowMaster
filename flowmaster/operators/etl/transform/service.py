@@ -11,7 +11,7 @@ from flowmaster.operators.etl.transform.tschema import (
 from flowmaster.operators.etl.types import DataOrient
 
 if TYPE_CHECKING:
-    from flowmaster.operators.etl.policy import ETLFlowConfig
+    from flowmaster.operators.etl.policy import ETLNotebook
     from flowmaster.operators.etl.dataschema import ExportContext
 
 
@@ -23,14 +23,14 @@ class Transform:
         ClickhouseTransformSchema.name: ClickhouseTransformSchema,
     }
 
-    def __init__(self, config: "ETLFlowConfig", logger: Optional[Logger] = None):
-        self.config = config
-        self.storage = config.storage
-        self.error_policy = config.transform.error_policy
-        self.partition_columns = config.transform.partition_columns
+    def __init__(self, notebook: "ETLNotebook", logger: Optional[Logger] = None):
+        self.notebook = notebook
+        self.storage = notebook.storage
+        self.error_policy = notebook.transform.error_policy
+        self.partition_columns = notebook.transform.partition_columns
 
         self.Schema = self._schema_classes[self.storage](
-            config=config, null_values=self.null_values
+            notebook=notebook, null_values=self.null_values
         )
         self.logger = logger or getLogger("Transform")
 

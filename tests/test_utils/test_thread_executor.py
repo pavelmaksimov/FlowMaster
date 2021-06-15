@@ -19,7 +19,7 @@ from flowmaster.operators.etl.providers.yandex_metrika_logs.export import (
 from flowmaster.operators.etl.service import ETLOperator
 from flowmaster.operators.etl.types import DataOrient
 from flowmaster.pool import pools
-from tests.fixtures.yandex_metrika import yml_visits_to_csv_config
+from tests.fixtures.yandex_metrika import yml_visits_to_csv_notebook
 
 logger_ = getLogger(__name__)
 logger_.level = 20
@@ -131,13 +131,15 @@ def test_concurrency():
         worktimes = [dt.datetime(2021, 1, i + 1) for i in range(count_task)]
 
         for worktime in worktimes:
-            yml_visits_to_csv_config.load.file_name = f"{test_concurrency.__name__}.tsv"
-            yml_visits_to_csv_config.work.concurrency = concurrency
-            yml_visits_to_csv_config.export.concurrency = 4
-            yml_visits_to_csv_config.transform.concurrency = 4
-            yml_visits_to_csv_config.load.concurrency = 4
+            yml_visits_to_csv_notebook.load.file_name = (
+                f"{test_concurrency.__name__}.tsv"
+            )
+            yml_visits_to_csv_notebook.work.concurrency = concurrency
+            yml_visits_to_csv_notebook.export.concurrency = 4
+            yml_visits_to_csv_notebook.transform.concurrency = 4
+            yml_visits_to_csv_notebook.load.concurrency = 4
 
-            flow = ETLOperator(yml_visits_to_csv_config)
+            flow = ETLOperator(yml_visits_to_csv_notebook)
             yield flow(start_period=worktime, end_period=worktime)
 
     executor = ThreadAsyncExecutor(ordering_task_func=order_task, dry_run=True)
@@ -174,10 +176,10 @@ def test_pools():
         pools.append_pools({"two": pool_size})
 
         for worktime in worktimes:
-            yml_visits_to_csv_config.load.file_name = f"{test_pools.__name__}.tsv"
-            yml_visits_to_csv_config.export.pools = ["two"]
+            yml_visits_to_csv_notebook.load.file_name = f"{test_pools.__name__}.tsv"
+            yml_visits_to_csv_notebook.export.pools = ["two"]
 
-            flow = ETLOperator(yml_visits_to_csv_config)
+            flow = ETLOperator(yml_visits_to_csv_notebook)
             task = flow(start_period=worktime, end_period=worktime)
 
             yield task
@@ -189,6 +191,3 @@ def test_pools():
 
     assert len(set(completed_tasks)) == count_task / pool_size
     assert sorted(completed_tasks)[-1] >= count_task * duration_func / pool_size
-
-
-# TODO: тест на то, что таски после достижении max_errors больше не заказываются, чет в яндекс метрике как будто бесконечный заказ

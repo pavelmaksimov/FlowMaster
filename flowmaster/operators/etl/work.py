@@ -11,42 +11,44 @@ from flowmaster.utils.yaml_helper import YamlHelper
 
 if TYPE_CHECKING:
     from flowmaster.operators.etl.service import ETLOperator
-    from flowmaster.operators.etl.policy import ETLFlowConfig
+    from flowmaster.operators.etl.policy import ETLNotebook
 
 
 class ETLWork(Work):
-    def __init__(self, config: "ETLFlowConfig", logger: Optional[Logger] = None):
-        super(ETLWork, self).__init__(config, logger)
+    def __init__(self, notebook: "ETLNotebook", logger: Optional[Logger] = None):
+        super(ETLWork, self).__init__(notebook, logger)
 
-        self.update_stale_data = config.work.update_stale_data
+        self.update_stale_data = notebook.work.update_stale_data
         self.export_pool_names = [
             *self.concurrency_pool_names,
-            *(config.export.pools or []),
+            *(notebook.export.pools or []),
         ]
         self.transform_pool_names = [
             *self.concurrency_pool_names,
-            *(config.transform.pools or []),
+            *(notebook.transform.pools or []),
         ]
         self.load_pool_names = [
             *self.concurrency_pool_names,
-            *(config.load.pools or []),
+            *(notebook.load.pools or []),
         ]
 
-        if config.export.concurrency is not None:
+        if notebook.export.concurrency is not None:
             self.export_pool_names.append(f"__{self.name}_export_concurrency__")
             self.add_pool(
-                f"__{self.name}_export_concurrency__", config.export.concurrency
+                f"__{self.name}_export_concurrency__", notebook.export.concurrency
             )
 
-        if config.transform.concurrency is not None:
+        if notebook.transform.concurrency is not None:
             self.transform_pool_names.append(f"__{self.name}_transform_concurrency__")
             self.add_pool(
-                f"__{self.name}_transform_concurrency__", config.transform.concurrency
+                f"__{self.name}_transform_concurrency__", notebook.transform.concurrency
             )
 
-        if config.load.concurrency is not None:
+        if notebook.load.concurrency is not None:
             self.load_pool_names.append(f"__{self.name}_load_concurrency__")
-            self.add_pool(f"__{self.name}_load_concurrency__", config.load.concurrency)
+            self.add_pool(
+                f"__{self.name}_load_concurrency__", notebook.load.concurrency
+            )
 
         self.Model = FlowItem
         self.logger = logger or getLogger(__name__)
@@ -75,17 +77,17 @@ def ordering_etl_flow_tasks(
 ) -> Iterator[ExecutorIterationTask]:
     """Prepare flow function to be sent to the queue and executed"""
     from flowmaster.operators.etl.service import ETLOperator
-    from flowmaster.operators.etl.policy import ETLFlowConfig
+    from flowmaster.operators.etl.policy import ETLNotebook
 
-    for file_name, config in YamlHelper.iter_parse_file_from_dir(
+    for file_name, notebook_dict in YamlHelper.iter_parse_file_from_dir(
         Settings.FLOW_CONFIGS_DIR, match=".etl.flow"
     ):
         if dry_run:
-            if config.get("provider") != "fakedata":
+            if notebook_dict.get("provider") != "fakedata":
                 continue
 
         try:
-            flow_config = ETLFlowConfig(name=file_name, **config)
+            notebook = ETLNotebook(name=file_name, **notebook_dict)
         except pydantic.ValidationError as exc:
             logger.error("ValidationError: '%s': %s", file_name, exc)
             continue
@@ -93,10 +95,10 @@ def ordering_etl_flow_tasks(
             logger.error("Error: '%s': %s", file_name, exc)
             continue
 
-        work = ETLWork(flow_config)
+        work = ETLWork(notebook)
 
         for start_period, end_period in work.iter_period_for_execute():
-            etl_flow = ETLOperator(flow_config)
+            etl_flow = ETLOperator(notebook)
             etl_flow_task = etl_flow(start_period, end_period, dry_run=dry_run)
 
             # The status is changed so that there is no repeated ordering of tasks.

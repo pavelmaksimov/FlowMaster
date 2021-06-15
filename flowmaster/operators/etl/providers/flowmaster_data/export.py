@@ -9,15 +9,15 @@ from flowmaster.operators.etl.providers.abstract import ExportAbstract
 from flowmaster.operators.etl.types import DataOrient
 
 if TYPE_CHECKING:
-    from flowmaster.operators.etl.policy import ETLFlowConfig
+    from flowmaster.operators.etl.policy import ETLNotebook
     from flowmaster.operators.etl.providers.flowmaster_data.policy import (
         FlowmasterDataExportPolicy,
     )
 
 
 class FlowmasterDataExport(ExportAbstract):
-    def __init__(self, config: "ETLFlowConfig", *args, **kwargs):
-        super(FlowmasterDataExport, self).__init__(config, *args, **kwargs)
+    def __init__(self, notebook: "ETLNotebook", *args, **kwargs):
+        super(FlowmasterDataExport, self).__init__(notebook, *args, **kwargs)
 
     def resource_items(
         self, start_period, end_period, **kwargs
@@ -74,7 +74,7 @@ class FlowmasterDataExport(ExportAbstract):
         self.logger.info("Exportation data")
 
         self.export: "FlowmasterDataExportPolicy" = self.model_templating(
-            start_period, end_period, model=self.config.export
+            start_period, end_period, model=self.notebook.export
         )
 
         if self.export.resource == "items":

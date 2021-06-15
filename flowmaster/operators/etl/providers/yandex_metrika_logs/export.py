@@ -13,16 +13,18 @@ from flowmaster.operators.etl.providers.abstract import ExportAbstract
 from flowmaster.operators.etl.types import DataOrient
 
 if TYPE_CHECKING:
-    from flowmaster.operators.etl.policy import ETLFlowConfig
+    from flowmaster.operators.etl.policy import ETLNotebook
 
 
 class YandexMetrikaLogsExport(ExportAbstract):
-    def __init__(self, config: "ETLFlowConfig", logger: Optional[Logger] = None):
-        self.counter_id = config.export.credentials.counter_id
-        self.credentials = config.export.credentials.dict()
-        self.params = config.export.params.dict()
-        self.initial_interval_check_report = config.export.initial_interval_check_report
-        super(YandexMetrikaLogsExport, self).__init__(config, logger)
+    def __init__(self, notebook: "ETLNotebook", logger: Optional[Logger] = None):
+        self.counter_id = notebook.export.credentials.counter_id
+        self.credentials = notebook.export.credentials.dict()
+        self.params = notebook.export.params.dict()
+        self.initial_interval_check_report = (
+            notebook.export.initial_interval_check_report
+        )
+        super(YandexMetrikaLogsExport, self).__init__(notebook, logger)
 
     @classmethod
     def validate_params(cls, **params: dict) -> None:

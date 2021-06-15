@@ -13,7 +13,7 @@ from flowmaster.models import FlowStatus, FlowETLStep, FlowOperator
 from flowmaster.operators.base.service import BaseOperator
 from flowmaster.operators.etl.dataschema import ETLContext
 from flowmaster.operators.etl.loaders import storage_classes
-from flowmaster.operators.etl.policy import ETLFlowConfig
+from flowmaster.operators.etl.policy import ETLNotebook
 from flowmaster.operators.etl.providers import provider_classes
 from flowmaster.operators.etl.work import ETLWork
 from flowmaster.utils import iter_range_datetime
@@ -22,17 +22,17 @@ from flowmaster.utils import iter_range_datetime
 class ETLOperator(BaseOperator):
     items = None
 
-    def __init__(self, config: ETLFlowConfig, *args, **kwargs):
-        super(ETLOperator, self).__init__(config, *args, **kwargs)
+    def __init__(self, notebook: ETLNotebook, *args, **kwargs):
+        super(ETLOperator, self).__init__(notebook, *args, **kwargs)
 
-        provider_meta_class = provider_classes[config.provider]
-        load_class = storage_classes[config.storage]
+        provider_meta_class = provider_classes[notebook.provider]
+        load_class = storage_classes[notebook.storage]
 
-        self.Work = ETLWork(config, self.logger)
-        self.Provider = provider_meta_class(config, self.logger)
-        self.Load = load_class(config, self.logger)
+        self.Work = ETLWork(notebook, self.logger)
+        self.Provider = provider_meta_class(notebook, self.logger)
+        self.Load = load_class(notebook, self.logger)
 
-        self.operator_context = ETLContext(storage=self.config.storage)
+        self.operator_context = ETLContext(storage=self.notebook.storage)
 
     def iterator(
         self, start_period: dt.datetime, end_period: dt.datetime, **kwargs

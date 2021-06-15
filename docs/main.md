@@ -1,6 +1,6 @@
 # Документация
 
-- [Как создать конфигурацию потока данных](configs/etl/base.md)
+- [Как создать конфигурацию потока данных](notebooks/etl/base.md)
 - [Как добавить свой скрипт экспорта данных](plugins.md)
 - [Интерфейс командной строки](cli.md) (CLI)
 
@@ -9,7 +9,7 @@
 
 Проверить конфигурации
 
-    flowmaster config validate
+    flowmaster notebook validate
 
 Далее запустить инструмент
 
@@ -21,10 +21,10 @@
 
 Мониторинг
 
-    flowmaster item list {config_filename} --limit 20
+    flowmaster item list {notebook_filename} --limit 20
 
 Перезапуск потока
 
-    flowmaster item restart {config_filename} -s 2021-01-01 --end 2021-01-31
+    flowmaster item restart {notebook_filename} -s 2021-01-01 --end 2021-01-31
     # or
-    flowmaster item restart-errors {config_filename}
+    flowmaster item restart-errors {notebook_filename}

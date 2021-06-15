@@ -14,12 +14,12 @@ from flowmaster.operators.etl.providers.yandex_direct.policy import (
 from flowmaster.operators.etl.types import DataOrient
 
 if TYPE_CHECKING:
-    from flowmaster.operators.etl.policy import ETLFlowConfig
+    from flowmaster.operators.etl.policy import ETLNotebook
 
 
 class YandexDirectExport(ExportAbstract):
-    def __init__(self, config: "ETLFlowConfig", *args, **kwargs):
-        self.export: ExportPolicy = config.export
+    def __init__(self, notebook: "ETLNotebook", *args, **kwargs):
+        self.export: ExportPolicy = notebook.export
         self.client = YandexDirect(
             wait_report=False,
             processing_mode="offline",
@@ -29,7 +29,7 @@ class YandexDirectExport(ExportAbstract):
             **self.export.credentials.dict(exclude_none=True),
             **self.export.headers.dict(exclude_none=True),
         )
-        super(YandexDirectExport, self).__init__(config, *args, **kwargs)
+        super(YandexDirectExport, self).__init__(notebook, *args, **kwargs)
 
     def exclude_none(self, body: dict) -> dict:
         new_body = {}

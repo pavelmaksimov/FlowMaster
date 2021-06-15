@@ -8,19 +8,19 @@ from flowmaster.operators.etl.types import DataOrient
 from flowmaster.utils import chunker
 
 if TYPE_CHECKING:
-    from flowmaster.operators.etl.policy import ETLFlowConfig
+    from flowmaster.operators.etl.policy import ETLNotebook
     from flowmaster.operators.etl.providers.sqlite.policy import SQLiteExportPolicy
 
 
 class SQLiteExport(ExportAbstract):
-    def __init__(self, config: "ETLFlowConfig", *args, **kwargs):
-        super(SQLiteExport, self).__init__(config, *args, **kwargs)
+    def __init__(self, notebook: "ETLNotebook", *args, **kwargs):
+        super(SQLiteExport, self).__init__(notebook, *args, **kwargs)
 
     def __call__(self, *args, **kwargs) -> Iterator[ExportContext]:
         self.logger.info("Exportation data")
 
         self.export: "SQLiteExportPolicy" = self.model_templating(
-            *args, model=self.config.export
+            *args, model=self.notebook.export
         )
 
         db = peewee.SqliteDatabase(self.export.db_path)

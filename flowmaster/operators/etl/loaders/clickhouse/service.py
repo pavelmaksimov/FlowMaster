@@ -11,7 +11,7 @@ from flowmaster.operators.etl.loaders.clickhouse.policy import (
 from flowmaster.operators.etl.types import DataOrient
 
 if TYPE_CHECKING:
-    from flowmaster.operators.etl.policy import ETLFlowConfig
+    from flowmaster.operators.etl.policy import ETLNotebook
     from flowmaster.operators.etl.dataschema import TransformContext, ETLContext
 
 
@@ -30,12 +30,12 @@ class ClickhouseLoader:
     StageTable: Optional[clickhousepy.Table] = None
     data_orient = DataOrient.columns
 
-    def __init__(self, config: "ETLFlowConfig", logger: Optional[Logger] = None):
-        self.data_cleaning_mode = config.load.data_cleaning_mode
-        self.credentials = config.load.credentials.dict()
-        self.create_table_config = config.load.table_schema.dict()
-        self.sql_after = config.load.sql_after
-        self.sql_before = config.load.sql_before
+    def __init__(self, notebook: "ETLNotebook", logger: Optional[Logger] = None):
+        self.data_cleaning_mode = notebook.load.data_cleaning_mode
+        self.credentials = notebook.load.credentials.dict()
+        self.create_table_config = notebook.load.table_schema.dict()
+        self.sql_after = notebook.load.sql_after
+        self.sql_before = notebook.load.sql_before
 
         self.DB = self.client.DB(self.create_table_config["db"])
         self.Table = self.client.Table(
@@ -58,7 +58,7 @@ class ClickhouseLoader:
 
     def validate_create_table_config(self) -> None:
         if self.Table.exists():
-            # Checking compliance of types in the table and in the config.
+            # Checking compliance of types in the table and in the notebook.
             name_and_dtype_columns = {
                 c[0]: c[1]
                 for c in self.Table.describe()
@@ -70,7 +70,7 @@ class ClickhouseLoader:
                 dtype_in_table = name_and_dtype_columns.get(name)
                 if dtype_in_table and dtype_in_table != dtype:
                     raise AssertionError(
-                        "AssertionError: Column data type in config "
+                        "AssertionError: Column data type in notebook "
                         f"does not match in table ({dtype_in_table=} != {dtype=})."
                     )
         # TODO: проверять orders & partition, чтоб были идентичными

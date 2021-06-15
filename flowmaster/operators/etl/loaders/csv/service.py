@@ -14,7 +14,7 @@ from flowmaster.operators.etl.loaders.csv.policy import (
 from flowmaster.operators.etl.types import DataOrient
 
 if TYPE_CHECKING:
-    from flowmaster.operators.etl.policy import ETLFlowConfig
+    from flowmaster.operators.etl.policy import ETLNotebook
     from flowmaster.operators.etl.dataschema import TransformContext, ETLContext
 
 
@@ -27,26 +27,26 @@ class CSVLoader:
     _enter = False
     _is_add_columns = None
 
-    def __init__(self, config: "ETLFlowConfig", logger: Optional[Logger] = None):
-        self.config = config
-        self.path = config.load.path
-        self.save_mode = config.load.save_mode
-        self.encoding = config.load.encoding
-        self.sep = config.load.sep
-        self.newline = config.load.newline
-        self.with_columns = config.load.with_columns
+    def __init__(self, notebook: "ETLNotebook", logger: Optional[Logger] = None):
+        self.notebook = notebook
+        self.path = notebook.load.path
+        self.save_mode = notebook.load.save_mode
+        self.encoding = notebook.load.encoding
+        self.sep = notebook.load.sep
+        self.newline = notebook.load.newline
+        self.with_columns = notebook.load.with_columns
 
         _template = dict(
-            name=config.name,
-            provider=config.provider,
-            storage=config.storage,
+            name=notebook.name,
+            provider=notebook.provider,
+            storage=notebook.storage,
             datetime=dt.datetime.now(),
         )
-        self.file_name = jinja2.Template(config.load.file_name).render(**_template)
-        self.add_data_before = jinja2.Template(config.load.add_data_before).render(
+        self.file_name = jinja2.Template(notebook.load.file_name).render(**_template)
+        self.add_data_before = jinja2.Template(notebook.load.add_data_before).render(
             **_template
         )
-        self.add_data_after = jinja2.Template(config.load.add_data_after).render(
+        self.add_data_after = jinja2.Template(notebook.load.add_data_after).render(
             **_template
         )
 

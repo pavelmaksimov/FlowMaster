@@ -12,8 +12,8 @@ class YamlHelper:
             path = str(path)
 
         with open(path, "rb") as f:
-            config = yaml.full_load(f.read())
-            return config
+            dict_ = yaml.full_load(f.read())
+            return dict_
 
     @classmethod
     def iter_parse_file_from_dir(

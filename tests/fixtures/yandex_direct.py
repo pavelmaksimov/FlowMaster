@@ -2,14 +2,14 @@ from flowmaster.operators.etl.loaders.clickhouse.policy import ClickhouseLoadPol
 from flowmaster.operators.etl.loaders.clickhouse.policy import ClickhouseTransformPolicy
 from flowmaster.operators.etl.loaders.clickhouse.service import ClickhouseLoader
 from flowmaster.operators.etl.loaders.csv.service import CSVLoader
-from flowmaster.operators.etl.policy import ETLFlowConfig
+from flowmaster.operators.etl.policy import ETLNotebook
 from flowmaster.operators.etl.providers import YandexDirectProvider
 from flowmaster.operators.etl.providers.yandex_direct.policy import (
     YandexDirectExportPolicy as ExportPolicy,
 )
 from tests.fixtures import work_policy, csv_load_policy, csv_transform_policy
 
-ya_direct_report_to_csv_config = ETLFlowConfig(
+ya_direct_report_to_csv_notebook = ETLNotebook(
     name="ya_direct_report_to_csv",
     provider=YandexDirectProvider.name,
     storage=CSVLoader.name,
@@ -34,11 +34,11 @@ ya_direct_report_to_csv_config = ETLFlowConfig(
     load=csv_load_policy,
 )
 
-ya_direct_report_to_clickhouse_config = ETLFlowConfig(
+ya_direct_report_to_clickhouse_notebook = ETLNotebook(
     **{
-        **ya_direct_report_to_csv_config.dict(),
+        **ya_direct_report_to_csv_notebook.dict(),
         **dict(
-            name="ya_direct_report_to_clickhouse_config",
+            name="ya_direct_report_to_clickhouse_notebook",
             storage=ClickhouseLoader.name,
             transform=ClickhouseTransformPolicy(
                 error_policy="default",
@@ -50,7 +50,7 @@ ya_direct_report_to_clickhouse_config = ETLFlowConfig(
                 ),
                 table_schema=ClickhouseLoadPolicy.TableSchemaPolicy(
                     db="default",
-                    table="flowmaster_ya_direct_report_to_clickhouse_config",
+                    table="flowmaster_ya_direct_report_to_clickhouse_notebook",
                     columns=["CampaignType String", "Cost Float32"],
                     orders=["CampaignType"],
                 ),
@@ -62,9 +62,9 @@ ya_direct_report_to_clickhouse_config = ETLFlowConfig(
     }
 )
 
-ya_direct_campaigns_to_csv_config = ETLFlowConfig(
+ya_direct_campaigns_to_csv_notebook = ETLNotebook(
     **{
-        **ya_direct_report_to_csv_config.dict(),
+        **ya_direct_report_to_csv_notebook.dict(),
         **dict(
             name="ya_direct_campaigns_to_csv",
             export=ExportPolicy(
@@ -84,9 +84,9 @@ ya_direct_campaigns_to_csv_config = ETLFlowConfig(
     }
 )
 
-ya_direct_campaigns_to_clickhouse_config = ETLFlowConfig(
+ya_direct_campaigns_to_clickhouse_notebook = ETLNotebook(
     **{
-        **ya_direct_campaigns_to_csv_config.dict(),
+        **ya_direct_campaigns_to_csv_notebook.dict(),
         **dict(
             name="ya_direct_campaigns_to_clickhouse",
             storage=ClickhouseLoader.name,
@@ -100,7 +100,7 @@ ya_direct_campaigns_to_clickhouse_config = ETLFlowConfig(
                 ),
                 table_schema=ClickhouseLoadPolicy.TableSchemaPolicy(
                     db="default",
-                    table="flowmaster_test_ya_direct_campaigns_to_clickhouse_config",
+                    table="flowmaster_test_ya_direct_campaigns_to_clickhouse_notebook",
                     columns=["CampaignName String", "CampaignID UInt64"],
                     orders=["CampaignID"],
                 ),
