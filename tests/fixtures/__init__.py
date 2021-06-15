@@ -5,15 +5,15 @@ from flowmaster.operators.etl.loaders.csv.policy import (
     CSVLoadPolicy,
     CSVTransformPolicy,
 )
-from flowmaster.operators.etl.policy import ETLFlowConfig
+from flowmaster.operators.etl.policy import ETLNotebook
 from tests import get_tests_dir
 
 FILE_TESTS_DIR = get_tests_dir() / "__test_files__"
 Path.mkdir(FILE_TESTS_DIR, exist_ok=True)
 
-work_policy = ETLFlowConfig.WorkPolicy(
-    triggers=ETLFlowConfig.WorkPolicy.TriggersPolicy(
-        schedule=ETLFlowConfig.WorkPolicy.TriggersPolicy.SchedulePolicy(
+work_policy = ETLNotebook.WorkPolicy(
+    triggers=ETLNotebook.WorkPolicy.TriggersPolicy(
+        schedule=ETLNotebook.WorkPolicy.TriggersPolicy.SchedulePolicy(
             timezone="Europe/Moscow",
             start_time="00:00:00",
             from_date=dt.date.today() - dt.timedelta(5),

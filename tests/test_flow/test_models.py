@@ -319,7 +319,7 @@ def test_allow_execute_flow():
     FlowItem.recreate_prev_items(
         flow_name=FLOW_NAME,
         worktime=worktime,
-        offset_periods=[-1],
+        offset_periods=10,
         interval_timedelta=interval_timedelta,
     )
     assert (

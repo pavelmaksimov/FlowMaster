@@ -8,8 +8,8 @@ app = typer.Typer()
 
 
 @app.command("list")
-def list_config():
-    for file_name, config in YamlHelper.iter_parse_file_from_dir(
+def list_notebook():
+    for file_name, _ in YamlHelper.iter_parse_file_from_dir(
         Settings.FLOW_CONFIGS_DIR, match=".flow"
     ):
         typer.echo(f"  {file_name}")
@@ -17,18 +17,18 @@ def list_config():
 
 @app.command()
 def validate():
-    from flowmaster.operators.etl.policy import ETLFlowConfig
+    from flowmaster.operators.etl.policy import ETLNotebook
 
-    for file_name, config in YamlHelper.iter_parse_file_from_dir(
+    for file_name, notebook_dict in YamlHelper.iter_parse_file_from_dir(
         Settings.FLOW_CONFIGS_DIR, match=".flow"
     ):
-        ETLFlowConfig(name=file_name, **config)
+        ETLNotebook(name=file_name, **notebook_dict)
         typer.echo(f"  {file_name} OK")
 
 
 @app.command()
 def errors():
-    for name in list_config():
+    for name in list_notebook():
         count = FlowItem.count_items(name, statuses=[FlowStatus.error_statuses])
         if count > 0:
             count_text = typer.style(count, fg=typer.colors.RED, bold=True)

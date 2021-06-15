@@ -72,7 +72,7 @@ class _SchedulePolicy(BaseModel):
         self._set_keep_sequence()
 
 
-class FlowConfig(BaseModel):
+class Notebook(BaseModel):
     class WorkPolicy(BasePolicy):
         class TriggersPolicy(BaseModel):
             class SchedulePolicy(_SchedulePolicy):

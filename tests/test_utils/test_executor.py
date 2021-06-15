@@ -24,9 +24,7 @@ def test_expires():
 
 def test_soft_time_limit():
     generator = (time.sleep(2) for i in range(1))
-    task = ExecutorIterationTask(
-        generator, soft_time_limit_seconds=1
-    )
+    task = ExecutorIterationTask(generator, soft_time_limit_seconds=1)
 
     with pytest.raises(SoftTimeLimitError):
         list(task)

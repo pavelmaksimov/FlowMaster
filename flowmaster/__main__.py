@@ -3,13 +3,13 @@ from functools import partial
 
 import typer
 
-import flowmaster.cli.config
 import flowmaster.cli.db
 import flowmaster.cli.item
+import flowmaster.cli.notebook
 from flowmaster.setttings import Settings
 
 app = typer.Typer()
-app.add_typer(flowmaster.cli.config.app, name="config")
+app.add_typer(flowmaster.cli.notebook.app, name="notebook")
 app.add_typer(flowmaster.cli.db.app, name="db")
 app.add_typer(flowmaster.cli.item.app, name="item")
 

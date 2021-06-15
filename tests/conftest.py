@@ -7,7 +7,7 @@ from flowmaster.operators.etl.loaders.csv.policy import (
     CSVTransformPolicy,
 )
 from flowmaster.operators.etl.loaders.csv.service import CSVLoader
-from flowmaster.operators.etl.policy import ETLFlowConfig
+from flowmaster.operators.etl.policy import ETLNotebook
 from flowmaster.operators.etl.providers import CSVProvider
 from flowmaster.operators.etl.providers import FlowmasterDataProvider
 from flowmaster.operators.etl.providers.csv.policy import CSVExportPolicy
@@ -34,9 +34,9 @@ def flowitem_model():
 
 @pytest.fixture()
 def work_policy():
-    return ETLFlowConfig.WorkPolicy(
-        triggers=ETLFlowConfig.WorkPolicy.TriggersPolicy(
-            schedule=ETLFlowConfig.WorkPolicy.TriggersPolicy.SchedulePolicy(
+    return ETLNotebook.WorkPolicy(
+        triggers=ETLNotebook.WorkPolicy.TriggersPolicy(
+            schedule=ETLNotebook.WorkPolicy.TriggersPolicy.SchedulePolicy(
                 timezone="Europe/Moscow",
                 start_time="00:00:00",
                 from_date=dt.date.today() - dt.timedelta(5),
@@ -82,9 +82,9 @@ def csv_export_policy(tmp_path):
 
 
 @pytest.fixture()
-def config_csv_to_csv_with_columns(work_policy, csv_transform_policy, csv_export_policy, csv_load_policy):
+def csv_to_csv_with_columns_notebook(work_policy, csv_transform_policy, csv_export_policy, csv_load_policy):
 
-    return ETLFlowConfig(
+    return ETLNotebook(
         name="csv_to_csv_with_columns",
         provider=CSVProvider.name,
         storage=CSVLoader.name,
@@ -96,8 +96,8 @@ def config_csv_to_csv_with_columns(work_policy, csv_transform_policy, csv_export
 
 
 @pytest.fixture()
-def config_csv_to_csv_without_columns(config_csv_to_csv_with_columns):
-    with open(config_csv_to_csv_with_columns.export.file_path, "w") as file:
+def csv_to_csv_without_columns_notebook(csv_to_csv_with_columns_notebook):
+    with open(csv_to_csv_with_columns_notebook.export.file_path, "w") as file:
         # fmt: off
         file.write(
             "begin-miss-rows\n" 
@@ -109,10 +109,10 @@ def config_csv_to_csv_without_columns(config_csv_to_csv_with_columns):
             "1\t2\n"
         )
 
-    config_csv_to_csv_with_columns.name = "csv_to_csv_without_columns"
-    config_csv_to_csv_with_columns.export.with_columns = False
+    csv_to_csv_with_columns_notebook.name = "csv_to_csv_without_columns"
+    csv_to_csv_with_columns_notebook.export.with_columns = False
 
-    return config_csv_to_csv_with_columns
+    return csv_to_csv_with_columns_notebook
 
 
 @pytest.fixture()
@@ -137,8 +137,8 @@ def sqlite_export_policy(tmp_path):
 
 
 @pytest.fixture()
-def sqlite_to_csv_config(work_policy, sqlite_export_policy, csv_transform_policy, csv_load_policy):
-    return ETLFlowConfig(
+def sqlite_to_csv_notebook(work_policy, sqlite_export_policy, csv_transform_policy, csv_load_policy):
+    return ETLNotebook(
         name="sqlite_to_csv",
         provider=SQLiteProvider.name,
         storage=CSVLoader.name,
@@ -192,8 +192,8 @@ def flowmasterdata_queues_export_policy():
 
 
 @pytest.fixture()
-def flowmasterdata_items_to_csv_config(tmp_path, work_policy, flowmasterdata_items_export_policy, csv_transform_policy, csv_load_policy):
-    return ETLFlowConfig(
+def flowmasterdata_items_to_csv_notebook(tmp_path, work_policy, flowmasterdata_items_export_policy, csv_transform_policy, csv_load_policy):
+    return ETLNotebook(
         name="flowmasterdata_items_to_csv",
         provider=FlowmasterDataProvider.name,
         storage=CSVLoader.name,

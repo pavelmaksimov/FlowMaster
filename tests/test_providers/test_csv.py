@@ -3,8 +3,8 @@ import datetime as dt
 from flowmaster.operators.etl.service import ETLOperator
 
 
-def test_flow_csv_to_csv_with_columns(config_csv_to_csv_with_columns):
-    etl_flow = ETLOperator(config_csv_to_csv_with_columns)
+def test_flow_csv_to_csv_with_columns(csv_to_csv_with_columns_notebook):
+    etl_flow = ETLOperator(csv_to_csv_with_columns_notebook)
     list(etl_flow(dt.datetime(2021, 2, 1), dt.datetime(2021, 2, 1)))
 
     with etl_flow.Load.open_file(mode="r") as loadfile:
@@ -20,8 +20,8 @@ def test_flow_csv_to_csv_with_columns(config_csv_to_csv_with_columns):
     ]
 
 
-def test_flow_csv_to_csv_without_columns(config_csv_to_csv_without_columns):
-    etl_flow = ETLOperator(config_csv_to_csv_without_columns)
+def test_flow_csv_to_csv_without_columns(csv_to_csv_without_columns_notebook):
+    etl_flow = ETLOperator(csv_to_csv_without_columns_notebook)
     list(etl_flow(dt.datetime(2021, 2, 1), dt.datetime(2021, 2, 1)))
 
     with etl_flow.Load.open_file(mode="r") as loadfile:

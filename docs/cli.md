@@ -1,25 +1,25 @@
 # CLI
 
-## Config
+## Notebook
 Команды для конфигураций.
 
 ```shell
-flowmaster config --help
+flowmaster notebook --help
 ```
 
 Список названий файлов конфигураций.
 ```shell
-flowmaster config list
+flowmaster notebook list
 ```
 
 Валидация конфигураций.
 ```shell
-flowmaster config validate
+flowmaster notebook validate
 ```
 
 Выведет конфигурации с количеством невыполненных потоков.
 ```shell
-flowmaster config errors
+flowmaster notebook errors
 ```
 
 
@@ -32,26 +32,26 @@ flowmaster item --help
 
 Выведет 20 последних записей выполненных потоков.
 ```shell
-flowmaster item list {config_filename} --limit 20
+flowmaster item list {notebook_filename} --limit 20
 ```
 Выведет записи не выполненных потоков.
 ```shell
-flowmaster item list-errors {config_filename}
+flowmaster item list-errors {notebook_filename}
 ```
 
 Изменяет состояния записей потоков, чтобы они перезапустились.
 ```shell
-flowmaster item restart {config_filename} -s 2021-01-01 --end 2021-01-31
+flowmaster item restart {notebook_filename} -s 2021-01-01 --end 2021-01-31
 ```
 
 Изменяет состояния записей не выполненных потоков, чтобы они перезапустились.
 ```shell
-flowmaster item restart-errors {config_filename}
+flowmaster item restart-errors {notebook_filename}
 ```
 
 Удаляет записи потока.
 ```shell
-flowmaster item clear {config_filename}
+flowmaster item clear {notebook_filename}
 ```
 
 

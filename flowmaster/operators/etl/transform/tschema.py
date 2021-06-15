@@ -8,7 +8,7 @@ from flowmaster.operators.etl.transform.policy import DTypeLiteralT
 from flowmaster.operators.etl.transform.policy import ErrorPolicyLiteralT
 
 if TYPE_CHECKING:
-    from flowmaster.operators.etl.policy import ETLFlowConfig
+    from flowmaster.operators.etl.policy import ETLNotebook
 
 
 class TransformSchemaData(pydantic.BaseModel):
@@ -49,14 +49,14 @@ class FileTransformSchema(StorageTransformSchemaAbstract):
     allow_null = False
     null_default_value = ""
 
-    def __init__(self, config: "ETLFlowConfig", null_values: Union[list, tuple, set]):
+    def __init__(self, notebook: "ETLNotebook", null_values: Union[list, tuple, set]):
         self.column_schema = {
             # TODO: refactoring .dict(exclude_unset=True)
             col_name: {k: v for k, v in col_schema.dict().items() if v is not None}
-            for col_name, col_schema in config.transform.column_schema.items()
+            for col_name, col_schema in notebook.transform.column_schema.items()
         }
-        self.error_policy = config.transform.error_policy
-        self.timezone = config.transform.timezone
+        self.error_policy = notebook.transform.error_policy
+        self.timezone = notebook.transform.timezone
 
         self.null_values = null_values
 
@@ -90,15 +90,15 @@ class ClickhouseTransformSchema(StorageTransformSchemaAbstract):
     name = ClickhouseLoader.name
     null_default_value = None
 
-    def __init__(self, config: "ETLFlowConfig", null_values: Union[list, tuple, set]):
+    def __init__(self, notebook: "ETLNotebook", null_values: Union[list, tuple, set]):
         self.column_schema = {
             col_name: {k: v for k, v in col_schema.dict().items() if v is not None}
-            for col_name, col_schema in config.transform.column_schema.items()
+            for col_name, col_schema in notebook.transform.column_schema.items()
         }
-        self.column_map = config.transform.column_map
-        self.table_schema_columns = config.load.table_schema.columns
-        self.error_policy = config.transform.error_policy
-        self.timezone = config.transform.timezone
+        self.column_map = notebook.transform.column_map
+        self.table_schema_columns = notebook.load.table_schema.columns
+        self.error_policy = notebook.transform.error_policy
+        self.timezone = notebook.transform.timezone
 
         self.null_values = null_values
 

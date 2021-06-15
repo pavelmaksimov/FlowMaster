@@ -7,14 +7,14 @@ from flowmaster.operators.etl.types import DataOrient
 from flowmaster.utils import chunker
 
 if TYPE_CHECKING:
-    from flowmaster.operators.etl.policy import ETLFlowConfig
+    from flowmaster.operators.etl.policy import ETLNotebook
     from flowmaster.operators.etl.providers.csv.policy import CSVExportPolicy
 
 
 class CSVExport(ExportAbstract):
-    def __init__(self, config: "ETLFlowConfig", *args, **kwargs):
-        self.export: "CSVExportPolicy" = config.export
-        super(CSVExport, self).__init__(config, *args, **kwargs)
+    def __init__(self, notebook: "ETLNotebook", *args, **kwargs):
+        self.export: "CSVExportPolicy" = notebook.export
+        super(CSVExport, self).__init__(notebook, *args, **kwargs)
 
     def __call__(self, *args, **kwargs) -> Iterator[ExportContext]:
         self.logger.info("Exportation data")

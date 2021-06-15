@@ -11,10 +11,10 @@ from flowmaster.operators.etl.providers.yandex_metrika_logs import (
 from flowmaster.operators.etl.service import ETLOperator
 from flowmaster.utils.yaml_helper import YamlHelper
 from tests import get_tests_dir
-from tests.fixtures.yandex_metrika import yml_visits_to_csv_config as CONFIG
+from tests.fixtures.yandex_metrika import yml_visits_to_csv_notebook as NOTEBOOK
 
 credentials = YamlHelper.parse_file(get_tests_dir("tests2") / "credentials.yml")
-CONFIG.export.credentials = YandexMetrikaLogsExportPolicy.CredentialsPolicy(
+NOTEBOOK.export.credentials = YandexMetrikaLogsExportPolicy.CredentialsPolicy(
     **credentials["yandex-metrika-logs"]
 )
 
@@ -26,11 +26,11 @@ def test_thread_executor_yandex_metrika_logs():
         worktimes = [pendulum.datetime(2021, 1, i + 1) for i in range(count_flows)]
 
         for worktime in worktimes:
-            CONFIG.load.file_name = (
+            NOTEBOOK.load.file_name = (
                 f"{test_thread_executor_yandex_metrika_logs.__name__}.tsv"
             )
 
-            flow = ETLOperator(CONFIG)
+            flow = ETLOperator(NOTEBOOK)
             generator = flow(start_period=worktime, end_period=worktime)
 
             yield ExecutorIterationTask(generator)

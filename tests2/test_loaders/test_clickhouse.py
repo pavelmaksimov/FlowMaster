@@ -13,10 +13,10 @@ from flowmaster.operators.etl.service import ETLOperator
 from flowmaster.operators.etl.types import DataOrient
 from flowmaster.utils.yaml_helper import YamlHelper
 from tests import get_tests_dir
-from tests.fixtures.yandex_metrika import yml_visits_to_clickhouse_config as CONFIG
+from tests.fixtures.yandex_metrika import yml_visits_to_clickhouse_notebook as NOTEBOOK
 
 credentials = YamlHelper.parse_file(get_tests_dir("tests2") / "credentials.yml")
-CONFIG.load.credentials = ClickhouseLoadPolicy.CredentialsPolicy(
+NOTEBOOK.load.credentials = ClickhouseLoadPolicy.CredentialsPolicy(
     **credentials["clickhouse"]
 )
 
@@ -29,9 +29,9 @@ def test_real_load_clickhouse():
 
     YandexMetrikaLogsExport.__call__ = Mock(side_effect=export_func)
 
-    CONFIG.load.table_schema.table = test_real_load_clickhouse.__name__
+    NOTEBOOK.load.table_schema.table = test_real_load_clickhouse.__name__
 
-    flow = ETLOperator(CONFIG)
+    flow = ETLOperator(NOTEBOOK)
     flow.Load.Table.drop_table()
     try:
         list(
@@ -44,8 +44,8 @@ def test_real_load_clickhouse():
 
         # test data_cleaning_mode off
 
-        CONFIG.load.data_cleaning_mode = ClickhouseLoader.DataCleaningMode.off
-        flow = ETLOperator(CONFIG)
+        NOTEBOOK.load.data_cleaning_mode = ClickhouseLoader.DataCleaningMode.off
+        flow = ETLOperator(NOTEBOOK)
 
         list(
             flow(
@@ -60,8 +60,8 @@ def test_real_load_clickhouse():
 
         # test data_cleaning_mode partition
 
-        CONFIG.load.data_cleaning_mode = ClickhouseLoader.DataCleaningMode.partition
-        flow = ETLOperator(CONFIG)
+        NOTEBOOK.load.data_cleaning_mode = ClickhouseLoader.DataCleaningMode.partition
+        flow = ETLOperator(NOTEBOOK)
 
         list(
             flow(
@@ -76,8 +76,8 @@ def test_real_load_clickhouse():
 
         # test data_cleaning_mode truncate
 
-        CONFIG.load.data_cleaning_mode = ClickhouseLoader.DataCleaningMode.truncate
-        flow = ETLOperator(CONFIG)
+        NOTEBOOK.load.data_cleaning_mode = ClickhouseLoader.DataCleaningMode.truncate
+        flow = ETLOperator(NOTEBOOK)
 
         list(
             flow(

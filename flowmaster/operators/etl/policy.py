@@ -2,13 +2,13 @@ from typing import Optional, Union
 
 from pydantic import PositiveInt, NegativeInt, validator, BaseModel
 
-from flowmaster.operators.base.policy import FlowConfig, PydanticModelT
+from flowmaster.operators.base.policy import Notebook, PydanticModelT
 from flowmaster.operators.etl.loaders import storage_classes, ClickhouseLoader
 from flowmaster.operators.etl.providers import provider_classes
 
 
-class ETLFlowConfig(FlowConfig):
-    class ETLWorkPolicy(FlowConfig.WorkPolicy):
+class ETLNotebook(Notebook):
+    class ETLWorkPolicy(Notebook.WorkPolicy):
         update_stale_data: Optional[Union[PositiveInt, list[NegativeInt]]] = None
 
     provider: str

@@ -12,7 +12,7 @@ from flowmaster.operators.etl.providers.abstract import ExportAbstract
 from flowmaster.operators.etl.types import DataOrient
 
 if TYPE_CHECKING:
-    from flowmaster.operators.etl.policy import ETLFlowConfig
+    from flowmaster.operators.etl.policy import ETLNotebook
 
 
 class YandexMetrikaManagementExport(ExportAbstract):
@@ -22,12 +22,12 @@ class YandexMetrikaManagementExport(ExportAbstract):
         goals = "goals"
         LiteralT = Literal["counters", "clients", "goals"]
 
-    def __init__(self, config: "ETLFlowConfig", logger: Optional[Logger] = None):
-        self.resource = config.export.resource
-        self.columns = config.export.columns
-        self.params = config.export.params.dict()
-        self.credentials = config.export.credentials.dict()
-        super(YandexMetrikaManagementExport, self).__init__(config, logger)
+    def __init__(self, notebook: "ETLNotebook", logger: Optional[Logger] = None):
+        self.resource = notebook.export.resource
+        self.columns = notebook.export.columns
+        self.params = notebook.export.params.dict()
+        self.credentials = notebook.export.credentials.dict()
+        super(YandexMetrikaManagementExport, self).__init__(notebook, logger)
 
     @property
     def client(self) -> YandexMetrikaManagement:

@@ -8,26 +8,26 @@ from flowmaster.models import FlowItem
 from flowmaster.utils import iter_range_datetime, iter_period_from_range
 
 if TYPE_CHECKING:
-    from flowmaster.operators.base.policy import FlowConfig
+    from flowmaster.operators.base.policy import Notebook
     from flowmaster.executors import ExecutorIterationTask
 
 
 class Work:
-    def __init__(self, config: "FlowConfig", logger: Optional[Logger] = None):
-        self.config = config
-        self.name = config.name
-        self.interval_timedelta = config.work.triggers.schedule._interval_timedelta
-        self.is_second_interval = config.work.triggers.schedule._is_second_interval
-        self.period_length = config.work.triggers.schedule.period_length
-        self.timezone = config.work.triggers.schedule.timezone
-        self.start_datetime = config.work.triggers.schedule._start_datetime
-        self.keep_sequence = config.work.triggers.schedule.keep_sequence
-        self.retry_delay = config.work.retry_delay
-        self.retries = config.work.retries
-        self.soft_time_limit_seconds = config.work.soft_time_limit_seconds
-        if config.work.time_limit_seconds_from_worktime is not None:
+    def __init__(self, notebook: "Notebook", logger: Optional[Logger] = None):
+        self.notebook = notebook
+        self.name = notebook.name
+        self.interval_timedelta = notebook.work.triggers.schedule._interval_timedelta
+        self.is_second_interval = notebook.work.triggers.schedule._is_second_interval
+        self.period_length = notebook.work.triggers.schedule.period_length
+        self.timezone = notebook.work.triggers.schedule.timezone
+        self.start_datetime = notebook.work.triggers.schedule._start_datetime
+        self.keep_sequence = notebook.work.triggers.schedule.keep_sequence
+        self.retry_delay = notebook.work.retry_delay
+        self.retries = notebook.work.retries
+        self.soft_time_limit_seconds = notebook.work.soft_time_limit_seconds
+        if notebook.work.time_limit_seconds_from_worktime is not None:
             self.expires = self.current_worktime + dt.timedelta(
-                seconds=config.work.time_limit_seconds_from_worktime
+                seconds=notebook.work.time_limit_seconds_from_worktime
             )
         elif self.is_second_interval:
             self.expires = self.current_worktime + dt.timedelta(
@@ -39,10 +39,12 @@ class Work:
         self.Model = FlowItem
         self.logger = logger or getLogger(__name__)
 
-        self.concurrency_pool_names = config.work.pools or []
-        if self.config.work.concurrency is not None:
+        self.concurrency_pool_names = notebook.work.pools or []
+        if self.notebook.work.concurrency is not None:
             self.concurrency_pool_names.append(f"__{self.name}_concurrency__")
-            self.add_pool(f"__{self.name}_concurrency__", self.config.work.concurrency)
+            self.add_pool(
+                f"__{self.name}_concurrency__", self.notebook.work.concurrency
+            )
 
     def add_pool(self, name: str, limit: int) -> None:
         from flowmaster.pool import pools

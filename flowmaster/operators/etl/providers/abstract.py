@@ -8,7 +8,7 @@ from pydantic import BaseModel
 
 if TYPE_CHECKING:
     from flowmaster.operators.base.policy import PydanticModelT
-    from flowmaster.operators.etl.policy import ETLFlowConfig
+    from flowmaster.operators.etl.policy import ETLNotebook
     from flowmaster.operators.etl.transform import Transform
     from flowmaster.operators.etl.dataschema import ExportContext
     from flowmaster.executors import SleepIteration
@@ -16,9 +16,9 @@ if TYPE_CHECKING:
 
 class ExportAbstract(ABC):
     def __init__(
-        self, config: "ETLFlowConfig", logger: Optional[logging.Logger] = None
+        self, notebook: "ETLNotebook", logger: Optional[logging.Logger] = None
     ):
-        self.config = config
+        self.notebook = notebook
         self.logger = logger or logging.getLogger(__name__)
 
     @classmethod
@@ -65,9 +65,9 @@ class ExportAbstract(ABC):
                         "start_period": start_period,
                         "end_period": end_period,
                         "datetime": dt.datetime.now(),
-                        "name": self.config.name,
-                        "provider": self.config.provider,
-                        "storage": self.config.storage,
+                        "name": self.notebook.name,
+                        "provider": self.notebook.provider,
+                        "storage": self.notebook.storage,
                     }
                 )
 

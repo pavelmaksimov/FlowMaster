@@ -57,10 +57,10 @@ def restart(
     for name_ in name.split(","):
         if start_time or end_time:
             # Apply timezone.
-            for file_name, config in YamlHelper.iter_parse_file_from_dir(
+            for file_name, notebook_dict in YamlHelper.iter_parse_file_from_dir(
                 Settings.FLOW_CONFIGS_DIR, match=name_
             ):
-                tz = config["work"]["schedule"]["timezone"]
+                tz = notebook_dict["work"]["schedule"]["timezone"]
 
                 if start_time:
                     start_time = start_time.replace(tzinfo=pendulum.timezone(tz))
