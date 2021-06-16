@@ -23,7 +23,7 @@ def init():
     pathlib.Path.mkdir(Settings.APP_HOME, exist_ok=True)
     pathlib.Path.mkdir(Settings.FILE_STORAGE_DIR, exist_ok=True)
     pathlib.Path.mkdir(Settings.LOGS_DIR, exist_ok=True)
-    pathlib.Path.mkdir(Settings.FLOW_CONFIGS_DIR, exist_ok=True)
+    pathlib.Path.mkdir(Settings.NOTEBOOKS_DIR, exist_ok=True)
     pathlib.Path.mkdir(Settings.PLUGINS_DIR, exist_ok=True)
 
     if not pathlib.Path.exists(Settings.POOL_CONFIG_FILEPATH):

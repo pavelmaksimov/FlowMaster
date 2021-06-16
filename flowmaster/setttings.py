@@ -10,7 +10,7 @@ class Settings:
         APP_HOME = Path.home() / "FlowMaster"
 
     FILE_STORAGE_DIR = APP_HOME / "storage"
-    FLOW_CONFIGS_DIR = APP_HOME / "configs"
+    NOTEBOOKS_DIR = APP_HOME / "notebooks"
     LOGS_DIR = APP_HOME / "logs"
     PLUGINS_DIRNAME = "plugins"
     PLUGINS_DIR = APP_HOME / PLUGINS_DIRNAME
