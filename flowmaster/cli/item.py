@@ -58,7 +58,7 @@ def restart(
         if start_time or end_time:
             # Apply timezone.
             for file_name, notebook_dict in YamlHelper.iter_parse_file_from_dir(
-                Settings.FLOW_CONFIGS_DIR, match=name_
+                Settings.NOTEBOOKS_DIR, match=name_
             ):
                 tz = notebook_dict["work"]["schedule"]["timezone"]
 

@@ -80,7 +80,7 @@ def ordering_etl_flow_tasks(
     from flowmaster.operators.etl.policy import ETLNotebook
 
     for file_name, notebook_dict in YamlHelper.iter_parse_file_from_dir(
-        Settings.FLOW_CONFIGS_DIR, match=".etl.flow"
+        Settings.NOTEBOOKS_DIR, match=".etl.flow"
     ):
         if dry_run:
             if notebook_dict.get("provider") != "fakedata":

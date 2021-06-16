@@ -10,7 +10,7 @@ app = typer.Typer()
 @app.command("list")
 def list_notebook():
     for file_name, _ in YamlHelper.iter_parse_file_from_dir(
-        Settings.FLOW_CONFIGS_DIR, match=".flow"
+        Settings.NOTEBOOKS_DIR, match=".flow"
     ):
         typer.echo(f"  {file_name}")
 
@@ -20,7 +20,7 @@ def validate():
     from flowmaster.operators.etl.policy import ETLNotebook
 
     for file_name, notebook_dict in YamlHelper.iter_parse_file_from_dir(
-        Settings.FLOW_CONFIGS_DIR, match=".flow"
+        Settings.NOTEBOOKS_DIR, match=".flow"
     ):
         ETLNotebook(name=file_name, **notebook_dict)
         typer.echo(f"  {file_name} OK")
