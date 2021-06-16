@@ -305,14 +305,14 @@ def test_allow_execute_flow():
         flow_name=FLOW_NAME,
         worktime_list=worktime_list,
         status=FlowStatus.fatal_error,
-        config_hash="",
+        notebook_hash="",
     )
     assert (
-        FlowItem.allow_execute_flow(FLOW_NAME, config_hash="", max_fatal_errors=3)
+        FlowItem.allow_execute_flow(FLOW_NAME, notebook_hash="", max_fatal_errors=3)
         is False
     )
     assert (
-        FlowItem.allow_execute_flow(FLOW_NAME, config_hash="new", max_fatal_errors=3)
+        FlowItem.allow_execute_flow(FLOW_NAME, notebook_hash="new", max_fatal_errors=3)
         is True
     )
 
@@ -323,7 +323,7 @@ def test_allow_execute_flow():
         interval_timedelta=interval_timedelta,
     )
     assert (
-        FlowItem.allow_execute_flow(FLOW_NAME, config_hash="", max_fatal_errors=3)
+        FlowItem.allow_execute_flow(FLOW_NAME, notebook_hash="", max_fatal_errors=3)
         is True
     )
 
@@ -345,7 +345,7 @@ def test_items_for_execute_seconds_interval_without_keep_sequence(flowitem_model
         keep_sequence=False,
         retries=0,
         retry_delay=0,
-        config_hash="",
+        notebook_hash="",
         max_fatal_errors=3,
     )
 
@@ -363,7 +363,7 @@ def test_items_for_execute_seconds_interval_with_keep_sequence(flowitem_model):
         keep_sequence=True,
         retries=2,
         retry_delay=0,
-        config_hash="",
+        notebook_hash="",
         max_fatal_errors=1,
     )
 

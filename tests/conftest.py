@@ -160,7 +160,7 @@ def flowmasterdata_items_export_policy():
             "status",
             "etl_step",
             "data",
-            "config_hash",
+            "notebook_hash",
             "retries",
             "duration",
             "log",
