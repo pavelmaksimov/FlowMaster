@@ -16,7 +16,7 @@ export:
         - status
         - etl_step
         - data
-        - config_hash
+        - notebook_hash
         - retries
         - duration
         - log

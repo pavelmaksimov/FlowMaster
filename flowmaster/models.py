@@ -83,7 +83,7 @@ class FlowItem(BaseModel):
     data = playhouse.sqlite_ext.JSONField(
         default={}, json_dumps=orjson.dumps, json_loads=orjson.loads
     )
-    config_hash = playhouse.sqlite_ext.CharField(default="", null=False)
+    notebook_hash = playhouse.sqlite_ext.CharField(default="", null=False)
     retries = playhouse.sqlite_ext.IntegerField(default=0)
     duration = playhouse.sqlite_ext.IntegerField(null=True)
     log = playhouse.sqlite_ext.TextField(null=True)
@@ -251,11 +251,11 @@ class FlowItem(BaseModel):
 
     @classmethod
     def allow_execute_flow(
-        cls, flow_name: str, config_hash: str, *, max_fatal_errors: int = 3
+        cls, flow_name: str, notebook_hash: str, *, max_fatal_errors: int = 3
     ) -> bool:
         item = cls.last_item(flow_name, for_updated=True)
 
-        if item and item.config_hash == config_hash:
+        if item and item.notebook_hash == notebook_hash:
             # Check limit fatal errors.
             items = (
                 cls.select()
@@ -308,14 +308,14 @@ class FlowItem(BaseModel):
         keep_sequence: bool,
         retries: int,
         retry_delay: int,
-        config_hash: str,
+        notebook_hash: str,
         max_fatal_errors: int,
         update_stale_data: Optional[
             Union[pydantic.PositiveInt, list[pydantic.NegativeInt]]
         ] = None,
     ) -> Optional[list["FlowItem"]]:
         if cls.allow_execute_flow(
-            flow_name, config_hash=config_hash, max_fatal_errors=max_fatal_errors
+            flow_name, notebook_hash=notebook_hash, max_fatal_errors=max_fatal_errors
         ):
             if not cls.exists(flow_name):
                 cls.create(**{cls.name.name: flow_name, cls.worktime.name: worktime})
