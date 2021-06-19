@@ -1,5 +1,4 @@
 import random
-from logging import Logger, getLogger
 from typing import TYPE_CHECKING, Optional
 
 import clickhousepy
@@ -9,6 +8,7 @@ from flowmaster.operators.etl.loaders.clickhouse.policy import (
     ClickhouseTransformPolicy,
 )
 from flowmaster.operators.etl.types import DataOrient
+from flowmaster.utils.logging_helper import Logger, getLogger
 
 if TYPE_CHECKING:
     from flowmaster.operators.etl.policy import ETLNotebook
@@ -42,7 +42,7 @@ class ClickhouseLoader:
             self.create_table_config["db"], self.create_table_config["table"]
         )
         self.partitions = []
-        self.logger = logger or getLogger("ClickhouseLoader")
+        self.logger = logger or getLogger()
 
     def set_context(self, model: "ETLContext") -> None:
         model.db = self.Table.db

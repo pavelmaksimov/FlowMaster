@@ -3,10 +3,8 @@ from collections import defaultdict
 from typing import Literal
 
 from flowmaster.setttings import Settings
-from flowmaster.utils.logging_helper import CreateLogger
+from flowmaster.utils.logging_helper import logger
 from flowmaster.utils.yaml_helper import YamlHelper
-
-logger = CreateLogger("counter-pool", filename="counter_pool.log")
 
 
 class Counter:
@@ -15,11 +13,11 @@ class Counter:
 
     def __setitem__(self, tag, switch: Literal[1, -1]):
         if switch not in (1, -1):
-            logger.warning("[%s] disabled counter switch: %s", tag, switch)
+            logger.warning("[{}] disabled counter switch: {}", tag, switch)
 
         if switch == -1 and self.counters[tag] == 0:
             logger.warning(
-                "[%s] Attempting to decrease the counter to less than zero", tag
+                "[{}] Attempting to decrease the counter to less than zero", tag
             )
         else:
             self.counters[tag] += switch

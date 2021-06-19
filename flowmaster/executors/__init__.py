@@ -1,6 +1,5 @@
 import datetime as dt
 import functools
-import logging
 import queue
 import threading
 import time
@@ -16,9 +15,8 @@ from flowmaster.executors.exceptions import (
     PoolOverflowingException,
 )
 from flowmaster.pool import pools
-from flowmaster.utils.logging_helper import CreateLogger
+from flowmaster.utils.logging_helper import logger
 
-logger = CreateLogger("executor", "executor.log", level=logging.INFO)
 task_queue = queue.Queue()
 sleeptask_queue = queue.Queue()
 threading_event = threading.Event()
@@ -214,12 +212,12 @@ class ThreadAsyncExecutor:
         """Adds new function to the queue"""
         count = 0
         with threading_lock:
-            for task in self.order_task_func(logger=logger):
+            for task in self.order_task_func():
                 task: ExecutorIterationTask
                 task_queue.put(task)
                 count += 1
 
-        logger.info("Count ordering task: %s", count)
+        logger.info("Count ordering task: {}", count)
 
     def get_task(self) -> tuple[queue.Queue, ExecutorIterationTask]:
         while not threading_event.is_set():
@@ -241,8 +239,7 @@ class ThreadAsyncExecutor:
                 return task_queue, task
 
     def worker(self) -> None:
-        logger_worker = CreateLogger("executor", "executor.log", level=logging.INFO)
-        logger_worker.info("Start worker")
+        logger.info("Start worker")
         try:
             while not threading_event.is_set():
                 queue_and_task = self.get_task()
@@ -253,13 +250,13 @@ class ThreadAsyncExecutor:
                     except SleepException:
                         self.sleeping_task_storage.append(task)
                     except Exception as exc:
-                        logger.error("Fail task: %s", exc)
+                        logger.error("Fail task: {}", exc)
                     finally:
                         queue_.task_done()
         except:
-            logger_worker.exception("Fail worker")
+            logger.exception("Fail worker")
         finally:
-            logger_worker.info("Stop worker")
+            logger.info("Stop worker")
 
     def create_worker_in_thread(self, number: int) -> None:
         for n in range(number):

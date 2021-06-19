@@ -1,4 +1,3 @@
-from logging import Logger, getLogger
 from typing import TYPE_CHECKING, Any, Optional
 
 from datagun import DataSet, NULL_VALUES
@@ -9,6 +8,7 @@ from flowmaster.operators.etl.transform.tschema import (
     ClickhouseTransformSchema,
 )
 from flowmaster.operators.etl.types import DataOrient
+from flowmaster.utils.logging_helper import Logger, getLogger
 
 if TYPE_CHECKING:
     from flowmaster.operators.etl.policy import ETLNotebook
@@ -32,7 +32,7 @@ class Transform:
         self.Schema = self._schema_classes[self.storage](
             notebook=notebook, null_values=self.null_values
         )
-        self.logger = logger or getLogger("Transform")
+        self.logger = logger or getLogger()
 
     def processing(
         self,

@@ -1,5 +1,4 @@
-from logging import Logger, getLogger
-from typing import Optional, TYPE_CHECKING, Iterator
+from typing import TYPE_CHECKING, Iterator, Optional
 
 import pydantic
 
@@ -7,6 +6,8 @@ from flowmaster.executors import catch_exceptions, ExecutorIterationTask
 from flowmaster.models import FlowItem, FlowStatus
 from flowmaster.operators.base.work import Work
 from flowmaster.setttings import Settings
+from flowmaster.utils.logging_helper import Logger, getLogger
+from flowmaster.utils.logging_helper import logger
 from flowmaster.utils.yaml_helper import YamlHelper
 
 if TYPE_CHECKING:
@@ -51,7 +52,7 @@ class ETLWork(Work):
             )
 
         self.Model = FlowItem
-        self.logger = logger or getLogger(__name__)
+        self.logger = logger or getLogger()
 
     def iter_items_for_execute(self) -> Iterator[FlowItem]:
         """
@@ -73,7 +74,7 @@ class ETLWork(Work):
 
 @catch_exceptions
 def ordering_etl_flow_tasks(
-    *, logger: Logger, dry_run: bool = False
+    *, dry_run: bool = False
 ) -> Iterator[ExecutorIterationTask]:
     """Prepare flow function to be sent to the queue and executed"""
     from flowmaster.operators.etl.service import ETLOperator
@@ -89,10 +90,10 @@ def ordering_etl_flow_tasks(
         try:
             notebook = ETLNotebook(name=file_name, **notebook_dict)
         except pydantic.ValidationError as exc:
-            logger.error("ValidationError: '%s': %s", file_name, exc)
+            logger.error("ValidationError: '{}': {}", file_name, exc)
             continue
         except Exception as exc:
-            logger.error("Error: '%s': %s", file_name, exc)
+            logger.error("Error: '{}': {}", file_name, exc)
             continue
 
         work = ETLWork(notebook)
@@ -109,7 +110,7 @@ def ordering_etl_flow_tasks(
                 to_time=end_period,
             )
             logger.info(
-                "Order ETL flow [%s]: %s %s", etl_flow.name, start_period, end_period
+                "Order ETL flow [{}]: {} {}", etl_flow.name, start_period, end_period
             )
 
             yield etl_flow_task

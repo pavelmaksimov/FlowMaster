@@ -11,3 +11,4 @@ tapi-yandex-direct==2021.5.3
 typer<0.4
 Jinja2<3.0
 requests
+loguru<1.0

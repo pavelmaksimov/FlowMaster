@@ -46,6 +46,7 @@ setup(
         "tapi-yandex-direct==2021.5.3",
         "typer>=0.3.0, <0.4.0",
         "Jinja2>=2.0.0, <3.0.0",
+        "loguru>=0.5, <0.6",
     ],
     license="GPLv3",
     keywords="etl,flowmaster,flow,airflow,prefect,schedule,scheduler,tasker",

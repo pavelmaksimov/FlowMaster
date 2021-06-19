@@ -1,6 +1,5 @@
 import datetime as dt
 import time
-from logging import Logger
 from typing import TYPE_CHECKING, Optional, Iterator, Union
 
 from tapi_yandex_metrika import YandexMetrikaLogsapi
@@ -11,6 +10,7 @@ from flowmaster.executors import SleepIteration
 from flowmaster.operators.etl.dataschema import ExportContext
 from flowmaster.operators.etl.providers.abstract import ExportAbstract
 from flowmaster.operators.etl.types import DataOrient
+from flowmaster.utils.logging_helper import Logger
 
 if TYPE_CHECKING:
     from flowmaster.operators.etl.policy import ETLNotebook

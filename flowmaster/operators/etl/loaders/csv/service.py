@@ -1,7 +1,6 @@
 import datetime as dt
 import pathlib
 from functools import partial
-from logging import Logger, getLogger
 from typing import TYPE_CHECKING, Optional
 
 import jinja2
@@ -12,6 +11,7 @@ from flowmaster.operators.etl.loaders.csv.policy import (
     CSVTransformPolicy,
 )
 from flowmaster.operators.etl.types import DataOrient
+from flowmaster.utils.logging_helper import Logger, getLogger
 
 if TYPE_CHECKING:
     from flowmaster.operators.etl.policy import ETLNotebook
@@ -50,7 +50,7 @@ class CSVLoader:
             **_template
         )
 
-        self.logger = logger or getLogger("CSVLoader")
+        self.logger = logger or getLogger()
 
         self.columns = None
         self.insert_counter = 0

@@ -32,7 +32,7 @@ def test_ordering_flow_tasks():
     rv = [(FLOW_NAME, notebook)]
     YamlHelper.iter_parse_file_from_dir = mock.Mock(return_value=rv)
 
-    flows = list(ordering_flow_tasks(logger=logger))
+    flows = list(ordering_flow_tasks())
 
     assert len(flows) == 5
     assert FlowItem.count_items(FLOW_NAME, statuses=[FlowStatus.run]) == len(flows)
@@ -56,7 +56,7 @@ def test_ordering_flow_tasks_with_period_length():
     rv = [(FLOW_NAME, notebook)]
     YamlHelper.iter_parse_file_from_dir = mock.Mock(return_value=rv)
 
-    flows = list(ordering_flow_tasks(logger=logger))
+    flows = list(ordering_flow_tasks())
 
     assert len(flows) == 3
 
@@ -122,7 +122,7 @@ def test_ordering_flow_tasks_with_interval_seconds(flowitem_model):
         rv = [(flowitem_model.name_for_test, notebook)]
         YamlHelper.iter_parse_file_from_dir = mock.Mock(return_value=rv)
 
-        list(ordering_flow_tasks(logger=logger))
+        list(ordering_flow_tasks())
 
         now += dt.timedelta(seconds=60)
         pendulum.set_test_now(now)

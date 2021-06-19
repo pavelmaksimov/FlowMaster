@@ -1,11 +1,11 @@
 import datetime as dt
-from logging import Logger, getLogger
 from typing import Iterator, Optional, TYPE_CHECKING
 
 import pendulum
 
 from flowmaster.models import FlowItem
 from flowmaster.utils import iter_range_datetime, iter_period_from_range
+from flowmaster.utils.logging_helper import Logger, getLogger
 
 if TYPE_CHECKING:
     from flowmaster.operators.base.policy import Notebook
@@ -37,7 +37,7 @@ class Work:
             self.expires = None
 
         self.Model = FlowItem
-        self.logger = logger or getLogger(__name__)
+        self.logger = logger or getLogger()
 
         self.concurrency_pool_names = notebook.work.pools or []
         if self.notebook.work.concurrency is not None:
@@ -109,9 +109,7 @@ class Work:
         )
 
 
-def ordering_flow_tasks(
-    *, logger: Logger, dry_run: bool = False, **kwargs
-) -> Iterator["ExecutorIterationTask"]:
+def ordering_flow_tasks(*, dry_run: bool = False) -> Iterator["ExecutorIterationTask"]:
     from flowmaster.operators.etl.work import ordering_etl_flow_tasks
 
-    yield from ordering_etl_flow_tasks(logger=logger, dry_run=dry_run, **kwargs)
+    yield from ordering_etl_flow_tasks(dry_run=dry_run)

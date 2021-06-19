@@ -1,10 +1,11 @@
 import datetime as dt
-import logging
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Iterator, Optional, Type, Union
 
 import jinja2
 from pydantic import BaseModel
+
+from flowmaster.utils.logging_helper import Logger, getLogger
 
 if TYPE_CHECKING:
     from flowmaster.operators.base.policy import PydanticModelT
@@ -15,11 +16,9 @@ if TYPE_CHECKING:
 
 
 class ExportAbstract(ABC):
-    def __init__(
-        self, notebook: "ETLNotebook", logger: Optional[logging.Logger] = None
-    ):
+    def __init__(self, notebook: "ETLNotebook", logger: Optional[Logger] = None):
         self.notebook = notebook
-        self.logger = logger or logging.getLogger(__name__)
+        self.logger = logger or getLogger()
 
     @classmethod
     def validate_params(cls, **params: dict) -> None:

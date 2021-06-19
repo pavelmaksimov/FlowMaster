@@ -17,13 +17,14 @@ from flowmaster.operators.etl.policy import ETLNotebook
 from flowmaster.operators.etl.providers import provider_classes
 from flowmaster.operators.etl.work import ETLWork
 from flowmaster.utils import iter_range_datetime
+from flowmaster.utils.logging_helper import get_logfile_path
 
 
 class ETLOperator(BaseOperator):
     items = None
 
-    def __init__(self, notebook: ETLNotebook, *args, **kwargs):
-        super(ETLOperator, self).__init__(notebook, *args, **kwargs)
+    def __init__(self, notebook: ETLNotebook):
+        super(ETLOperator, self).__init__(notebook)
 
         provider_meta_class = provider_classes[notebook.provider]
         load_class = storage_classes[notebook.storage]
@@ -151,6 +152,18 @@ class ETLOperator(BaseOperator):
                 end_period.strftime("%Y-%m-%dT%H:%M:%S"),
             ).replace("T00:00:00", "")
 
+    def update_logger(self, log_file_name, dry_run):
+        log_file_path = get_logfile_path(f"{log_file_name}.log", self.name)
+        level = "DEBUG" if dry_run else "INFO"
+        self.logger.add(
+            log_file_path,
+            level=level,
+            colorize=True,
+            backtrace=True,
+            diagnose=True,
+            retention="30 days",
+        )
+
     def task_generator(
         self,
         start_period: dt.datetime,
@@ -159,10 +172,10 @@ class ETLOperator(BaseOperator):
         dry_run: bool = False,
         **kwargs,
     ) -> Iterator[Union[dict, Optional[AsyncIterationT]]]:
+        period_text = self._get_period_text(start_period, end_period)
+        self.update_logger(period_text, dry_run)
 
-        date_log = self._get_period_text(start_period, end_period)
-        self.logger.update(self.name, filename=f"{date_log}.log", level=self.loglevel)
-        self.logger.info("Start flow: %s  %s", self.name, date_log)
+        self.logger.info("Start flow: {} {}", self.name, period_text)
 
         datetime_list = iter_range_datetime(
             start_period, end_period, self.Work.interval_timedelta
@@ -181,12 +194,12 @@ class ETLOperator(BaseOperator):
                 if isinstance(item, dict):
                     log_data = item
                     self.Model.update_items(self.items, **log_data)
-                    self.logger.debug("%s: %s", self.name, log_data)
+                    self.logger.debug("{}: {}", self.name, log_data)
 
                 yield item
 
         except:
-            self.logger.exception("Fail flow: %s  %s", self.name, date_log)
+            self.logger.exception("Fail flow: {}  {}", self.name, period_text)
             if dry_run is False:
                 self.send_notifications(
                     **{
@@ -206,7 +219,7 @@ class ETLOperator(BaseOperator):
 
         finally:
             self.Model.update_items(self.items)
-            self.logger.info("End flow: %s  %s", self.name, date_log)
+            self.logger.info("End flow: {}  {}", self.name, period_text)
 
     def __call__(
         self,
