@@ -48,7 +48,7 @@ def prepare_for_run(dry_run: bool = False):
 
 
 @app.command()
-def run(interval: int = 20, dry_run: bool = False):
+def run_local(interval: int = 20, dry_run: bool = False):
     prepare_for_run(dry_run=dry_run)
 
     from flowmaster.utils.local_executor import sync_executor
@@ -59,7 +59,7 @@ def run(interval: int = 20, dry_run: bool = False):
 
 
 @app.command()
-def run_thread(workers: int = 2, interval: int = 20, dry_run: bool = False):
+def run(workers: int = 2, interval: int = 20, dry_run: bool = False):
     prepare_for_run(dry_run=dry_run)
 
     from flowmaster.operators.base.work import ordering_flow_tasks
