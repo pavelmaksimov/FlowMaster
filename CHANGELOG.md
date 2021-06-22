@@ -1,6 +1,6 @@
 # CHANGELOG
 
-# v0.6.0
+# v0.6.1
 ### 2021.06.21
 
 Redesigned executor
