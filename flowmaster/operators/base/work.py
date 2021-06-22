@@ -24,6 +24,7 @@ class Work:
         self.keep_sequence = notebook.work.triggers.schedule.keep_sequence
         self.retry_delay = notebook.work.retry_delay
         self.retries = notebook.work.retries
+        self.max_fatal_errors = notebook.work.max_fatal_errors
         self.soft_time_limit_seconds = notebook.work.soft_time_limit_seconds
         if notebook.work.time_limit_seconds_from_worktime is not None:
             self.expires = self.current_worktime + dt.timedelta(
@@ -89,7 +90,7 @@ class Work:
             self.retries,
             self.retry_delay,
             notebook_hash="",
-            max_fatal_errors=3,
+            max_fatal_errors=self.max_fatal_errors,
         )
 
     def iter_datetime_for_execute(self) -> Iterator[dt.datetime]:

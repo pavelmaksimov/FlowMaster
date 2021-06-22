@@ -92,6 +92,7 @@ class Notebook(BaseModel):
         retry_delay: int = 60
         time_limit_seconds_from_worktime: Optional[int] = None
         soft_time_limit_seconds: Optional[int] = None
+        max_fatal_errors: int = 3
 
     name: str
     description: Optional[str] = None
