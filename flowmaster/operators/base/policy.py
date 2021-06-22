@@ -15,7 +15,7 @@ class BasePolicy(BaseModel):
 class BaseNotificationServicePolicy(BaseModel):
     on_retry: bool = False
     on_success: bool = False
-    # on_failure: bool = True
+    on_failure: bool = True
 
 
 class _SchedulePolicy(BaseModel):

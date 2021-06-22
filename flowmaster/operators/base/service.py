@@ -22,11 +22,22 @@ class BaseOperator:
         for key, value in kwargs.items():
             message += f"\n{key}: {value}"
 
-        if status == FlowStatus.success:
-            codex_tg = self.notebook.work.notifications.codex_telegram
+        codex_tg = self.notebook.work.notifications.codex_telegram
 
+        if status == FlowStatus.success:
             if codex_tg.on_success:
                 send_codex_telegram_message(codex_tg.links, message)
 
-            if codex_tg.on_retry:
-                send_codex_telegram_message(codex_tg.links, message)
+        elif status in FlowStatus.error_statuses:
+            if not self.Model.allow_execute_flow(
+                self.name,
+                notebook_hash="",
+                max_fatal_errors=self.notebook.work.max_fatal_errors,
+            ) or not self.Model.retry_error_items(
+                self.name, self.Work.retries, retry_delay=0
+            ):
+                if codex_tg.on_failure:
+                    send_codex_telegram_message(codex_tg.links, message)
+            else:
+                if codex_tg.on_retry:
+                    send_codex_telegram_message(codex_tg.links, message)
