@@ -26,6 +26,7 @@ def getLogger() -> Logger:
     logger = Logger(_Core(), None, 0, False, False, False, False, True, None, {})
     logger.add(_sys.stderr)
     _atexit.register(logger.remove)
+
     return logger
 
 
