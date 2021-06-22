@@ -274,7 +274,7 @@ class FlowItem(BaseModel):
         # http://docs.peewee-orm.com/en/latest/peewee/hacks.html?highlight=time%20now#date-math
         # A function that checks to see if retry_delay passes to restart.
         ex = peewee.fn.datetime(
-            peewee.fn.strftime("%s", cls.started_utc) + retry_delay, "unixepoch"
+            peewee.fn.strftime("%s", cls.finished_utc) + retry_delay, "unixepoch"
         )
         items = cls.select().where(
             cls.name == flow_name,
