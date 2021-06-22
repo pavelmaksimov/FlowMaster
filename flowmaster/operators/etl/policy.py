@@ -1,3 +1,4 @@
+import hashlib
 from typing import Optional, Union
 
 from pydantic import PositiveInt, NegativeInt, validator, BaseModel
@@ -54,11 +55,25 @@ class ETLNotebook(Notebook):
                     except IndexError:
                         raise ValueError("Invalid table column schema")
 
+    def _set_hash(self):
+        self.hash = hashlib.md5(
+            str(
+                (
+                    self.name,
+                    self.load.dict(exclude_unset=True),
+                    self.transform.dict(exclude_unset=True),
+                    self.export.dict(exclude_unset=True),
+                )
+            ).encode()
+        ).hexdigest()
+
     def __init__(self, **kwargs):
         self._set_partition_columns(**kwargs)
         self._set_column_map(**kwargs)
 
         super().__init__(**kwargs)
+
+        self._set_hash()
 
         # Checking if the input data are not dictionaries.
         if isinstance(transform := kwargs.get("transform", {}), BaseModel):

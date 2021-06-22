@@ -97,3 +97,4 @@ class Notebook(BaseModel):
     name: str
     description: Optional[str] = None
     work: WorkPolicy
+    hash: str = ""

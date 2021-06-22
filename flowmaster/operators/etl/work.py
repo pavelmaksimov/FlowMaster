@@ -66,7 +66,7 @@ class ETLWork(Work):
             self.keep_sequence,
             self.retries,
             self.retry_delay,
-            notebook_hash="",
+            notebook_hash=self.notebook.hash,
             max_fatal_errors=self.max_fatal_errors,
             update_stale_data=self.update_stale_data,
         )

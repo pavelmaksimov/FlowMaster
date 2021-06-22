@@ -31,7 +31,7 @@ class BaseOperator:
         elif status in FlowStatus.error_statuses:
             if not self.Model.allow_execute_flow(
                 self.name,
-                notebook_hash="",
+                notebook_hash=self.notebook.hash,
                 max_fatal_errors=self.notebook.work.max_fatal_errors,
             ) or not self.Model.retry_error_items(
                 self.name, self.Work.retries, retry_delay=0
