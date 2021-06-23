@@ -161,7 +161,16 @@ class ETLOperator(BaseOperator):
             colorize=True,
             backtrace=True,
             diagnose=True,
-            retention="30 days",
+            retention=self.Work.interval_timedelta * 90,
+        )
+        error_log_file_path = get_logfile_path(f"errors.log", self.name)
+        self.logger.add(
+            error_log_file_path,
+            level="ERROR",
+            colorize=True,
+            backtrace=True,
+            diagnose=True,
+            rotation="10 MB",
         )
 
     def task_generator(

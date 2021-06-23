@@ -40,3 +40,12 @@ logger.add(
     backtrace=True,
     diagnose=True,
 )
+logger.add(
+    get_logfile_path("errors.log", "app"),
+    level="ERROR",
+    rotation="20 MB",
+    enqueue=True,
+    colorize=True,
+    backtrace=True,
+    diagnose=True,
+)
