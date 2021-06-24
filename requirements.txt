@@ -14,6 +14,8 @@ clickhouse-driver==0.2.0
     # via clickhousepy
 clickhousepy==2021.3.10
     # via -r requirements.in
+colorama==0.4.4
+    # via loguru
 datagun==0.1.0
     # via -r requirements.in
 faker==8.1.1
@@ -73,3 +75,5 @@ tzlocal==2.1
     # via clickhouse-driver
 urllib3==1.26.4
     # via requests
+win32-setctime==1.0.3
+    # via loguru
