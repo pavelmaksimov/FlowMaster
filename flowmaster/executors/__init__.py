@@ -251,6 +251,8 @@ class ThreadAsyncExecutor:
                         self.sleeping_task_storage.append(task)
                     except Exception as exc:
                         logger.error("Fail task: {}", exc)
+                    except GeneratorExit:
+                        ...
                     finally:
                         queue_.task_done()
         except:
