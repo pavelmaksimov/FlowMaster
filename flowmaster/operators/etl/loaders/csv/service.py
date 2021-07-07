@@ -57,7 +57,7 @@ class CSVLoader:
         self.file_path = pathlib.Path(self.path) / self.file_name
         self.open_file = partial(open, self.file_path, encoding=self.encoding)
 
-    def set_context(self, model: "ETLContext") -> None:
+    def update_context(self, model: "ETLContext") -> None:
         model.path = str(self.file_path)
 
     def values_to_text(self, data: list) -> str:

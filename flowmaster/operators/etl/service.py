@@ -17,7 +17,7 @@ from flowmaster.operators.etl.policy import ETLNotebook
 from flowmaster.operators.etl.providers import provider_classes
 from flowmaster.operators.etl.work import ETLWork
 from flowmaster.utils import iter_range_datetime
-from flowmaster.utils.logging_helper import get_logfile_path
+from flowmaster.utils.logging_helper import create_logfile_path
 
 
 class ETLOperator(BaseOperator):
@@ -25,6 +25,7 @@ class ETLOperator(BaseOperator):
 
     def __init__(self, notebook: ETLNotebook):
         super(ETLOperator, self).__init__(notebook)
+        self.notebook: ETLNotebook
 
         provider_meta_class = provider_classes[notebook.provider]
         load_class = storage_classes[notebook.storage]
@@ -33,16 +34,13 @@ class ETLOperator(BaseOperator):
         self.Provider = provider_meta_class(notebook, self.logger)
         self.Load = load_class(notebook, self.logger)
 
-        self.operator_context = ETLContext(storage=self.notebook.storage)
+        self.operator_context = ETLContext(storage=notebook.storage)
 
     def iterator(
         self, start_period: dt.datetime, end_period: dt.datetime, **kwargs
     ) -> Iterator[Union[dict, AsyncIterationT]]:
 
         begin_time = time.time()
-        self.operator_context.start_period = start_period
-        self.operator_context.end_period = end_period
-        self.Load.set_context(self.operator_context)
 
         try:
             yield {
@@ -152,26 +150,11 @@ class ETLOperator(BaseOperator):
                 end_period.strftime("%Y-%m-%dT%H:%M:%S"),
             ).replace("T00:00:00", "")
 
-    def update_logger(self, log_file_name, dry_run):
-        log_file_path = get_logfile_path(f"{log_file_name}.log", self.name)
-        level = "DEBUG" if dry_run else "INFO"
-        self.logger.add(
-            log_file_path,
-            level=level,
-            colorize=True,
-            backtrace=True,
-            diagnose=True,
-            retention=self.Work.interval_timedelta * 90,
+    def get_logfile_path(self):
+        period_text = self._get_period_text(
+            self.operator_context.start_period, self.operator_context.end_period
         )
-        error_log_file_path = get_logfile_path(f"errors.log", self.name)
-        self.logger.add(
-            error_log_file_path,
-            level="ERROR",
-            colorize=True,
-            backtrace=True,
-            diagnose=True,
-            rotation="10 MB",
-        )
+        return create_logfile_path(f"{period_text}.log", self.name)
 
     def task_generator(
         self,
@@ -181,24 +164,30 @@ class ETLOperator(BaseOperator):
         dry_run: bool = False,
         **kwargs,
     ) -> Iterator[Union[dict, Optional[AsyncIterationT]]]:
+
+        self.operator_context.start_period = start_period
+        self.operator_context.end_period = end_period
+        self.Load.update_context(self.operator_context)
+        self.update_logger(dry_run)
+
         period_text = self._get_period_text(start_period, end_period)
-        self.update_logger(period_text, dry_run)
-
-        self.logger.info("Start flow: {} {}", self.name, period_text)
-
         datetime_list = iter_range_datetime(
             start_period, end_period, self.Work.interval_timedelta
         )
-
         self.items = self.Model.create_items(
             self.name,
             datetime_list,
-            operator=FlowOperator.etl,
-            data=self.operator_context.dict(exclude_unset=True),
+            **{
+                self.Model.operator.name: FlowOperator.etl,
+                self.Model.data.name: self.operator_context.dict(exclude_unset=True),
+                self.Model.logpath.name: str(self.get_logfile_path().absolute()),
+            },
         )
 
         log_data = {}
         try:
+            self.logger.info("Start flow: {} {}", self.name, period_text)
+
             for item in self.iterator(start_period, end_period, **kwargs):
                 if isinstance(item, dict):
                     log_data = item

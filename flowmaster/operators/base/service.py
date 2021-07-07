@@ -1,7 +1,7 @@
 from flowmaster.models import FlowItem, FlowStatus
 from flowmaster.operators.base.policy import Notebook
 from flowmaster.operators.base.work import Work
-from flowmaster.utils.logging_helper import getLogger
+from flowmaster.utils.logging_helper import getLogger, create_logfile_path
 from flowmaster.utils.notifications import send_codex_telegram_message
 
 
@@ -13,6 +13,33 @@ class BaseOperator:
         self.logger = getLogger()
         self.Work = Work(notebook, self.logger)
         self.Model = FlowItem  # TODO replace to Pydantic
+
+    def get_logfile_path(self):
+        worktime = self.Work.current_worktime.strftime("%Y-%m-%dT%H:%M:%S").replace("T00:00:00", "")
+        return create_logfile_path(f"{worktime}.log", self.name)
+
+    def update_logger(self, dry_run):
+        logfile_path = self.get_logfile_path()
+        level = "DEBUG" if dry_run else "INFO"
+        self.logger.add(
+            logfile_path,
+            level=level,
+            colorize=True,
+            backtrace=True,
+            diagnose=True,
+            retention=self.Work.interval_timedelta * 90,
+            encoding="utf8",
+        )
+        error_logfile_path = create_logfile_path(f"errors.log", self.name)
+        self.logger.add(
+            error_logfile_path,
+            level="ERROR",
+            colorize=True,
+            backtrace=True,
+            diagnose=True,
+            rotation="10 MB",
+            encoding="utf8",
+        )
 
     def send_notifications(self, status: FlowStatus.LiteralT, **kwargs):
         if self.notebook.work.notifications is None:

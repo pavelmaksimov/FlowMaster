@@ -44,7 +44,7 @@ class ClickhouseLoader:
         self.partitions = []
         self.logger = logger or getLogger()
 
-    def set_context(self, model: "ETLContext") -> None:
+    def update_context(self, model: "ETLContext") -> None:
         model.db = self.Table.db
         model.table = self.Table.table
 

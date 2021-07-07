@@ -87,6 +87,7 @@ class FlowItem(BaseModel):
     retries = playhouse.sqlite_ext.IntegerField(default=0)
     duration = playhouse.sqlite_ext.IntegerField(null=True)
     log = playhouse.sqlite_ext.TextField(null=True)
+    logpath = playhouse.sqlite_ext.TextField(null=True)
     expires_utc = playhouse.sqlite_ext.DateTimeField(null=True)
     started_utc = playhouse.sqlite_ext.DateTimeField(null=True)
     finished_utc = playhouse.sqlite_ext.DateTimeField(null=True)
