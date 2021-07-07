@@ -356,19 +356,20 @@ class FlowItem(BaseModel):
 
     @classmethod
     def create_items(
-        cls, flow_name: str, worktime_list: Iterable[dt.datetime], **data
+        cls, flow_name: str, worktime_list: Iterable[dt.datetime], **kwargs
     ) -> list["FlowItem"]:
         items = []
         for datetime_ in worktime_list:
             try:
                 item = cls.create(
-                    **data,
-                    **{cls.name.name: flow_name, cls.worktime.name: datetime_},
+                    **{cls.name.name: flow_name, cls.worktime.name: datetime_, **kwargs},
                 )
             except peewee.IntegrityError:
                 item = cls.get(cls.name == flow_name, cls.worktime == datetime_)
 
             items.append(item)
+
+        cls.update_items(items, **kwargs)
 
         return items
 
@@ -378,13 +379,13 @@ class FlowItem(BaseModel):
         items: list["FlowItem"],
         save: bool = True,
         save_expression_fields: bool = True,
-        **data,
+        **kwargs,
     ) -> dict:
-        data.update({cls.updated.name: dt.datetime.now()})
+        kwargs.update({cls.updated.name: dt.datetime.now()})
         not_saved_data = {}
 
         for item in items:
-            for field, value in data.items():
+            for field, value in kwargs.items():
                 if field in cls.__dict__:
                     if (
                         isinstance(value, peewee.Expression)
