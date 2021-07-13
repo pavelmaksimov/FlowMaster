@@ -169,8 +169,20 @@ class FlowItem(BaseModel):
         )
 
     @classmethod
-    def clear(cls, flow_name: str) -> int:
-        return cls.delete().where(cls.name == flow_name).execute()
+    def clear(
+        cls,
+        flow_name: str,
+        from_time: Optional[dt.datetime] = None,
+        to_time: Optional[dt.datetime] = None,
+    ) -> int:
+        query = cls.delete().where(cls.name == flow_name)
+        if from_time:
+            query = query.where(cls.worktime >= from_time)
+
+        if to_time:
+            query = query.where(cls.worktime <= to_time)
+
+        return query.execute()
 
     @classmethod
     def create_next_execute_item(
