@@ -12,7 +12,7 @@ app = typer.Typer()
 
 @app.command("list")
 def list_items(name: str, limit: int = 20):
-    for i in FlowItem.iter_items(name, limit):
+    for i in FlowItem.iter_items(name, limit=limit):
         msg_parts = [
             f'  {i.worktime.strftime("%Y-%m-%dT%T").replace("T00:00:00", "")}  ',
             f"{i.status}  ",
@@ -35,7 +35,7 @@ def list_items(name: str, limit: int = 20):
 
 @app.command()
 def list_errors(name: str, limit: int = 1000):
-    for i in FlowItem.iter_items(name, limit):
+    for i in FlowItem.iter_items(name, limit=limit):
         if i.status in FlowStatus.error_statuses:
             msg_parts = [
                 f'  {i.worktime.strftime("%Y-%m-%dT%T").replace("T00:00:00", "")}  ',

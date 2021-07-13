@@ -1,12 +1,13 @@
 import atexit
 import datetime as dt
-from typing import Union, Iterable, Optional, Literal
+from typing import Union, Iterable, Optional, Literal, Sequence
 
 import orjson
 import peewee
 import pendulum
 import playhouse.sqlite_ext
 import pydantic
+from playhouse.hybrid import hybrid_property
 from playhouse.sqliteq import SqliteQueueDatabase
 
 from flowmaster.setttings import Settings
@@ -404,13 +405,24 @@ class FlowItem(BaseModel):
         return not_saved_data
 
     @classmethod
-    def iter_items(cls, flow_name: str, limit: int = 20) -> list["FlowItem"]:
-        return (
+    def iter_items(
+        cls,
+        flow_name: str,
+        statuses: Optional[Sequence[FlowStatus.LiteralT]] = None,
+        limit: int = 20,
+        offset: int = 0,
+    ) -> peewee.ModelSelect:
+        query = (
             FlowItem.select()
             .where(FlowItem.name == flow_name)
             .order_by(cls.worktime.desc())
             .limit(limit)
+            .offset(offset)
         )
+        if statuses is not None:
+            query = query.where(cls.status.in_(statuses))
+
+        return query
 
     @staticmethod
     def get_utcnow() -> dt.datetime:
