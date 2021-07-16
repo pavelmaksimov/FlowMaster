@@ -11,6 +11,7 @@ class Settings:
 
     FILE_STORAGE_DIR = APP_HOME / "storage"
     NOTEBOOKS_DIR = APP_HOME / "notebooks"
+    ARCHIVE_NOTEBOOKS_DIR = NOTEBOOKS_DIR / "__archive__"
     LOGS_DIR = APP_HOME / "logs"
     PLUGINS_DIRNAME = "plugins"
     PLUGINS_DIR = APP_HOME / PLUGINS_DIRNAME
