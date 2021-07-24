@@ -1,29 +1,35 @@
 import typer
 
 from flowmaster.models import FlowItem, FlowStatus
-from flowmaster.setttings import Settings
-from flowmaster.utils.yaml_helper import YamlHelper
+from flowmaster.service import (
+    iter_active_notebook_filenames,
+    iter_archive_notebook_filenames,
+    get_notebook,
+)
 
 app = typer.Typer()
 
 
 @app.command("list")
 def list_notebook():
-    for file_name, _ in YamlHelper.iter_parse_file_from_dir(
-        Settings.NOTEBOOKS_DIR, match=".flow"
-    ):
-        typer.echo(f"  {file_name}")
+    for name, _ in iter_active_notebook_filenames():
+        typer.echo(f"  {name}")
+
+    for name, _ in iter_archive_notebook_filenames():
+        typer.echo(f"  {name} (archive)")
 
 
 @app.command()
 def validate():
-    from flowmaster.operators.etl.policy import ETLNotebook
+    for name, _ in iter_active_notebook_filenames():
+        validate, text, notebook_dict, policy, error = get_notebook(name)
+        if validate:
+            typer.echo(f"  {name} - OK")
 
-    for file_name, notebook_dict in YamlHelper.iter_parse_file_from_dir(
-        Settings.NOTEBOOKS_DIR, match=".flow"
-    ):
-        ETLNotebook(name=file_name, **notebook_dict)
-        typer.echo(f"  {file_name} OK")
+    for name, _ in iter_archive_notebook_filenames():
+        validate, text, notebook_dict, policy, error = get_notebook(name)
+        if validate:
+            typer.echo(f"  {name} (archive) - OK")
 
 
 @app.command()
