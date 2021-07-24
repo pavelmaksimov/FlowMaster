@@ -444,10 +444,9 @@ class FlowItem(BaseModel):
                 )
             except peewee.IntegrityError:
                 item = cls.get(cls.name == flow_name, cls.worktime == datetime_)
+                cls.update_items([item], **kwargs)
 
             items.append(item)
-
-        cls.update_items(items, **kwargs)
 
         return items
 
