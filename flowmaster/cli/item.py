@@ -1,11 +1,8 @@
 import datetime as dt
 
-import pendulum
 import typer
 
 from flowmaster.models import FlowItem, FlowStatus
-from flowmaster.setttings import Settings
-from flowmaster.utils.yaml_helper import YamlHelper
 
 app = typer.Typer()
 
@@ -51,36 +48,19 @@ def list_errors(name: str, limit: int = 1000):
 @app.command()
 def restart(
     name: str,
-    start_time: dt.datetime = typer.Option(..., "--start_time", "-s"),
-    end_time: dt.datetime = typer.Option(..., "--end_time", "-e"),
+    from_time: dt.datetime = typer.Option(..., "--from_time", "-s"),
+    to_time: dt.datetime = typer.Option(..., "--to_time", "-e"),
 ):
     for name_ in name.split(","):
-        if start_time or end_time:
-            # Apply timezone.
-            for file_name, notebook_dict in YamlHelper.iter_parse_file_from_dir(
-                Settings.NOTEBOOKS_DIR, match=name_
-            ):
-                tz = notebook_dict["work"]["schedule"]["timezone"]
-
-                if start_time:
-                    start_time = start_time.replace(tzinfo=pendulum.timezone(tz))
-
-                if end_time:
-                    end_time = end_time.replace(tzinfo=pendulum.timezone(tz))
-
-                break
-
-        count = FlowItem.change_status(
-            name_, new_status=FlowStatus.add, from_time=start_time, to_time=end_time
-        )
+        count = len(FlowItem.recreate_items(name, from_time=from_time, to_time=to_time))
         typer.secho(f"  {name_} {typer.style(f'{count=}', fg=typer.colors.WHITE)} OK")
 
 
 @app.command()
 def restart_errors(name: str):
     for name_ in name.split(","):
-        count = FlowItem.change_status(
-            name_, new_status=FlowStatus.add, filter_statuses=FlowStatus.error_statuses
+        count = len(
+            FlowItem.recreate_items(name, filter_statuses=FlowStatus.error_statuses)
         )
         typer.secho(f"  {name_} {typer.style(f'{count=}', fg=typer.colors.WHITE)} OK")
 
