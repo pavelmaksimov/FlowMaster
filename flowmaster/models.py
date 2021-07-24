@@ -99,6 +99,20 @@ class FlowItem(BaseModel):
     class Meta:
         primary_key = playhouse.sqlite_ext.CompositeKey("name", "worktime")
 
+    @hybrid_property
+    def worktime_for_url(self):
+        self.worktime: dt.datetime
+        tz_name = pendulum.instance(self.worktime).timezone_name.replace("/", ".")
+        worktime_str = self.worktime.strftime("%Y-%m-%dT%H:%M:%S")
+        return f"{worktime_str}Z{tz_name}"
+
+    @classmethod
+    def worktime_from_url(cls, worktime_for_url):
+        datetime, tz_name = worktime_for_url.split("Z")
+        tz_name = tz_name.replace(".", "/")
+        worktime = pendulum.parse(datetime, tz=tz_name)
+        return worktime
+
     @classmethod
     def count_items(
         cls, flow_name: str, statuses: Optional[list[FlowStatus.LiteralT]] = None
@@ -107,6 +121,20 @@ class FlowItem(BaseModel):
         if statuses is not None:
             query = query.where(cls.status.in_(statuses))
         return query.count()
+
+    @classmethod
+    def count_items_by_name(cls) -> peewee.ModelSelect:
+        query = cls.select(
+            cls.name, peewee.fn.Count(cls.worktime).alias("count")
+        ).group_by(cls.name)
+        return query
+
+    @classmethod
+    def count_items_by_name_and_status(cls) -> peewee.ModelSelect:
+        query = cls.select(
+            cls.name, cls.status, peewee.fn.Count(cls.worktime).alias("count")
+        ).group_by(cls.name, cls.status)
+        return query
 
     @classmethod
     def exists(cls, flow_name: str) -> bool:
@@ -376,7 +404,11 @@ class FlowItem(BaseModel):
         for datetime_ in worktime_list:
             try:
                 item = cls.create(
-                    **{cls.name.name: flow_name, cls.worktime.name: datetime_, **kwargs},
+                    **{
+                        cls.name.name: flow_name,
+                        cls.worktime.name: datetime_,
+                        **kwargs,
+                    },
                 )
             except peewee.IntegrityError:
                 item = cls.get(cls.name == flow_name, cls.worktime == datetime_)
