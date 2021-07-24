@@ -184,6 +184,38 @@ class FlowItem(BaseModel):
         return query.execute()
 
     @classmethod
+    def recreate_item(
+        cls,
+        flow_name: str,
+        worktime: dt.datetime,
+    ) -> list["FlowItem"]:
+        cls.clear(flow_name, worktime, worktime)
+        return cls.create_items(flow_name, [worktime])
+
+    @classmethod
+    def recreate_items(
+        cls,
+        flow_name: str,
+        filter_statuses: Optional[tuple[FlowStatus.LiteralT]] = None,
+        from_time: Optional[dt.datetime] = None,
+        to_time: Optional[dt.datetime] = None,
+    ) -> list["FlowItem"]:
+        query = cls.select().where(cls.name == flow_name)
+        if from_time:
+            query = query.where(cls.worktime >= from_time)
+
+        if to_time:
+            query = query.where(cls.worktime <= to_time)
+
+        if filter_statuses:
+            query = query.where(cls.status.in_(filter_statuses))
+
+        worktime_list = [i.worktime for i in query]
+        cls.clear(flow_name, from_time, to_time)
+
+        return cls.create_items(flow_name, worktime_list)
+
+    @classmethod
     def is_create_next(
         cls,
         flow_name: str,
