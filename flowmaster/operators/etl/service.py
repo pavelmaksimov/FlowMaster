@@ -192,7 +192,7 @@ class ETLOperator(BaseOperator):
                 if isinstance(item, dict):
                     log_data = item
                     self.Model.update_items(self.items, **log_data)
-                    self.logger.debug("{}: {}", self.name, log_data)
+                    self.logger.info("{}: {}", self.name, log_data)
 
                 yield item
 

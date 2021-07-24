@@ -50,7 +50,7 @@ class Pool:
             is_free = self.sizes[tag][tag] < self.limits[tag]
             results.append(is_free)
             if is_free is False:
-                logger.debug(f"Pool '{tag}' full")
+                logger.debug("Pool '{}' full", tag)
 
         return all(results)
 

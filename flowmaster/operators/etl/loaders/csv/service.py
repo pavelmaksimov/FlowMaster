@@ -85,8 +85,7 @@ class CSVLoader:
 
         with self.open_file(mode="a") as f:
             f.write(self.add_data_after)
-
-        self.logger.info(f"Save data to file: {f.name}")
+        self.logger.info("Save data to file: {}", f.name)
 
     def __call__(self, context: "TransformContext", *args, **kwargs) -> None:
         if self._enter is False:
@@ -114,4 +113,4 @@ class CSVLoader:
 
         self.insert_counter += 1
 
-        self.logger.info(f"Add data to file: {f.name}")
+        self.logger.info("Add data to file: {}", f.name)

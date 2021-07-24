@@ -106,7 +106,7 @@ class ClickhouseLoader:
 
         elif self.data_cleaning_mode == self.DataCleaningMode.partition:
             p = list(set(self.partitions))
-            self.logger.info(f"Drop partitions: {p}")
+            self.logger.info("Drop partitions: {}", p)
             self.Table.drop_partitions(p)
             self.partitions.clear()
 
@@ -128,8 +128,9 @@ class ClickhouseLoader:
             rows = len(context.data[0])
             rows_before = self.StageTable.get_count_rows()
             self.logger.info(
-                "Iteration of inserting data into a staging table"
-                f"'{self.StageTable.db}.{self.StageTable.table}'"
+                "Iteration of inserting data into a staging table '{}.{}'",
+                self.StageTable.db,
+                self.StageTable.table,
             )
             self.StageTable.insert(
                 context.data, context.insert_columns, types_check=True, columnar=True
@@ -137,9 +138,9 @@ class ClickhouseLoader:
             rows_after = self.StageTable.get_count_rows()
 
             if not rows_after - rows_before == rows:
-                raise AssertionError("Not all rows could be inserted")
+                raise AssertionError("Different number of rows after inserting")
         else:
-            self.logger.info("Not data for insert")
+            self.logger.info("No data to insert")
 
     def __enter__(self) -> "ClickhouseLoader":
         stage_table_name = "{}_{}".format(
@@ -176,7 +177,9 @@ class ClickhouseLoader:
             if exc_type:
                 raise
             elif not is_identic:
-                self.logger.warning("AssertionError: Not all rows could be inserted")
+                self.logger.warning(
+                    "Different number of rows after inserting (with parallel loading this can be)"
+                )
 
         for sql in self.sql_after:
             self.client.execute(sql)

@@ -123,7 +123,7 @@ class YandexMetrikaLogsExport(ExportAbstract):
                     )
                 else:
                     sleeptime = self.sleeptime(repeat_number)
-                    self.logger.info(f"Wait report {sleeptime} sec.")
+                    self.logger.info("Wait report {} sec.", sleeptime)
                     if dry_run is True:
                         time.sleep(10)
                     yield SleepIteration(sleep=sleeptime)

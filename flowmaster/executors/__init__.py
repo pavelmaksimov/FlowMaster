@@ -296,6 +296,15 @@ class ThreadAsyncExecutor:
                     duration = 0
                     iter_begin = time.time()
 
+                    logger.info("Pool info: {}", pools.info())
+                    logger.info(
+                        "The number of new tasks in the queue: {}", task_queue.qsize()
+                    )
+                    logger.info(
+                        "Number of sleeping tasks in the queue: {}",
+                        sleeptask_queue.qsize(),
+                    )
+
                     if orders is None or num_order < orders:
                         self.fill_queue()
                         num_order += 1
