@@ -227,6 +227,8 @@ class ETLOperator(BaseOperator):
         dry_run: bool = False,
         **kwargs,
     ) -> ExecutorIterationTask:
+        # TODO: перенести ExecutorIterationTask в BaseOperator,
+        #  чтобы не добавлять его везде и как то через маг.классы итерации спрятать
         return ExecutorIterationTask(
             self.task_generator(start_period, end_period, dry_run=dry_run, **kwargs),
             expires=self.Work.expires,

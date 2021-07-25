@@ -66,7 +66,11 @@ def run(workers: int = 2, interval: int = 20, dry_run: bool = False):
     from flowmaster.operators.base.work import ordering_flow_tasks
     from flowmaster.executors import ThreadAsyncExecutor
 
-    typer.echo("Executor: ThreadAsyncExecutor\n")
+    if dry_run:
+        typer.echo(f"Dry-run mode!")
+    typer.echo("Executor: ThreadAsyncExecutor")
+    typer.echo(f"Number of workers: {workers}")
+    typer.echo(f"Scheduler interval: {interval}")
 
     order_task_func = partial(ordering_flow_tasks, dry_run=dry_run)
     executor = ThreadAsyncExecutor(ordering_task_func=order_task_func)

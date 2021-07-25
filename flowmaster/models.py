@@ -12,6 +12,7 @@ from playhouse.sqliteq import SqliteQueueDatabase
 
 from flowmaster.setttings import Settings
 from flowmaster.utils import iter_period_from_range, iter_range_datetime
+from flowmaster.utils.logging_helper import logger
 
 database = SqliteQueueDatabase(
     # http://docs.peewee-orm.com/en/latest/peewee/playhouse.html#sqliteq
@@ -78,8 +79,10 @@ class FlowItem(BaseModel):
     name = playhouse.sqlite_ext.CharField()
     worktime = DateTimeTZField()
 
+    # 'operator' move to dataschema for 'data' field
     operator = playhouse.sqlite_ext.CharField(null=True)
     status = playhouse.sqlite_ext.CharField(default=FlowStatus.add, null=False)
+    # 'etl_step' move to dataschema for 'data' field
     etl_step = playhouse.sqlite_ext.CharField(null=True)
     data = playhouse.sqlite_ext.JSONField(
         default={}, json_dumps=orjson.dumps, json_loads=orjson.loads
@@ -87,6 +90,7 @@ class FlowItem(BaseModel):
     notebook_hash = playhouse.sqlite_ext.CharField(default="", null=False)
     retries = playhouse.sqlite_ext.IntegerField(default=0)
     duration = playhouse.sqlite_ext.IntegerField(null=True)
+    # TODO: rename log to info
     log = playhouse.sqlite_ext.TextField(null=True)
     logpath = playhouse.sqlite_ext.TextField(null=True)
     expires_utc = playhouse.sqlite_ext.DateTimeField(null=True)
@@ -253,16 +257,19 @@ class FlowItem(BaseModel):
     ) -> Optional["FlowItem"]:
         if cls.is_create_next(flow_name, interval_timedelta, worktime):
             last_executed_item = cls.last_item(flow_name, for_updated=True)
-            next_execute_datetime = last_executed_item.worktime + interval_timedelta
+            next_worktime = last_executed_item.worktime + interval_timedelta
             try:
-                return cls.create(
+                item = cls.create(
                     **{
                         cls.name.name: flow_name,
-                        cls.worktime.name: next_execute_datetime,
+                        cls.worktime.name: next_worktime,
                     }
                 )
             except peewee.IntegrityError:
                 return None
+            else:
+                logger.info("Created next worktime {} for {}", next_worktime, flow_name)
+                return item
 
     @classmethod
     def create_missing_items(
@@ -275,6 +282,8 @@ class FlowItem(BaseModel):
         items = []
         for datetime_ in iter_range_datetime(start_time, end_time, interval_timedelta):
             try:
+                logger.info("Created missing worktime {} for {}", datetime_, flow_name)
+
                 item = cls.create(
                     **{cls.name.name: flow_name, cls.worktime.name: datetime_}
                 )
@@ -304,15 +313,21 @@ class FlowItem(BaseModel):
 
         first_item = cls.first_item(flow_name)
         if first_item:
-            dates = [
+            worktime_list = [
                 worktime + (interval_timedelta * delta) for delta in offset_periods
             ]
-            dates = list(filter(lambda dt_: dt_ >= first_item.worktime, dates))
+            worktime_list = list(
+                filter(lambda dt_: dt_ >= first_item.worktime, worktime_list)
+            )
 
-            cls.delete().where(cls.name == flow_name, cls.worktime.in_(dates)).execute()
+            cls.delete().where(
+                cls.name == flow_name, cls.worktime.in_(worktime_list)
+            ).execute()
 
             items = []
-            for date1, date2 in iter_period_from_range(dates, interval_timedelta):
+            for date1, date2 in iter_period_from_range(
+                worktime_list, interval_timedelta
+            ):
                 new_items = cls.create_missing_items(
                     flow_name,
                     start_time=date1,
@@ -320,6 +335,12 @@ class FlowItem(BaseModel):
                     interval_timedelta=interval_timedelta,
                 )
                 items.extend(new_items)
+
+            logger.info(
+                "Recreated items to restart flows {} for previous worktimes {}",
+                flow_name,
+                worktime_list,
+            )
 
             return items
 
@@ -337,14 +358,18 @@ class FlowItem(BaseModel):
                 .order_by(cls.updated.desc())
                 .limit(max_fatal_errors)
             )
-            return len(items) < max_fatal_errors
+            is_allow = len(items) < max_fatal_errors
+            if not is_allow:
+                logger.info("Many fatal errors, {} will not be scheduled", flow_name)
+
+            return is_allow
         else:
             return True
 
     @classmethod
     def retry_error_items(
         cls, flow_name: str, retries: int, retry_delay: int
-    ) -> list["FlowItem"]:
+    ) -> Optional[peewee.ModelSelect]:
         # http://docs.peewee-orm.com/en/latest/peewee/hacks.html?highlight=time%20now#date-math
         # A function that checks to see if retry_delay passes to restart.
         ex = peewee.fn.datetime(
@@ -358,19 +383,25 @@ class FlowItem(BaseModel):
         )
         worktimes = [i.worktime for i in items]
 
-        cls.update(
-            **{
-                cls.status.name: FlowStatus.add,
-                cls.retries.name: cls.retries + 1,
-                cls.updated.name: dt.datetime.now(),
-            }
-        ).where(cls.name == flow_name, cls.worktime.in_(worktimes)).execute()
+        if worktimes:
+            # TODO: recreate items
+            cls.update(
+                **{
+                    cls.status.name: FlowStatus.add,
+                    cls.retries.name: cls.retries + 1,
+                    cls.updated.name: dt.datetime.now(),
+                }
+            ).where(cls.name == flow_name, cls.worktime.in_(worktimes)).execute()
 
-        return (
-            cls.select()
-            .where(cls.name == flow_name, cls.worktime.in_(worktimes))
-            .order_by(cls.worktime.desc())
-        )
+            logger.info(
+                "Restart error items for {}, worktimes = {}", flow_name, worktimes
+            )
+
+            return (
+                cls.select()
+                .where(cls.name == flow_name, cls.worktime.in_(worktimes))
+                .order_by(cls.worktime.desc())
+            )
 
     @classmethod
     def get_items_for_execute(
@@ -393,6 +424,9 @@ class FlowItem(BaseModel):
         ):
             if not cls.exists(flow_name):
                 cls.create(**{cls.name.name: flow_name, cls.worktime.name: worktime})
+                logger.info(
+                    "Created first item for {}, worktime {}", flow_name, worktime
+                )
 
             if cls.create_next_execute_item(flow_name, interval_timedelta, worktime):
                 if update_stale_data:

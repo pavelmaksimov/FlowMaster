@@ -296,7 +296,7 @@ class ThreadAsyncExecutor:
                     duration = 0
                     iter_begin = time.time()
 
-                    logger.info("Pool info: {}", pools.info())
+                    logger.info("Pool info: {}", pools.info_text())
                     logger.info(
                         "The number of new tasks in the queue: {}", task_queue.qsize()
                     )

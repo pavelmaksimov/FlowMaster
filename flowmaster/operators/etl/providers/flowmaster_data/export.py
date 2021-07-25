@@ -42,7 +42,7 @@ class FlowmasterDataExport(ExportAbstract):
         yield ExportContext(
             export_kwargs={},
             columns=self.export.columns,
-            data=pools.info(),
+            data=pools.info(only_used=False),
             data_orient=DataOrient.dict,
         )
 

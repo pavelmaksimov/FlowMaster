@@ -69,9 +69,12 @@ class Pool:
         counter: Counter = self.sizes[tag]
         return counter[tag]
 
-    def info(self) -> list[dict]:
+    def info(self, only_used=True) -> list[dict]:
         data = []
         for tag, limit in self.limits.items():
+            if only_used and self[tag] == 0:
+                continue
+
             data.append(
                 {
                     "name": tag,
@@ -83,10 +86,18 @@ class Pool:
 
         return data
 
+    def info_text(self, only_used=True) -> str:
+        info_list = self.info(only_used)
+        text = ""
+        for tag in info_list:
+            text += f"\n\t{tag['name']} {tag['size']}/{tag['limit']}\n"
+
+        return text or "all pools are free"
+
     def __str__(self) -> str:
         text = ""
         for tag, limit in self.limits.items():
-            text += f"{tag}: {self[tag]}, limit={limit}\n"
+            text += f"{tag}: {self[tag]}/{limit}\n"
 
         return str(text)
 
