@@ -1,14 +1,11 @@
 from typing import TYPE_CHECKING, Iterator, Optional
 
-import pydantic
-
 from flowmaster.executors import catch_exceptions, ExecutorIterationTask
 from flowmaster.models import FlowItem, FlowStatus
 from flowmaster.operators.base.work import Work
-from flowmaster.setttings import Settings
+from flowmaster.service import iter_active_notebook_filenames, get_notebook
 from flowmaster.utils.logging_helper import Logger, getLogger
 from flowmaster.utils.logging_helper import logger
-from flowmaster.utils.yaml_helper import YamlHelper
 
 if TYPE_CHECKING:
     from flowmaster.operators.etl.service import ETLOperator
@@ -80,37 +77,30 @@ def ordering_etl_flow_tasks(
     from flowmaster.operators.etl.service import ETLOperator
     from flowmaster.operators.etl.policy import ETLNotebook
 
-    for file_name, notebook_dict in YamlHelper.iter_parse_file_from_dir(
-        Settings.NOTEBOOKS_DIR, match=".etl.flow"
-    ):
+    for name in iter_active_notebook_filenames():
+        validate, text, notebook_dict, notebook, error = get_notebook(name)
+        notebook: ETLNotebook
         if dry_run:
-            if notebook_dict.get("provider") != "fakedata":
+            if notebook.provider != "fakedata":
                 continue
 
-        try:
-            notebook = ETLNotebook(name=file_name, **notebook_dict)
-        except pydantic.ValidationError as exc:
-            logger.error("ValidationError: '{}': {}", file_name, exc)
-            continue
-        except Exception as exc:
-            logger.error("Error: '{}': {}", file_name, exc)
-            continue
+        if not validate:
+            logger.error("ValidationError: '{}': {}", name, error)
 
-        work = ETLWork(notebook)
+        flow = ETLOperator(notebook)
 
-        for start_period, end_period in work.iter_period_for_execute():
-            etl_flow = ETLOperator(notebook)
-            etl_flow_task = etl_flow(start_period, end_period, dry_run=dry_run)
+        for start_period, end_period in flow.Work.iter_period_for_execute():
+            etl_flow_task = flow(start_period, end_period, dry_run=dry_run)
 
             # The status is changed so that there is no repeated ordering of tasks.
             FlowItem.change_status(
-                etl_flow.name,
+                flow.name,
                 new_status=FlowStatus.run,
                 from_time=start_period,
                 to_time=end_period,
             )
             logger.info(
-                "Order ETL flow [{}]: {} {}", etl_flow.name, start_period, end_period
+                "Order ETL flow [{}]: {} {}", flow.name, start_period, end_period
             )
 
             yield etl_flow_task
