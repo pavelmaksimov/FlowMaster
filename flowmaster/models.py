@@ -380,6 +380,7 @@ class FlowItem(BaseModel):
             cls.status.in_(FlowStatus.error_statuses),
             cls.retries < retries,
             cls.get_utcnow() >= ex,
+            (dt.datetime.utcnow() <= cls.expires_utc | cls.expires_utc == None),
         )
         worktimes = [i.worktime for i in items]
 
