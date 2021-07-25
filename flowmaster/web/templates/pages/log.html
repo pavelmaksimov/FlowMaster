@@ -1,0 +1,17 @@
+{% extends "pages/wrapper.html" %}
+
+{% block title %}Log{% endblock %}
+
+{% block body %}
+<div class="card card-lg">
+    <div class="card-body ">
+        <div class="row g-4">
+            <div class="col-12 markdown">
+                <h1>{{ name }}</h1>
+                <p>{{ filepath or '' }}</p>
+                <pre style="background: #1f2936">{{ content }}</pre>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

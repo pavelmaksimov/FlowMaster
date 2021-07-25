@@ -1,0 +1,30 @@
+{% extends "pages/wrapper.html" %}
+
+{% block title %}Detailed{% endblock %}
+
+
+{% block title_btns %}
+<span class="d-none d-sm-inline">
+    <a href="/notebook/{{ name }}/edit" class="btn btn-outline-success">Edit</a>
+</span>
+<span class="d-none d-sm-inline">
+    <a href="/notebook/{{ name }}/tasks" class="btn btn-outline-primary">Tasks</a>
+</span>
+<span class="d-none d-sm-inline">
+    <a href="/notebook/{{ name }}/error-tasks" class="btn btn-outline-warning">Error tasks</a>
+</span>
+{% endblock %}
+
+{% block body %}
+<div class="card card-lg">
+    <div class="card-body ">
+        <div class="row g-4">
+            <div class="col-12 markdown">
+                <h1>{{ name }}</h1>
+                <p>{{ filepath }}</p>
+                <pre style="background: #1f2936">{{ text }}</pre>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

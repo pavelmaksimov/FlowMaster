@@ -1,0 +1,196 @@
+{% extends "pages/wrapper.html" %}
+
+{% block title %}Notebooks{% endblock %}
+
+{% block title_btns %}
+{% if notebooks %}
+<span class="d-none d-sm-inline">
+    <a href="/notebook/create" class="btn btn-primary">Create notebook</a>
+</span>
+{% endif %}
+{% endblock %}
+
+{% block body %}
+{% if notebooks %}
+<div class="row row-deck row-cards">
+    <div class="col-12">
+        <div class="card">
+            <div class="table-responsive">
+                <table class="table card-table table-vcenter text-nowrap datatable">
+                    <thead>
+                    <tr>
+                        <th></th>
+                        <th>Name</th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+
+                    {% for item in notebooks %}
+
+                    <tr>
+                        <td>
+                            {% if item.is_archive %}
+                            <span class="badge bg-secondary me-1"></span>
+                            {% else %}
+                            <span class="badge bg-success me-1"></span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a class="{% if item.is_archive %}text-secondary{% else %}text-light{% endif %}"
+                               href="/notebook/{{ item.name }}/detailed">
+                                <!-- Download SVG icon from http://tabler-icons.io/i/ban -->
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24"
+                                     viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                                     stroke-linecap="round" stroke-linejoin="round">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                    <path d="M4 21v-4a3 3 0 0 1 3 -3h5"></path>
+                                    <path d="M9 17l3 -3l-3 -3"></path>
+                                    <path d="M14 3v4a1 1 0 0 0 1 1h4"></path>
+                                    <path d="M5 11v-6a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2h-9.5"></path>
+                                </svg>
+
+                                {{ item.name }}
+                            </a>
+                        </td>
+                        <td>
+                            <div class="btn-list flex-nowrap">
+                                {% if not item.validate %}
+                                <a href="/notebook/{{ item.name }}/edit" class="btn btn-danger">
+                                    <!-- Download SVG icon from http://tabler-icons.io/i/ban -->
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24"
+                                         viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                                         stroke-linecap="round" stroke-linejoin="round">
+                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                        <circle cx="12" cy="12" r="9"></circle>
+                                        <line x1="5.7" y1="5.7" x2="18.3" y2="18.3"></line>
+                                    </svg>
+                                    Invalid
+                                </a>
+                                {% endif %}
+
+                                {% if item.count_errors %}
+                                <a href="/notebook/{{ item.name }}/error-tasks" class="btn btn-warning"
+                                   title="Tasks with errors">
+                                    Error tasks ({{ item.count_errors }})
+                                </a>
+                                {% endif %}
+
+                                {% if item.count_fatal_errors %}
+                                <a href="/notebook/{{ item.name }}/fatal-error-tasks" class="btn btn-danger"
+                                   title="Error requiring correction by the user">
+                                    Fatal error tasks ({{ item.count_errors }})
+                                </a>
+                                {% endif %}
+                            </div>
+                        </td>
+                        <td>
+                            <div class="btn-list flex-nowrap justify-content-end">
+                                {% if item.count %}
+                                <a href="/notebook/{{ item.name }}/tasks" class="btn btn-outline-light text-yellow"
+                                   title="All tasks">
+                                    <!-- Download SVG icon from http://tabler-icons.io/i/list -->
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24"
+                                         viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                                         stroke-linecap="round" stroke-linejoin="round">
+                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                        <line x1="9" y1="6" x2="20" y2="6"></line>
+                                        <line x1="9" y1="12" x2="20" y2="12"></line>
+                                        <line x1="9" y1="18" x2="20" y2="18"></line>
+                                        <line x1="5" y1="6" x2="5" y2="6.01"></line>
+                                        <line x1="5" y1="12" x2="5" y2="12.01"></line>
+                                        <line x1="5" y1="18" x2="5" y2="18.01"></line>
+                                    </svg>
+
+                                    {{ item.count }}
+                                </a>
+                                {% endif %}
+
+                                <a href="/notebook/{{ item.name }}/edit" class="btn btn-icon btn-outline-light"
+                                   title="Edit notebook file">
+                                    <!-- Download SVG icon from http://tabler-icons.io/i/edit -->
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon text-info" width="24"
+                                         height="24"
+                                         viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                                         stroke-linecap="round" stroke-linejoin="round">
+                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                        <path d="M9 7h-3a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-3"></path>
+                                        <path d="M9 15h3l8.5 -8.5a1.5 1.5 0 0 0 -3 -3l-8.5 8.5v3"></path>
+                                        <line x1="16" y1="5" x2="19" y2="8"></line>
+                                    </svg>
+                                </a>
+
+                                {% if item.is_archive %}
+                                <a href="/notebook/{{ item.name }}/unarchive" class="btn btn-icon btn-outline-light"
+                                   title="Activate">
+                                    <!-- Download SVG icon from http://tabler-icons.io/i/player-play -->
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon text-success" width="24"
+                                         height="24"
+                                         viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                                         stroke-linecap="round" stroke-linejoin="round">
+                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                        <path d="M7 4v16l13 -8z"></path>
+                                    </svg>
+                                </a>
+                                {% else %}
+                                <a href="/notebook/{{ item.name }}/archive" class="btn btn-icon btn-outline-light"
+                                   title="Put a stop to">
+                                    <!-- Download SVG icon from http://tabler-icons.io/i/player-pause -->
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon text-warning" width="24"
+                                         height="24"
+                                         viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                                         stroke-linecap="round" stroke-linejoin="round">
+                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                        <rect x="6" y="5" width="4" height="14" rx="1"></rect>
+                                        <rect x="14" y="5" width="4" height="14" rx="1"></rect>
+                                    </svg>
+                                </a>
+                                {% endif %}
+
+                                <a href="/notebook/{{ item.name }}/delete" class="btn btn-icon btn-outline-light"
+                                   title="Delete notebook file and tasks">
+                                    <!-- Download SVG icon from http://tabler-icons.io/i/x -->
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon text-danger" width="24"
+                                         height="24"
+                                         viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                                         stroke-linecap="round" stroke-linejoin="round">
+                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                                    </svg>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="container-xl d-flex flex-column justify-content-center">
+    <div class="empty">
+        <p class="empty-title">No notebooks found</p>
+        <p class="empty-subtitle text-muted">
+            You haven't created any notebooks yet.
+        </p>
+        <div class="empty-action">
+            <a href="/notebook/create" class="btn btn-primary">
+                <!-- Download SVG icon from http://tabler-icons.io/i/plus -->
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24"
+                     stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+                Add your first notebook
+            </a>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

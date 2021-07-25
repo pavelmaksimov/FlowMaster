@@ -1,0 +1,56 @@
+{% extends "pages/wrapper.html" %}
+
+{% block title %}Create notebook{% endblock %}
+
+{% block body %}
+<div class="row row-cards">
+    <div class="col-12">
+        <form action="" method="post" class="card">
+            <div class="card-header">
+                <h1 class="card-title"></h1>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-xl-12">
+                        <div class="mb-3">
+                            <label class="form-label">Name</label>
+                            <div class="input-group input-group-flat">
+                                <input name="name" type="text" autocomplete="off" value="{{ name }}" required
+                                       class="form-control text-end pe-0 {% if name_error %}is-invalid{% endif %}">
+                                <span class="input-group-text">.etl.yaml</span>
+                            </div>
+
+                            {% if name_error %}
+                            <h3 class="text-danger">Error</h3>
+                            <pre class="text-danger" style="background-color: #0d1117">{{ name_error }}</pre>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Policy</label>
+                            <pre style="background-color: #232e3c; padding: 0; border: none">
+                                <textarea class="form-control {% if text_error %}is-invalid{% endif %}" name="text"
+                                          wrap="soft" rows="{{ rows }}" required
+                                          style="background-color: #0d1117">{{ text }}</textarea>
+
+                            </pre>
+
+                            {% if text_error %}
+                            <h3 class="text-danger">Error</h3>
+                            <pre class="text-danger" style="background-color: #0d1117">{{ text_error }}</pre>
+                            {% endif %}
+                        </div>
+
+                    </div>
+
+                </div>
+                <div class="card-footer text-end">
+                    <div class="d-flex">
+                        <button type="submit" class="btn btn-primary ms-auto">Save</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

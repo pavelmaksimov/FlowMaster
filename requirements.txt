@@ -4,22 +4,32 @@
 #
 #    pip-compile requirements.in
 #
+aiofiles==0.7.0
+    # via -r requirements.in
 certifi==2020.12.5
     # via requests
 chardet==4.0.0
     # via requests
 click==7.1.2
-    # via typer
+    # via
+    #   typer
+    #   uvicorn
 clickhouse-driver==0.2.0
     # via clickhousepy
 clickhousepy==2021.3.10
     # via -r requirements.in
 colorama==0.4.4
-    # via loguru
+    # via
+    #   loguru
+    #   uvicorn
 datagun==0.1.0
     # via -r requirements.in
 faker==8.1.1
     # via -r requirements.in
+fastapi==0.65.0
+    # via -r requirements.in
+h11==0.12.0
+    # via uvicorn
 idna==2.10
     # via requests
 jinja2==2.11.3
@@ -38,25 +48,37 @@ peewee==3.14.4
 pendulum==2.1.1
     # via -r requirements.in
 pydantic==1.8.1
-    # via -r requirements.in
+    # via
+    #   -r requirements.in
+    #   fastapi
 python-dateutil==2.8.1
     # via
     #   datagun
     #   faker
     #   pendulum
+python-dotenv==0.18.0
+    # via uvicorn
+python-multipart==0.0.5
+    # via -r requirements.in
 pytz==2021.1
     # via clickhouse-driver
 pytzdata==2020.1
     # via pendulum
 pyyaml==5.4.1
-    # via -r requirements.in
+    # via
+    #   -r requirements.in
+    #   uvicorn
 requests==2.25.1
     # via
     #   -r requirements.in
     #   tapi-wrapper2
     #   tapi-yandex-direct
 six==1.15.0
-    # via python-dateutil
+    # via
+    #   python-dateutil
+    #   python-multipart
+starlette==0.14.2
+    # via fastapi
 tapi-wrapper2==0.1.1
     # via
     #   tapi-yandex-direct
@@ -75,5 +97,11 @@ tzlocal==2.1
     # via clickhouse-driver
 urllib3==1.26.4
     # via requests
+uvicorn[standard]==0.13.0
+    # via -r requirements.in
+watchgod==0.6
+    # via uvicorn
+websockets==8.1
+    # via uvicorn
 win32-setctime==1.0.3
     # via loguru

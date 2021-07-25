@@ -1,0 +1,93 @@
+{% extends "pages/wrapper.html" %}
+
+{% block title %}Tasks{% endblock %}
+
+{% block body %}
+<div class="row row-deck row-cards">
+    <div class="col-12">
+        <div class="card">
+            <div class="table-responsive">
+                <table class="table card-table table-vcenter text-nowrap datatable">
+                    <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Worktime</th>
+                        <th>Status</th>
+                        <th>Duration</th>
+                        <th>Retries</th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+
+                    {% for item in tasks %}
+                    <tr>
+                        <td>{{ item.name }}</td>
+                        <td>{{ item.worktime.strftime('%Y-%m-%d %H:%M').replace(' 00:00', '') }} {{
+                            item.worktime.tzname() }}
+                        </td>
+                        <td>{{ item.status }}</td>
+                        <td>{{ item.duration }}</td>
+                        <td>{{ item.retries }}</td>
+                        <td>
+                            <div class="btn-list flex-nowrap">
+                                <a href="#" class="btn btn-light" data-bs-toggle="modal"
+                                   data-bs-target="#taskdata-{{loop.index}}">
+                                    Context
+                                </a>
+                                <a href="/notebook/{{ item.name }}/task/{{ item.worktime_for_url }}/logs"
+                                   class="btn btn-light">
+                                    Log
+                                </a>
+                                <a href="/notebook/{{ item.name }}/task/{{ item.worktime_for_url }}/restart"
+                                   class="btn btn-light">
+                                    Restart
+                                </a>
+                            </div>
+                    </tr>
+                    {% endfor %}
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+
+{% for item in tasks %}
+<div class="modal modal-blur fade" id="taskdata-{{loop.index}}" tabindex="-1" style="display: none;" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Context</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                {{ item.data }}
+                <br>
+                <br>
+                Other data:
+                <br>
+                <br>
+                Started UTC: {{ item.started_utc }}
+                <br>
+                Finished UTC: {{ item.finished_utc }}
+                <br>
+                Created: {{ item.created }}
+                <br>
+                Updated: {{ item.updated }}
+                <br>
+                Error info: {{ item.log }}
+                <br>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn me-auto" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+{% endblock %}

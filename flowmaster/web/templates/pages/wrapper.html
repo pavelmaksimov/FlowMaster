@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-xl">
+    <!-- Page title -->
+    <div class="page-header d-print-none">
+        <div class="row align-items-center">
+            <div class="col">
+                <!-- Page pre-title -->
+                <div class="page-pretitle">
+                    {% block pretitle %}{% endblock %}
+                </div>
+                <h2 class="page-title">
+                    {% block title %}{% endblock %}
+                </h2>
+            </div>
+            <!-- Page title actions -->
+            <div class="col-auto ms-auto d-print-none">
+                <div class="btn-list">
+                    {% block title_btns %}{% endblock %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="page-body">
+    <div class="container-xl">
+        {% block body %}{% endblock %}
+    </div>
+</div>
+{% endblock %}

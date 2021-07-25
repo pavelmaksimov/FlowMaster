@@ -1,0 +1,41 @@
+{% extends "pages/wrapper.html" %}
+
+{% block title %}Edit notebook{% endblock %}
+
+{% block body %}
+<div class="row row-cards">
+    <div class="col-12">
+        <form action="" method="post" class="card">
+            <div class="card-header">
+                <h1 class="card-title">{{ name }}</h1>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-xl-12">
+                        <div>{{ filepath }}</div>
+                        <div class="mb-3">
+                            <pre style="background-color: #232e3c; padding: 0; border: none">
+                                <textarea class="form-control {% if error %}is-invalid{% endif %}" name="text"
+                                          rows="{{ rows }}" placeholder="Content..."
+                                          wrap="soft" style="background-color: #0d1117">{{ text }}</textarea>
+
+                            </pre>
+                            {% if error %}
+                            <h3 class="text-danger">Error</h3>
+                            <pre class="text-danger" style="background-color: #0d1117">{{ error }}</pre>
+                            {% endif %}
+                        </div>
+
+                    </div>
+
+                </div>
+                <div class="card-footer text-end">
+                    <div class="d-flex">
+                        <button type="submit" class="btn btn-primary ms-auto">Save</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

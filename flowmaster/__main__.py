@@ -1,12 +1,15 @@
 import pathlib
 from functools import partial
+from multiprocessing import Process
 
 import typer
+import uvicorn
 
 import flowmaster.cli.db
 import flowmaster.cli.item
 import flowmaster.cli.notebook
 from flowmaster.setttings import Settings
+from flowmaster.web.views import webapp
 
 app = typer.Typer()
 app.add_typer(flowmaster.cli.notebook.app, name="notebook")
@@ -62,6 +65,14 @@ def run_local(interval: int = 20, dry_run: bool = False):
 @app.command()
 def run(workers: int = 2, interval: int = 20, dry_run: bool = False):
     prepare_for_run(dry_run=dry_run)
+
+    webserver_thread = Process(
+        target=uvicorn.run,
+        name="Flowmaster_web",
+        kwargs=dict(app=webapp, host="0.0.0.0", port=Settings.WEBUI_PORT),
+    )
+    webserver_thread.start()
+    typer.echo(f"WEB UI: 0.0.0.0:{Settings.WEBUI_PORT}\n")
 
     from flowmaster.operators.base.work import ordering_flow_tasks
     from flowmaster.executors import ThreadAsyncExecutor

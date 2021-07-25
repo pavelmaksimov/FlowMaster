@@ -9,6 +9,7 @@ class Settings:
     else:
         APP_HOME = Path.home() / "FlowMaster"
 
+    WEBUI_PORT = os.environ.get("FLOWMASTER_PORT", 8822)
     FILE_STORAGE_DIR = APP_HOME / "storage"
     NOTEBOOKS_DIR = APP_HOME / "notebooks"
     ARCHIVE_NOTEBOOKS_DIR = NOTEBOOKS_DIR / "__archive__"

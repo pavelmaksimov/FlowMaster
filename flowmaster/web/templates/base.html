@@ -1,0 +1,31 @@
+<!doctype html>
+<!--
+* FlowMaster - ETL flow framework based on Yaml configs in Python.
+* @link https://github.com/pavelmaksimov/FlowMaster
+* Copyright 2021 The FlowMaster - Pavel Maksimov
+* License GNU General Public License v3.0 (https://github.com/pavelmaksimov/FlowMaster/blob/master/LICENSE)
+-->
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+    <meta http-equiv="X-UA-Compatible" content="ie=edge"/>
+    <link rel="stylesheet" href="https://unpkg.com/@tabler/core@latest/dist/css/tabler.min.css">
+    <script src="https://unpkg.com/@tabler/core@latest/dist/js/tabler.min.js"></script>
+    {% include 'includes/global-style.html' %}
+    {% block head %}
+    <title>{% block title %}{% endblock %} - FlowMaster</title>
+    {% endblock %}
+</head>
+<body class="antialiased theme-dark">
+<div class="wrapper">
+    {% include 'header.html' %}
+    {% include 'navbar.html' %}
+    <div class="page-wrapper">
+        {% block content %}{% endblock %}
+        {% include 'footer.html' %}
+    </div>
+</div>
+{% block scripts %}{% endblock %}
+</body>
+</html>
