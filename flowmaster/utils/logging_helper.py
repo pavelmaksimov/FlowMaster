@@ -8,7 +8,7 @@ from loguru._logger import Logger
 from flowmaster.setttings import Settings
 
 
-def create_logfile_path(filename: str, relative_path: str = None) -> Path:
+def create_logfile(filename: str, relative_path: str = None) -> Path:
     Path.mkdir(Settings.LOGS_DIR, exist_ok=True)
     path = Settings.LOGS_DIR
 
@@ -31,7 +31,7 @@ def getLogger() -> Logger:
 
 
 logger.add(
-    create_logfile_path("{time:%Y-%m-%d}.log", "app"),
+    create_logfile("{time:%Y-%m-%d}.log", "app"),
     level="INFO",
     rotation="100 MB",
     retention="30 days",
@@ -42,7 +42,7 @@ logger.add(
     encoding="utf8",
 )
 logger.add(
-    create_logfile_path("errors.log", "app"),
+    create_logfile("errors.log", "app"),
     level="ERROR",
     rotation="20 MB",
     enqueue=True,

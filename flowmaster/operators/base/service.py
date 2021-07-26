@@ -1,7 +1,7 @@
 from flowmaster.models import FlowItem, FlowStatus
 from flowmaster.operators.base.policy import Notebook
 from flowmaster.operators.base.work import Work
-from flowmaster.utils.logging_helper import getLogger, create_logfile_path
+from flowmaster.utils.logging_helper import getLogger, create_logfile
 from flowmaster.utils.notifications import send_codex_telegram_message
 
 
@@ -17,7 +17,7 @@ class BaseOperator:
     def get_logfile_path(self):
         worktime = self.Work.current_worktime.strftime("%Y-%m-%dT%H:%M:%S")
         worktime = worktime.replace("T00:00:00", "")
-        return create_logfile_path(f"{worktime}.log", self.name)
+        return create_logfile(f"{worktime}.log", self.name)
 
     def update_logger(self, dry_run):
         logfile_path = self.get_logfile_path()
@@ -31,7 +31,7 @@ class BaseOperator:
             retention=self.Work.interval_timedelta * 90,
             encoding="utf8",
         )
-        error_logfile_path = create_logfile_path(f"errors.log", self.name)
+        error_logfile_path = create_logfile(f"errors.log", self.name)
         self.logger.add(
             error_logfile_path,
             level="ERROR",

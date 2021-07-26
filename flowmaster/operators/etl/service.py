@@ -17,7 +17,7 @@ from flowmaster.operators.etl.policy import ETLNotebook
 from flowmaster.operators.etl.providers import provider_classes
 from flowmaster.operators.etl.work import ETLWork
 from flowmaster.utils import iter_range_datetime
-from flowmaster.utils.logging_helper import create_logfile_path
+from flowmaster.utils.logging_helper import create_logfile
 
 
 class ETLOperator(BaseOperator):
@@ -154,7 +154,7 @@ class ETLOperator(BaseOperator):
         period_text = self._get_period_text(
             self.operator_context.start_period, self.operator_context.end_period
         )
-        return create_logfile_path(f"{period_text}.log", self.name)
+        return create_logfile(f"{period_text}.log", self.name)
 
     def task_generator(
         self,
