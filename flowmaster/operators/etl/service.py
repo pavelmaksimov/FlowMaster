@@ -168,7 +168,7 @@ class ETLOperator(BaseOperator):
         self.operator_context.start_period = start_period
         self.operator_context.end_period = end_period
         self.Load.update_context(self.operator_context)
-        self.update_logger(dry_run)
+        self.add_logger_file(dry_run)
 
         period_text = self._get_period_text(start_period, end_period)
         datetime_list = iter_range_datetime(

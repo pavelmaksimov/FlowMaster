@@ -19,7 +19,7 @@ class BaseOperator:
         worktime = worktime.replace("T00:00:00", "")
         return create_logfile(f"{worktime}.log", self.name)
 
-    def update_logger(self, dry_run):
+    def add_logger_file(self, dry_run):
         logfile_path = self.get_logfile_path()
         level = "DEBUG" if dry_run else "INFO"
         self.logger.add(
