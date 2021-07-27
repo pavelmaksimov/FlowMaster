@@ -8,9 +8,10 @@ from flowmaster.operators.etl.loaders.csv.policy import (
 )
 from flowmaster.operators.etl.loaders.csv.service import CSVLoader
 from flowmaster.operators.etl.policy import ETLNotebook
-from flowmaster.operators.etl.providers import CSVProvider
-from flowmaster.operators.etl.providers import FlowmasterDataProvider
+from flowmaster.operators.etl.providers.criteo import CriteoProvider
+from flowmaster.operators.etl.providers.csv import CSVProvider
 from flowmaster.operators.etl.providers.csv.policy import CSVExportPolicy
+from flowmaster.operators.etl.providers.flowmaster_data import FlowmasterDataProvider
 from flowmaster.operators.etl.providers.sqlite import SQLiteProvider
 from flowmaster.operators.etl.providers.sqlite.policy import SQLiteExportPolicy
 
@@ -199,6 +200,44 @@ def flowmasterdata_items_to_csv_notebook(tmp_path, work_policy, flowmasterdata_i
         storage=CSVLoader.name,
         work=work_policy,
         export=flowmasterdata_items_export_policy,
+        transform=csv_transform_policy,
+        load=csv_load_policy,
+    )
+
+
+@pytest.fixture()
+def criteo_export_policy():
+    return CriteoProvider.policy_model(
+        api_version="202104",
+        credentials=CriteoProvider.policy_model.CredentialsPolicy(
+            client_id="client_id", client_secret="client_secret"
+        ),
+        resource="stats",
+        params=CriteoProvider.policy_model.StatsV202104ParamsPolicy(
+            dimensions=["Day"],
+            metrics=["Clicks"],
+            currency="RUB",
+            timezone="Europe/Moscow",
+        ),
+        chunk_size=100,
+        concurrency=1,
+    )
+
+
+@pytest.fixture()
+def criteo_to_csv_notebook(
+    tmp_path,
+    work_policy,
+    criteo_export_policy,
+    csv_transform_policy,
+    csv_load_policy
+):
+    return ETLNotebook(
+        name="criteo_to_csv",
+        provider=CriteoProvider.name,
+        storage=CSVLoader.name,
+        work=work_policy,
+        export=criteo_export_policy,
         transform=csv_transform_policy,
         load=csv_load_policy,
     )

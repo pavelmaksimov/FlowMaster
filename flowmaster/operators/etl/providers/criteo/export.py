@@ -1,14 +1,19 @@
 import datetime as dt
-import hashlib
 from typing import TYPE_CHECKING, Iterator, Union
 
-from flowmaster.exceptions import AuthError
+import criteo_marketing_transition as cm
+import orjson
+from criteo_marketing_transition.rest import ApiException
+from urllib3.response import HTTPResponse
+
+from flowmaster.exceptions import AuthError, ForbiddenError
 from flowmaster.executors import SleepIteration
 from flowmaster.operators.etl.dataschema import ExportContext
 from flowmaster.operators.etl.providers.abstract import ExportAbstract
 from flowmaster.operators.etl.providers.criteo.policy import (
     CriteoExportPolicy as ExportPolicy,
 )
+from flowmaster.utils import chunker
 
 if TYPE_CHECKING:
     from flowmaster.operators.etl.policy import ETLNotebook
@@ -17,85 +22,108 @@ if TYPE_CHECKING:
 class CriteoExport(ExportAbstract):
     def __init__(self, notebook: "ETLNotebook", *args, **kwargs):
         self.export: ExportPolicy = notebook.export
-        self.client = Criteo(
-            wait_report=False,
-            processing_mode="offline",
-            retry_if_not_enough_units=False,
-            retry_if_exceeded_limit=False,
-            retries_if_server_error=0,
-            **self.export.credentials.dict(exclude_none=True),
-            **self.export.headers.dict(exclude_none=True),
+        configuration = cm.Configuration(
+            username=self.export.credentials.client_id,
+            password=self.export.credentials.client_secret,
         )
+
+        self.client = cm.ApiClient(configuration)
+        self.analytics_api = cm.AnalyticsApi(self.client)
         super(CriteoExport, self).__init__(notebook, *args, **kwargs)
-
-    def exclude_none(self, body: dict) -> dict:
-        new_body = {}
-        for key, value in body.items():
-            if isinstance(value, dict):
-                new_body[key] = self.exclude_none(value)
-            elif value is not None:
-                new_body[key] = value
-
-        return new_body
-
-    def create_report_name(self, body):
-        return hashlib.md5(str((body, self.export.headers)).encode()).hexdigest()
-
-    def collect_params(
-        self, start_period: dt.datetime, end_period: dt.datetime, **kwargs
-    ) -> dict:
-        body = self.export.body.dict(exclude_none=True)
-        body = self.exclude_none(body)
-
-        if self.export.resource == "reports":
-            body["params"]["Format"] = "TSV"
-            body["params"]["ReportName"] = self.create_report_name(body)
-
-            if body["params"]["DateRangeType"] == "CUSTOM_DATE":
-                body["params"]["SelectionCriteria"].update(
-                    {
-                        "DateFrom": start_period.date().isoformat(),
-                        "DateTo": end_period.date().isoformat(),
-                    }
-                )
-
-        return super().collect_params(start_period, end_period, **body)
 
     def __call__(
         self, start_period: dt.datetime, end_period: dt.datetime, **kwargs
     ) -> Iterator[Union[ExportContext, SleepIteration]]:
+        from flowmaster.operators.etl import DataOrient
+
         self.logger.info("Exportation data")
 
+        columns = self.export.params.dimensions + self.export.params.metrics
+        stats_query_message = cm.StatisticsReportQueryMessage(
+            dimensions=self.export.params.dimensions,
+            metrics=self.export.params.metrics,
+            start_date=start_period.date().isoformat(),
+            end_date=end_period.date().isoformat(),
+            currency=self.export.params.currency,
+            format="json",
+        )
 
-            except exceptions.CriteoTokenError as exc:
-                raise AuthError(exc)
+        iter_num = 0
+        api_error_retries = 0
+        while True:
+            self.logger.info("Iter export data")
+            iter_num += 1
+            try:
+                [
+                    response_content,
+                    http_code,
+                    response_headers,
+                ] = self.analytics_api.get_adset_report_with_http_info(
+                    statistics_report_query_message=stats_query_message,
+                    async_req=True,
+                    _preload_content=False,
+                ).get()
 
-            except exceptions.CriteoNotEnoughUnitsError:
-                yield SleepIteration(sleep=60 * 5)
-                continue
+            except ApiException as exc:
+                if (
+                    exc.status == 401
+                    or exc.body.get("error") == "credentials_no_longer_supported"
+                ):
+                    raise AuthError(exc)
 
-            except exceptions.CriteoRequestsLimitError:
-                yield SleepIteration(sleep=10)
-                continue
+                if exc.status == 403:
+                    raise ForbiddenError(exc)
 
-            except exceptions.CriteoClientError as exc:
-                if api_error_retries and exc.error_code in (52, 1000, 1001, 1002):
-                    api_error_retries -= 1
-                    yield SleepIteration(sleep=10)
-                    continue
+                if exc.status == 429:
+                    if api_error_retries:
+                        api_error_retries -= 1
+                        # https://developers.criteo.com/marketing-solutions/docs/requesting-a-report
+                        yield SleepIteration(sleep=60)
+                        continue
+
+                if exc.status in (500, 503):
+                    # https://developers.criteo.com/marketing-solutions/docs/how-to-handle-api-errors
+                    if api_error_retries:
+                        api_error_retries -= 1
+                        yield SleepIteration(sleep=iter_num * 20)
+                        continue
+
                 raise
+            else:
+                if http_code == 200:
+                    if response_content:
+                        response_content: HTTPResponse
+                        content: str = response_content.read().decode("utf-8-sig")
+                        data = orjson.loads(content)
 
-            except ConnectionError:
-                if api_error_retries:
-                    api_error_retries -= 1
-                    yield SleepIteration(sleep=10)
-                raise
+                        if self.export.chunk_size:
+                            for chunk in chunker(
+                                data["Rows"],
+                                size=self.export.chunk_size,
+                            ):
+                                yield ExportContext(
+                                    columns=columns,
+                                    data=chunk,
+                                    data_orient=DataOrient.dict,
+                                    response_kwargs={"headers": response_headers},
+                                )
+                        else:
+                            yield ExportContext(
+                                columns=columns,
+                                data=data["Rows"],
+                                data_orient=DataOrient.dict,
+                                response_kwargs={"headers": response_headers},
+                            )
+                    else:
+                        self.logger.warning("Didn't receive data")
 
-                    yield ExportContext(
-                        export_kwargs=result.request_kwargs,
-                        columns=result.columns,
-                        data=data,
-                        data_orient=DataOrient.values,
+                    break
+                else:
+                    if api_error_retries:
+                        api_error_retries -= 1
+                        yield SleepIteration(sleep=10)
+
+                    raise Exception(
+                        f"CriteoError: code={http_code}, headers={response_headers}\n"
+                        f"response_content={response_content}"
                     )
-
-                    self.logger.info("Iter export data")

@@ -17,6 +17,7 @@ provider: Literal[
     "csv",
     "sqlite",
     "flowmaster",
+    "criteo",
 ]
 # Хранилище для вставки данных.
 storage: Literal["clickhouse", "csv"]
@@ -106,6 +107,7 @@ transform:
 - [csv](provider-csv.md)
 - [sqlite](provider-sqlite.md)
 - [flowmaster](provider-flowmasterdata.md)
+- [criteo](provider-criteo.md)
 
 
 ### Политики загрузчика в хранилище (load)

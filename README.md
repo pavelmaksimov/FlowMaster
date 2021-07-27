@@ -22,6 +22,7 @@ At the moment there are connectors to sources
 - Yandex Metrika Logs API
 - Yandex Direct API
 - Yandex Direct Report API
+- Criteo
 
 Storages
 - Save to csv file
