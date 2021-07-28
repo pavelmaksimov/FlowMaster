@@ -78,6 +78,7 @@ requests==2.25.1
     #   -r requirements.in
     #   tapi-wrapper2
     #   tapi-yandex-direct
+    #   tapi-yandex-metrika
 six==1.15.0
     # via
     #   criteo-marketing-transition
@@ -85,13 +86,13 @@ six==1.15.0
     #   python-multipart
 starlette==0.14.2
     # via fastapi
-tapi-wrapper2==0.1.1
+tapi-wrapper2==0.1.2
     # via
     #   tapi-yandex-direct
     #   tapi-yandex-metrika
-tapi-yandex-direct==2021.5.3
+tapi-yandex-direct==2021.5.29
     # via -r requirements.in
-tapi-yandex-metrika==2021.2.21
+tapi-yandex-metrika==2021.5.28
     # via -r requirements.in
 text-unidecode==1.3
     # via faker
