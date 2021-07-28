@@ -1,10 +1,11 @@
 #!/usr/bin/env python
-import os
+import pathlib
 import re
+from os.path import abspath
 
 from setuptools import setup, find_packages
 
-with open("README.md", "r") as fh:
+with open(pathlib.Path(abspath(__file__)).parent / "README.md", "r") as fh:
     readme = fh.read()
 
 package = "flowmaster"
@@ -14,7 +15,9 @@ def get_version(package):
     """
     Return package version as listed in `__version__` in `init.py`.
     """
-    init_py = open(os.path.join(package, "__init__.py")).read()
+    init_py = open(
+        pathlib.Path(abspath(__file__)).parent / package / "__init__.py"
+    ).read()
     return re.search("^__version__ = ['\"]([^'\"]+)['\"]", init_py, re.MULTILINE).group(
         1
     )
