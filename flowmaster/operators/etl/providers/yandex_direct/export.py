@@ -72,7 +72,7 @@ class YandexDirectExport(ExportAbstract):
         result = None
         page_iterator = None
         api_error_retries = 10
-        while api_error_retries:
+        while True:
             try:
                 if result is None:
                     body = self.collect_params(start_period, end_period)
@@ -110,6 +110,7 @@ class YandexDirectExport(ExportAbstract):
                 if api_error_retries:
                     api_error_retries -= 1
                     yield SleepIteration(sleep=10)
+                    continue
                 raise
 
             except StopIteration:

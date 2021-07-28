@@ -51,6 +51,7 @@ setup(
         "fastapi<=0.65",
         "aiofiles<0.8.0",
         "python-multipart<=0.0.5",
+        "criteo-marketing-transition==1.0.3",
     ],
     license="GPLv3",
     keywords="etl,flowmaster,flow,airflow,prefect,schedule,scheduler,tasker",
