@@ -14,7 +14,7 @@ class ClickhouseLoadPolicy(BasePolicy):
         user: str
         host: str
         port: int = 9000
-        password: Optional[Union[str, int]] = None
+        password: Optional[str] = None
 
     class TableSchemaPolicy(BaseModel):
         db: str

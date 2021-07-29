@@ -37,6 +37,7 @@ class ClickhouseLoader:
         self.sql_after = notebook.load.sql_after
         self.sql_before = notebook.load.sql_before
 
+        self.client = clickhousepy.Client(**self.credentials)
         self.DB = self.client.DB(self.create_table_config["db"])
         self.Table = self.client.Table(
             self.create_table_config["db"], self.create_table_config["table"]
@@ -47,11 +48,6 @@ class ClickhouseLoader:
     def update_context(self, model: "ETLContext") -> None:
         model.db = self.Table.db
         model.table = self.Table.table
-
-    @property
-    def client(self) -> clickhousepy.Client:
-        self.credentials["password"] = str(self.credentials["password"])
-        return clickhousepy.Client(**self.credentials)
 
     def validate_insert_columns(self, columns, **kwargs) -> None:
         pass
