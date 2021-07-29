@@ -282,13 +282,13 @@ class FlowItem(BaseModel):
         items = []
         for datetime_ in iter_range_datetime(start_time, end_time, interval_timedelta):
             try:
-                logger.info("Created missing worktime {} for {}", datetime_, flow_name)
-
                 item = cls.create(
                     **{cls.name.name: flow_name, cls.worktime.name: datetime_}
                 )
             except peewee.IntegrityError:
                 item = cls.get(cls.name == flow_name, cls.worktime == datetime_)
+            else:
+                logger.info("Created missing worktime {} for {}", datetime_, flow_name)
 
             items.append(item)
 
