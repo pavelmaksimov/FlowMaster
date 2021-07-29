@@ -8,3 +8,7 @@ class FatalError(FlowmasterExeception):
 
 class AuthError(FatalError):
     ...
+
+
+class ForbiddenError(AuthError):
+    ...

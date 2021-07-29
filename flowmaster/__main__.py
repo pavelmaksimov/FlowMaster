@@ -63,16 +63,16 @@ def run_local(interval: int = 20, dry_run: bool = False):
 
 
 @app.command()
-def run(workers: int = 2, interval: int = 20, dry_run: bool = False):
+def run(workers: int = 2, interval: int = 20, dry_run: bool = False, port=Settings.WEBUI_PORT):
     prepare_for_run(dry_run=dry_run)
 
     webserver_thread = Process(
         target=uvicorn.run,
         name="Flowmaster_web",
-        kwargs=dict(app=webapp, host="0.0.0.0", port=Settings.WEBUI_PORT),
+        kwargs=dict(app=webapp, host="0.0.0.0", port=port),
     )
     webserver_thread.start()
-    typer.echo(f"WEB UI: 0.0.0.0:{Settings.WEBUI_PORT}\n")
+    typer.echo(f"WEB UI: 0.0.0.0:{port}\n")
 
     from flowmaster.operators.base.work import ordering_flow_tasks
     from flowmaster.executors import ThreadAsyncExecutor

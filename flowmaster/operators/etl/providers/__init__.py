@@ -1,6 +1,7 @@
 import importlib
 
 from flowmaster.operators.etl.providers.abstract import ProviderAbstract
+from flowmaster.operators.etl.providers.criteo import CriteoProvider
 from flowmaster.operators.etl.providers.csv import CSVProvider
 from flowmaster.operators.etl.providers.fakedata import FakeDataProvider
 from flowmaster.operators.etl.providers.flowmaster_data import FlowmasterDataProvider
@@ -27,6 +28,7 @@ provider_classes = {
     CSVProvider.name: CSVProvider,
     SQLiteProvider.name: SQLiteProvider,
     FlowmasterDataProvider.name: FlowmasterDataProvider,
+    CriteoProvider.name: CriteoProvider,
 }
 
 # Fetching custom providers.

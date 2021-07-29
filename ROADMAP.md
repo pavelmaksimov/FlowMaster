@@ -7,7 +7,6 @@
 - Google Analytics
 - Google Adwords
 - Mytarget
-- Criteo
 - File
 - Clickhouse
 - BigQuery

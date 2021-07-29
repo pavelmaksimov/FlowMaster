@@ -15,8 +15,8 @@ class BaseOperator:
         self.Model = FlowItem  # TODO replace to Pydantic
 
     def get_logfile_path(self):
-        worktime = self.Work.current_worktime.strftime("%Y-%m-%dT%H:%M:%S")
-        worktime = worktime.replace("T00:00:00", "")
+        worktime = self.Work.current_worktime.strftime("%Y-%m-%dT%H-%M-%S")
+        worktime = worktime.replace("T00-00-00", "")
         return create_logfile(f"{worktime}.log", self.name)
 
     def add_logger_file(self, dry_run):

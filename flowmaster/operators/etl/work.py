@@ -86,6 +86,7 @@ def ordering_etl_flow_tasks(
 
         if not validate:
             logger.error("ValidationError: '{}': {}", name, error)
+            continue
 
         flow = ETLOperator(notebook)
 

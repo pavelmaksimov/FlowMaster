@@ -1,0 +1,89 @@
+description: Base stats from Criteo to Clickhouse
+provider: criteo
+storage: clickhouse
+
+work:
+    update_stale_data: 3
+    triggers:
+        schedule:
+            timezone: Europe/Moscow
+            start_time: 00:00:00
+            from_date: 2021-07-02
+            interval: daily
+
+export:
+    # Required policies:
+
+    credentials:
+        # https://developers.criteo.com/marketing-solutions/docs/onboarding-checklist
+        # From API key file.
+        client_id:
+        client_secret:
+    api_version: 202104
+    resource: stats
+    params:
+        # https://developers.criteo.com/marketing-solutions/docs/dimensions
+        dimensions:
+            - Advertiser
+            - AdvertiserId
+            - Adset
+            - AdsetId
+            - Day
+        # https://developers.criteo.com/marketing-solutions/docs/metrics
+        metrics:
+            - Displays
+            - Clicks
+            - Cost
+        # https://developers.criteo.com/marketing-solutions/docs/currencies-supported
+        currency: RUB
+
+        # Optional policy:
+
+        # If you do not provide any advertiserIds value,
+        # statistics for all advertisers in your portfolio will be returned.
+        advertiser_ids:
+        # https://developers.criteo.com/marketing-solutions/docs/timezones-supported
+        timezone: Europe/Moscow
+
+    # Optional policy:
+
+    # Number of lines to read per iteration.
+    chunk_size:
+    # Maximum number of simultaneous exports.
+    concurrency: 5
+    # Limits execution in case of overflow of available slots in at least one of the specified pools.
+    pools:
+
+load:
+    credentials:
+        host:
+        user:
+        password:
+        port:
+
+    table_schema:
+        db: default
+        table: criteo_campaign_stats
+        columns:
+            Advertiser: Advertiser String
+            AdvertiserId: AdvertiserID UInt64
+            Adset: Adset String
+            AdsetId: AdsetID UInt64
+            Day: Date Date
+            Displays: Impressions UInt64
+            Clicks: Clicks UInt64
+            Cost: Cost String
+        orders:
+            - Advertiser
+            - AdvertiserID
+            - Adset
+            - AdsetID
+            - Date
+        partition:
+            - Date
+
+    data_cleaning_mode: partition
+
+transform:
+    timezone: Europe/Moscow
+    error_policy: default

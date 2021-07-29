@@ -1,10 +1,11 @@
 #!/usr/bin/env python
-import os
+import pathlib
 import re
+from os.path import abspath
 
 from setuptools import setup, find_packages
 
-with open("README.md", "r") as fh:
+with open(pathlib.Path(abspath(__file__)).parent / "README.md", "r") as fh:
     readme = fh.read()
 
 package = "flowmaster"
@@ -14,7 +15,9 @@ def get_version(package):
     """
     Return package version as listed in `__version__` in `init.py`.
     """
-    init_py = open(os.path.join(package, "__init__.py")).read()
+    init_py = open(
+        pathlib.Path(abspath(__file__)).parent / package / "__init__.py"
+    ).read()
     return re.search("^__version__ = ['\"]([^'\"]+)['\"]", init_py, re.MULTILINE).group(
         1
     )
@@ -42,8 +45,8 @@ setup(
         "pendulum>=2.0.0, <3.0.0",
         "pydantic>=1.0.0, <2.0.0",
         "PyYAML>=5.0.0, <6.0.0",
-        "tapi-yandex-metrika==2021.2.21",
-        "tapi-yandex-direct==2021.5.3",
+        "tapi-yandex-metrika==2021.5.28",
+        "tapi-yandex-direct==2021.5.29",
         "typer>=0.3.0, <0.4.0",
         "Jinja2>=2.0.0, <3.0.0",
         "loguru>=0.5, <0.6",
@@ -51,6 +54,7 @@ setup(
         "fastapi<=0.65",
         "aiofiles<0.8.0",
         "python-multipart<=0.0.5",
+        "criteo-marketing-transition==1.0.3",
     ],
     license="GPLv3",
     keywords="etl,flowmaster,flow,airflow,prefect,schedule,scheduler,tasker",
