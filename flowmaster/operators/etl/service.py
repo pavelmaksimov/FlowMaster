@@ -143,12 +143,12 @@ class ETLOperator(BaseOperator):
     @staticmethod
     def _get_period_text(start_period: dt.datetime, end_period: dt.datetime) -> str:
         if start_period == end_period:
-            return start_period.strftime("%Y-%m-%dT%H:%M:%S").replace("T00:00:00", "")
+            return start_period.strftime("%Y-%m-%dT%H-%M-%S").replace("T00-00-00", "")
         else:
             return "{} {}".format(
-                start_period.strftime("%Y-%m-%dT%H:%M:%S"),
-                end_period.strftime("%Y-%m-%dT%H:%M:%S"),
-            ).replace("T00:00:00", "")
+                start_period.strftime("%Y-%m-%dT%H-%M-%S"),
+                end_period.strftime("%Y-%m-%dT%H-%M-%S"),
+            ).replace("T00-00-00", "")
 
     def get_logfile_path(self):
         period_text = self._get_period_text(
