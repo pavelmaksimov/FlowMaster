@@ -13,7 +13,7 @@ def sync_executor(*, interval: int = 20, orders: int = None, dry_run: bool = Fal
         logger.info("Ordering flow tasks")
 
         for task in ordering_flow_tasks(dry_run=dry_run):
-            task()
+            task.execute()
 
         if duration >= interval:
             duration = 0
