@@ -1,8 +1,8 @@
 from typing import TYPE_CHECKING, Iterator, Optional
 
 from flowmaster.executors import catch_exceptions, ExecutorIterationTask
-from flowmaster.models import FlowItem, FlowStatus
-from flowmaster.operators.base.work import Work
+from flowmaster.models import FlowItem
+from flowmaster.operators.base.work import Work, prepare_items_for_order
 from flowmaster.service import iter_active_notebook_filenames, get_notebook
 from flowmaster.utils.logging_helper import Logger, getLogger
 from flowmaster.utils.logging_helper import logger
@@ -93,15 +93,8 @@ def ordering_etl_flow_tasks(
         for start_period, end_period in flow.Work.iter_period_for_execute():
             etl_flow_task = flow(start_period, end_period, dry_run=dry_run)
 
-            # The status is changed so that there is no repeated ordering of tasks.
-            FlowItem.change_status(
-                flow.name,
-                new_status=FlowStatus.run,
-                from_time=start_period,
-                to_time=end_period,
-            )
-            logger.info(
-                "Order ETL flow [{}]: {} {}", flow.name, start_period, end_period
-            )
-
-            yield etl_flow_task
+            with prepare_items_for_order(name, start_period, end_period):
+                logger.info(
+                    "Order ETL flow [{}]: {} {}", flow.name, start_period, end_period
+                )
+                yield etl_flow_task

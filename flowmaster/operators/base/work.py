@@ -1,9 +1,10 @@
 import datetime as dt
+from contextlib import contextmanager
 from typing import Iterator, Optional, TYPE_CHECKING
 
 import pendulum
 
-from flowmaster.models import FlowItem
+from flowmaster.models import FlowItem, FlowStatus
 from flowmaster.utils import iter_range_datetime, iter_period_from_range
 from flowmaster.utils.logging_helper import Logger, getLogger
 
@@ -108,6 +109,20 @@ class Work:
         yield from iter_period_from_range(
             datetime_range, self.interval_timedelta, self.period_length
         )
+
+
+@contextmanager
+def prepare_items_for_order(
+    name: str, start_period: dt.datetime, end_period: dt.datetime
+):
+    # The status is changed so that there is no repeated ordering of tasks.
+    FlowItem.change_status(
+        name,
+        new_status=FlowStatus.run,
+        from_time=start_period,
+        to_time=end_period,
+    )
+    yield
 
 
 def ordering_flow_tasks(*, dry_run: bool = False) -> Iterator["ExecutorIterationTask"]:
