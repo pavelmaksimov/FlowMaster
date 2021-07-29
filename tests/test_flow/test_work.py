@@ -7,71 +7,75 @@ import pendulum
 from flowmaster.models import FlowItem, FlowStatus
 from flowmaster.operators.base.work import Work, ordering_flow_tasks
 from flowmaster.operators.etl.policy import ETLNotebook
-from flowmaster.utils.yaml_helper import YamlHelper
-from tests.fixtures.yandex_metrika import yml_visits_to_csv_notebook as NOTEBOOK
 
 FLOW_NAME = "test_work"
 
 logger = logging.getLogger(__name__)
 
 
-def test_ordering_flow_tasks():
-    FlowItem.delete().where(FlowItem.name == FLOW_NAME).execute()
+def test_ordering_flow_tasks(flowitem_model, ya_metrika_logs_to_csv_notebook):
+    name = flowitem_model.name_for_test
 
-    NOTEBOOK.work.triggers.schedule = (
-        ETLNotebook.WorkPolicy.TriggersPolicy.SchedulePolicy(
-            timezone="Europe/Moscow",
-            start_time="00:00:00",
-            from_date=dt.date.today() - dt.timedelta(5),
-            interval="daily",
-        )
-    )
-    notebook = dict(NOTEBOOK)
-    notebook.pop("name")
+    with mock.patch(
+        "flowmaster.service.iter_active_notebook_filenames"
+    ) as a, mock.patch("flowmaster.service.get_notebook") as b:
+        a.return_value = name
+        b.return_value = (True, None, None, ya_metrika_logs_to_csv_notebook, None)
 
-    rv = [(FLOW_NAME, notebook)]
-    YamlHelper.iter_parse_file_from_dir = mock.Mock(return_value=rv)
+        tasks = list(ordering_flow_tasks())
 
-    flows = list(ordering_flow_tasks())
-
-    assert len(flows) == 5
-    assert FlowItem.count_items(FLOW_NAME, statuses=[FlowStatus.run]) == len(flows)
+        assert len(tasks) == 5
+        assert flowitem_model.count_items(name, statuses=[FlowStatus.run]) == len(tasks)
 
 
-def test_ordering_flow_tasks_with_period_length():
-    FlowItem.delete().where(FlowItem.name == FLOW_NAME).execute()
+def test_prepare_items_for_order(flowitem_model, flowmasterdata_items_to_csv_notebook):
+    name = flowitem_model.name_for_test
+    flowmasterdata_items_to_csv_notebook.name = name
+    work = Work(flowmasterdata_items_to_csv_notebook)
 
-    NOTEBOOK.work.triggers.schedule = (
-        ETLNotebook.WorkPolicy.TriggersPolicy.SchedulePolicy(
-            timezone="Europe/Moscow",
-            start_time="00:00:00",
-            from_date=dt.date.today() - dt.timedelta(5),
-            interval="daily",
-            period_length=2,
-        )
-    )
-    notebook = dict(NOTEBOOK)
-    notebook.pop("name")
+    with mock.patch(
+        "flowmaster.service.iter_active_notebook_filenames"
+    ) as a, mock.patch("flowmaster.service.get_notebook") as b:
+        a.return_value = name
+        b.return_value = (True, None, None, flowmasterdata_items_to_csv_notebook, None)
 
-    rv = [(FLOW_NAME, notebook)]
-    YamlHelper.iter_parse_file_from_dir = mock.Mock(return_value=rv)
+        list(ordering_flow_tasks())
 
-    flows = list(ordering_flow_tasks())
-
-    assert len(flows) == 3
+        for i in flowitem_model.iter_items(name, statuses=[FlowStatus.run]):
+            assert pendulum.parse(i.expires_utc, tz="UTC") == work.expires
 
 
-def test_worktime():
+def test_ordering_flow_tasks_with_period_length(
+    flowitem_model, ya_metrika_logs_to_csv_notebook
+):
+    name = flowitem_model.name_for_test
+    ya_metrika_logs_to_csv_notebook.name = name
+    ya_metrika_logs_to_csv_notebook.work.triggers.schedule.period_length = 2
+
+    with mock.patch(
+        "flowmaster.service.iter_active_notebook_filenames"
+    ) as a, mock.patch("flowmaster.service.get_notebook") as b:
+        a.return_value = name
+        b.return_value = (True, None, None, ya_metrika_logs_to_csv_notebook, None)
+
+        tasks = list(ordering_flow_tasks())
+
+    assert len(tasks) == 3
+
+
+def test_worktime(flowitem_model, ya_metrika_logs_to_csv_notebook):
     tz = "Europe/Moscow"
-    NOTEBOOK.work.triggers.schedule = (
+    ya_metrika_logs_to_csv_notebook.name = flowitem_model.name_for_test
+    ya_metrika_logs_to_csv_notebook.work.triggers.schedule = (
         ETLNotebook.WorkPolicy.TriggersPolicy.SchedulePolicy(
             timezone=tz, start_time="01:00:00", from_date=None, interval="daily"
         )
     )
-    work = Work(NOTEBOOK)
+    work = Work(ya_metrika_logs_to_csv_notebook)
+
     assert work.current_worktime == pendulum.yesterday(tz).replace(hour=1)
 
-    NOTEBOOK.work.triggers.schedule = (
+    ya_metrika_logs_to_csv_notebook.work.triggers.schedule = (
         ETLNotebook.WorkPolicy.TriggersPolicy.SchedulePolicy(
             timezone="Europe/Moscow",
             start_time="01:00:00",
@@ -79,21 +83,24 @@ def test_worktime():
             interval="daily",
         )
     )
-    work = Work(NOTEBOOK)
+    work = Work(ya_metrika_logs_to_csv_notebook)
+
     assert work.current_worktime == pendulum.yesterday(tz).replace(hour=1)
 
 
-def test_worktime_second_interval():
+def test_worktime_second_interval(flowitem_model, ya_metrika_logs_to_csv_notebook):
     tz = "Europe/Moscow"
-    NOTEBOOK.work.triggers.schedule = (
+    ya_metrika_logs_to_csv_notebook.name = flowitem_model.name_for_test
+    ya_metrika_logs_to_csv_notebook.work.triggers.schedule = (
         ETLNotebook.WorkPolicy.TriggersPolicy.SchedulePolicy(
             timezone=tz, start_time="01:00:00", from_date=None, interval=86400
         )
     )
-    work = Work(NOTEBOOK)
+    work = Work(ya_metrika_logs_to_csv_notebook)
+
     assert work.current_worktime == pendulum.today(tz).replace(hour=1)
 
-    NOTEBOOK.work.triggers.schedule = (
+    ya_metrika_logs_to_csv_notebook.work.triggers.schedule = (
         ETLNotebook.WorkPolicy.TriggersPolicy.SchedulePolicy(
             timezone="Europe/Moscow",
             start_time="01:00:00",
@@ -101,30 +108,34 @@ def test_worktime_second_interval():
             interval=86400,
         )
     )
-    work = Work(NOTEBOOK)
+    work = Work(ya_metrika_logs_to_csv_notebook)
 
     assert work.current_worktime == pendulum.today(tz).replace(hour=1)
 
 
-def test_ordering_flow_tasks_with_interval_seconds(flowitem_model):
+def test_ordering_flow_tasks_with_interval_seconds(
+    flowitem_model, ya_metrika_logs_to_csv_notebook
+):
     now = pendulum.datetime(2021, 1, 1)
     pendulum.set_test_now(now)
+    name = flowitem_model.name_for_test
+    ya_metrika_logs_to_csv_notebook.name = name
+    ya_metrika_logs_to_csv_notebook.work.triggers.schedule = (
+        ETLNotebook.WorkPolicy.TriggersPolicy.SchedulePolicy(
+            timezone="UTC", start_time="00:00:00", from_date=None, interval=60
+        )
+    )
 
     for _ in range(5):
-        NOTEBOOK.work.triggers.schedule = (
-            ETLNotebook.WorkPolicy.TriggersPolicy.SchedulePolicy(
-                timezone="UTC", start_time="00:00:00", from_date=None, interval=60
-            )
-        )
+        with mock.patch(
+            "flowmaster.service.iter_active_notebook_filenames"
+        ) as a, mock.patch("flowmaster.service.get_notebook") as b:
+            a.return_value = name
+            b.return_value = (True, None, None, ya_metrika_logs_to_csv_notebook, None)
 
-        notebook = NOTEBOOK.dict()
-        notebook.pop("name")
-        rv = [(flowitem_model.name_for_test, notebook)]
-        YamlHelper.iter_parse_file_from_dir = mock.Mock(return_value=rv)
+            list(ordering_flow_tasks())
 
-        list(ordering_flow_tasks())
+            now += dt.timedelta(seconds=60)
+            pendulum.set_test_now(now)
 
-        now += dt.timedelta(seconds=60)
-        pendulum.set_test_now(now)
-
-    assert FlowItem.count_items(flowitem_model.name_for_test) == 5
+    assert FlowItem.count_items(name) == 5

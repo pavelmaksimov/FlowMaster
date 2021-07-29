@@ -93,7 +93,7 @@ def ordering_etl_flow_tasks(
         for start_period, end_period in flow.Work.iter_period_for_execute():
             etl_flow_task = flow(start_period, end_period, dry_run=dry_run)
 
-            with prepare_items_for_order(name, start_period, end_period):
+            with prepare_items_for_order(flow, start_period, end_period):
                 logger.info(
                     "Order ETL flow [{}]: {} {}", flow.name, start_period, end_period
                 )

@@ -8,7 +8,7 @@ def test_flow_flowmaster_items(flowmasterdata_items_to_csv_notebook):
     FlowItem.clear(flowmasterdata_items_to_csv_notebook.name)
 
     etl_flow = ETLOperator(flowmasterdata_items_to_csv_notebook)
-    list(etl_flow(dt.datetime(2021, 2, 1), dt.datetime(2021, 2, 5)))
+    list(etl_flow(dt.datetime(2021, 2, 5), dt.datetime(2021, 2, 5)))
 
     with etl_flow.Load.open_file(mode="r") as loadfile:
         data = loadfile.readlines()
@@ -17,7 +17,7 @@ def test_flow_flowmaster_items(flowmasterdata_items_to_csv_notebook):
         [row for row in data if flowmasterdata_items_to_csv_notebook.name in row]
     )
 
-    assert count_items == 5
+    assert count_items == 1
 
 
 def test_flow_flowmasterdata_pools(
@@ -30,18 +30,19 @@ def test_flow_flowmasterdata_pools(
 
     with etl_flow.Load.open_file(mode="r") as loadfile:
         data = loadfile.readlines()
+        print(data)
 
     assert [
         row
         for row in data
-        if "__flowmasterdata_items_to_csv_export_concurrency__" in row
+        if "____test_flowmasterdata_items_to_csv_export_concurrency__" in row
     ]
     assert [
         row
         for row in data
-        if "__flowmasterdata_items_to_csv_transform_concurrency__" in row
+        if "____test_flowmasterdata_items_to_csv_transform_concurrency__" in row
     ]
     assert [
-        row for row in data if "__flowmasterdata_items_to_csv_load_concurrency__" in row
+        row for row in data if "____test_flowmasterdata_items_to_csv_load_concurrency__" in row
     ]
     assert [row for row in data if "name\tsize\tlimit\tdatetime" in row]

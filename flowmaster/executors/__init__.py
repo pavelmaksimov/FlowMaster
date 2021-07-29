@@ -90,13 +90,7 @@ class ExecutorIterationTask:
         expires: Optional[dt.datetime] = None,
         soft_time_limit_seconds: Optional[int] = None,
     ):
-        """
-
-        :param expires: Python generator
-        :param expires: Datetime in the future for the task should expire. (as in celery)
-        :param soft_time_limit_seconds: The soft time limit for this task. (as in celery)
-        """
-        self.generator = generator
+        self.generator = generator  # TODO: rename to iterator
         self.soft_time_limit_seconds = soft_time_limit_seconds
         self.expires = expires
 
@@ -110,7 +104,7 @@ class ExecutorIterationTask:
         return True
 
     def check_limit(self) -> None:
-        if self.expires and pendulum.now() > self.expires:
+        if self.expires is not None and pendulum.now("UTC") > self.expires:
             raise ExpiredError(
                 f"{self.duration=}, {self.execute_duration=}, {self.expires=}"
             )

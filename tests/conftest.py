@@ -8,6 +8,7 @@ from flowmaster.operators.etl.loaders.csv.policy import (
 )
 from flowmaster.operators.etl.loaders.csv.service import CSVLoader
 from flowmaster.operators.etl.policy import ETLNotebook
+from flowmaster.operators.etl.providers import YandexMetrikaLogsProvider
 from flowmaster.operators.etl.providers.criteo import CriteoProvider
 from flowmaster.operators.etl.providers.csv import CSVProvider
 from flowmaster.operators.etl.providers.csv.policy import CSVExportPolicy
@@ -42,6 +43,20 @@ def work_policy():
                 start_time="00:00:00",
                 from_date=dt.date.today() - dt.timedelta(5),
                 interval="daily",
+            )
+        )
+    )
+
+
+@pytest.fixture()
+def seconds_interval_work_policy():
+    return ETLNotebook.WorkPolicy(
+        triggers=ETLNotebook.WorkPolicy.TriggersPolicy(
+            schedule=ETLNotebook.WorkPolicy.TriggersPolicy.SchedulePolicy(
+                timezone="Europe/Moscow",
+                start_time="00:00:00",
+                from_date=None,
+                interval=86400,
             )
         )
     )
@@ -193,12 +208,12 @@ def flowmasterdata_queues_export_policy():
 
 
 @pytest.fixture()
-def flowmasterdata_items_to_csv_notebook(tmp_path, work_policy, flowmasterdata_items_export_policy, csv_transform_policy, csv_load_policy):
+def flowmasterdata_items_to_csv_notebook(tmp_path, seconds_interval_work_policy, flowmasterdata_items_export_policy, csv_transform_policy, csv_load_policy):
     return ETLNotebook(
-        name="flowmasterdata_items_to_csv",
+        name="__test_flowmasterdata_items_to_csv",
         provider=FlowmasterDataProvider.name,
         storage=CSVLoader.name,
-        work=work_policy,
+        work=seconds_interval_work_policy,
         export=flowmasterdata_items_export_policy,
         transform=csv_transform_policy,
         load=csv_load_policy,
@@ -238,6 +253,47 @@ def criteo_to_csv_notebook(
         storage=CSVLoader.name,
         work=work_policy,
         export=criteo_export_policy,
+        transform=csv_transform_policy,
+        load=csv_load_policy,
+    )
+
+
+@pytest.fixture()
+def ya_metrika_logs_export_policy(tmp_path):
+    return YandexMetrikaLogsProvider.policy_model(
+        credentials=YandexMetrikaLogsProvider.policy_model.CredentialsPolicy(
+            counter_id=0, access_token="token"
+        ),
+        params=YandexMetrikaLogsProvider.policy_model.ParamsPolicy(
+            source="visits",
+            columns=[
+                "ym:s:counterID",
+                "ym:s:clientID",
+                "ym:s:visitID",
+                "ym:s:date",
+                "ym:s:dateTime",
+                "ym:s:lastTrafficSource",
+                "ym:s:startURL",
+                "ym:s:pageViews",
+            ],
+        )
+    )
+
+
+@pytest.fixture()
+def ya_metrika_logs_to_csv_notebook(
+    tmp_path,
+    work_policy,
+    ya_metrika_logs_export_policy,
+    csv_transform_policy,
+    csv_load_policy
+):
+    return ETLNotebook(
+        name="test_ya_metrika_logs_to_csv",
+        provider=YandexMetrikaLogsProvider.name,
+        storage=CSVLoader.name,
+        work=work_policy,
+        export=ya_metrika_logs_export_policy,
         transform=csv_transform_policy,
         load=csv_load_policy,
     )

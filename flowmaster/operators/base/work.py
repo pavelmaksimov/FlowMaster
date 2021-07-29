@@ -10,6 +10,7 @@ from flowmaster.utils.logging_helper import Logger, getLogger
 
 if TYPE_CHECKING:
     from flowmaster.operators.base.policy import Notebook
+    from flowmaster.operators.etl.service import BaseOperator
     from flowmaster.executors import ExecutorIterationTask
 
 
@@ -113,15 +114,23 @@ class Work:
 
 @contextmanager
 def prepare_items_for_order(
-    name: str, start_period: dt.datetime, end_period: dt.datetime
+    flow: "BaseOperator", start_period: dt.datetime, end_period: dt.datetime
 ):
     # The status is changed so that there is no repeated ordering of tasks.
     FlowItem.change_status(
-        name,
+        flow.name,
         new_status=FlowStatus.run,
         from_time=start_period,
         to_time=end_period,
     )
+    if flow.Work.expires is not None:
+        FlowItem.change_expires(
+            flow.name,
+            expires=flow.Work.expires,
+            from_time=start_period,
+            to_time=end_period,
+        )
+
     yield
 
 

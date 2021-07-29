@@ -188,6 +188,27 @@ class FlowItem(BaseModel):
         return query.execute()
 
     @classmethod
+    def change_expires(
+        cls,
+        flow_name: str,
+        expires: pendulum.DateTime,
+        *,
+        from_time: dt.datetime,
+        to_time: dt.datetime,
+    ) -> int:
+        expires_utc = (
+            expires.astimezone(pendulum.timezone("UTC"))
+            .replace(tzinfo=None)
+            .isoformat()
+        )
+
+        query = cls.update(**{cls.expires_utc.name: expires_utc}).where(
+            cls.name == flow_name, cls.worktime >= from_time, cls.worktime <= to_time
+        )
+
+        return query.execute()
+
+    @classmethod
     def recreate_item(
         cls,
         flow_name: str,
@@ -380,6 +401,8 @@ class FlowItem(BaseModel):
             cls.status.in_(FlowStatus.error_statuses),
             cls.retries < retries,
             cls.get_utcnow() >= ex,
+            # TODO: В поле info записывать, что поток не будет перезапущен, т.к. истек срок выполнения.
+            #  Иначе не понятно, почему не перезапускаются.
             (dt.datetime.utcnow() <= cls.expires_utc | cls.expires_utc == None),
         )
         worktimes = [i.worktime for i in items]
