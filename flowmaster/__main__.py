@@ -63,7 +63,12 @@ def run_local(interval: int = 20, dry_run: bool = False):
 
 
 @app.command()
-def run(workers: int = 2, interval: int = 20, dry_run: bool = False, port=Settings.WEBUI_PORT):
+def run(
+    workers: int = 2,
+    interval: int = 20,
+    dry_run: bool = False,
+    port=Settings.WEBUI_PORT,
+):
     prepare_for_run(dry_run=dry_run)
 
     webserver_thread = Process(
