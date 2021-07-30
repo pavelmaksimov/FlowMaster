@@ -1,6 +1,6 @@
 import pathlib
+import platform
 from functools import partial
-from multiprocessing import Process
 
 import typer
 import uvicorn
@@ -51,6 +51,30 @@ def prepare_for_run(dry_run: bool = False):
         FlowItem.delete().where("fakedata.etl.flow" in FlowItem.name).execute()
 
 
+def run_web(port):
+    kwargs = dict(app=webapp, host="0.0.0.0", port=int(port))
+    if platform.system() == "Windows":
+        import threading
+
+        web_thread = threading.Thread(
+            target=uvicorn.run,
+            name="Flowmaster_web",
+            daemon=True,
+            kwargs=kwargs,
+        )
+    else:
+        import multiprocessing
+
+        web_thread = multiprocessing.Process(
+            target=uvicorn.run,
+            name="Flowmaster_web",
+            daemon=True,
+            kwargs=kwargs,
+        )
+    web_thread.start()
+    typer.echo(f"WEB UI: 0.0.0.0:{port}\n")
+
+
 @app.command()
 def run_local(interval: int = 20, dry_run: bool = False):
     prepare_for_run(dry_run=dry_run)
@@ -67,17 +91,10 @@ def run(
     workers: int = 2,
     interval: int = 20,
     dry_run: bool = False,
-    port=Settings.WEBUI_PORT,
+    port: int = Settings.WEBUI_PORT,
 ):
     prepare_for_run(dry_run=dry_run)
-
-    webserver_thread = Process(
-        target=uvicorn.run,
-        name="Flowmaster_web",
-        kwargs=dict(app=webapp, host="0.0.0.0", port=port),
-    )
-    webserver_thread.start()
-    typer.echo(f"WEB UI: 0.0.0.0:{port}\n")
+    run_web(port)
 
     from flowmaster.operators.base.work import ordering_flow_tasks
     from flowmaster.executors import ThreadAsyncExecutor
