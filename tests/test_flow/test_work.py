@@ -15,6 +15,7 @@ logger = logging.getLogger(__name__)
 
 def test_ordering_flow_tasks(flowitem_model, ya_metrika_logs_to_csv_notebook):
     name = flowitem_model.name_for_test
+    ya_metrika_logs_to_csv_notebook.name = name
 
     with mock.patch(
         "flowmaster.service.iter_active_notebook_filenames"
