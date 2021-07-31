@@ -1,8 +1,9 @@
 from pathlib import Path
 
-from flowmaster.models import FlowItem, database
+from flowmaster.database import db
+from flowmaster.models import FlowItem
 
-database.create_tables([FlowItem])
+db.create_tables([FlowItem])
 
 
 def get_tests_dir(test_dir_name: str = "tests") -> Path:

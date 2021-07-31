@@ -19,7 +19,8 @@ app.add_typer(flowmaster.cli.item.app, name="item")
 
 @app.command()
 def init():
-    from flowmaster.models import database, FlowItem
+    from flowmaster.models import FlowItem
+    from flowmaster.database import db
 
     typer.echo(f"\nAPP_HOME={Settings.APP_HOME}")
 
@@ -34,7 +35,7 @@ def init():
         with open(Settings.POOL_CONFIG_FILEPATH, "w") as f:
             f.write("flows: 100\n")
 
-    database.create_tables([FlowItem])
+    db.create_tables([FlowItem])
 
 
 def prepare_for_run(dry_run: bool = False):

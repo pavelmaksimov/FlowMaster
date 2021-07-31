@@ -1,4 +1,3 @@
-import atexit
 import datetime as dt
 from typing import Union, Iterable, Optional, Literal, Sequence
 
@@ -8,36 +7,10 @@ import pendulum
 import playhouse.sqlite_ext
 import pydantic
 from playhouse.hybrid import hybrid_property
-from playhouse.sqliteq import SqliteQueueDatabase
 
-from flowmaster.setttings import Settings
+from flowmaster.database import db
 from flowmaster.utils import iter_period_from_range, iter_range_datetime
 from flowmaster.utils.logging_helper import logger
-
-database = SqliteQueueDatabase(
-    # http://docs.peewee-orm.com/en/latest/peewee/playhouse.html#sqliteq
-    Settings.APP_HOME / "db.sqlite_ext",
-    pragmas=(
-        ("cache_size", -1024 * 64),  # 64MB page-cache.
-        ("journal_mode", "wal"),  # Use WAL-mode (you should always use this!).
-        ("foreign_keys", 1),
-    ),
-    use_gevent=False,  # Use the standard library "threading" module.
-    autostart=True,  # The worker thread now must be started manually.
-    queue_max_size=64,  # Max. # of pending writes that can accumulate.
-    results_timeout=3.0,  # Max. time to wait for query to be executed.
-)
-
-
-@atexit.register
-def _stop_worker_threads():
-    """http://docs.peewee-orm.com/en/latest/peewee/playhouse.html#sqliteq"""
-    database.stop()
-
-
-class BaseModel(playhouse.sqlite_ext.Model):
-    class Meta:
-        database = database
 
 
 class FlowStatus:
@@ -73,7 +46,12 @@ class DateTimeTZField(playhouse.sqlite_ext.DateTimeField):
         return f"{value.isoformat()} {dt_.timezone_name}" if value else None
 
 
-class FlowItem(BaseModel):
+class BaseDBModel(playhouse.sqlite_ext.Model):
+    class Meta:
+        database = db
+
+
+class FlowItem(BaseDBModel):
     """When changing fields, update to operators.etl.providers.flowmaster_data.policy.FlowmasterDataExportPolicy"""
 
     name = playhouse.sqlite_ext.CharField()
@@ -561,3 +539,6 @@ class FlowItem(BaseModel):
     def get_utcnow() -> dt.datetime:
         """For mock"""
         return dt.datetime.utcnow()
+
+
+db.create_tables([FlowItem])
