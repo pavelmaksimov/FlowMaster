@@ -171,7 +171,7 @@ class ExecutorIterationTask:
     def __call__(self) -> Iterator[dict]:  # TODO: New Type flow_iteration_log
         while True:
             try:
-                yield from self
+                yield next(self)
             except SleepException as sleep_iteration:
                 time.sleep(sleep_iteration.sleep)
             except StopIteration:
