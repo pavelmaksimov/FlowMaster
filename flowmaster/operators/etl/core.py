@@ -2,7 +2,7 @@ import datetime as dt
 import time
 from typing import Iterator, Union, Optional
 
-from flowmaster.enums import Statuses, FlowETLStep, FlowOperator
+from flowmaster.enums import Statuses, FlowOperator
 from flowmaster.exceptions import FatalError
 from flowmaster.executors import (
     SleepIteration,
@@ -14,6 +14,7 @@ from flowmaster.operators.etl.dataschema import ETLContext
 from flowmaster.operators.etl.loaders import storage_classes
 from flowmaster.operators.etl.policy import ETLNotebook
 from flowmaster.operators.etl.providers import provider_classes
+from flowmaster.operators.etl.types import ETLSteps
 from flowmaster.operators.etl.work import ETLWork
 from flowmaster.utils import iter_range_datetime
 from flowmaster.utils.logging_helper import create_logfile
@@ -60,7 +61,7 @@ class ETLOperator(BaseOperator):
 
                 while True:
                     # Export step.
-                    yield {self.Model.etl_step.name: FlowETLStep.export}
+                    yield {self.Model.etl_step.name: ETLSteps.export}
                     yield NextIterationInPools(pool_names=self.Work.export_pool_names)
                     try:
                         result = next(export_iterator)
@@ -79,7 +80,7 @@ class ETLOperator(BaseOperator):
                         {**kwargs, **result.export_kwargs}
                     )
                     yield {
-                        self.Model.etl_step.name: FlowETLStep.transform,
+                        self.Model.etl_step.name: ETLSteps.transform,
                         self.Model.data.name: self.operator_context.dict(
                             exclude_unset=True
                         ),
@@ -99,7 +100,7 @@ class ETLOperator(BaseOperator):
                         transform_context.data_errors
                     )
                     yield {
-                        self.Model.etl_step.name: FlowETLStep.load,
+                        self.Model.etl_step.name: ETLSteps.load,
                         self.Model.data.name: self.operator_context.dict(
                             exclude_unset=True
                         ),

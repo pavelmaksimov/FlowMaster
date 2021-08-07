@@ -11,13 +11,6 @@ class Statuses:
     LiteralT = Literal[add, run, success, error, fatal_error]
 
 
-class FlowETLStep:
-    export = "EXPORT"
-    transform = "TRANSFORM"
-    load = "LOAD"
-    LiteralT = Literal[export, transform, load]
-
-
 class FlowOperator:
     etl = "ETL"
     LiteralT = Literal[etl]
