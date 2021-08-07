@@ -5,7 +5,7 @@ from fastapi import FastAPI, Request, Form
 from fastapi.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
 
-from flowmaster.enums import FlowStatus
+from flowmaster.enums import Statuses
 from flowmaster.models import FlowItem
 from flowmaster.service import (
     get_notebook,
@@ -47,10 +47,10 @@ async def notebooks_view(request: Request):
         data["count"] = count_names_map.get(name, 0)
         data["count_errors"] = sum(
             count_statuses_map.get((name, status), 0)
-            for status in FlowStatus.error_statuses
+            for status in Statuses.error_statuses
         )
         data["count_fatal_errors"] = count_statuses_map.get(
-            (name, FlowStatus.fatal_error), 0
+            (name, Statuses.fatal_error), 0
         )
         data["validate"] = validate
         notebooks.append(data)
@@ -210,7 +210,7 @@ async def error_tasks_view(name: str, request: Request):
         context={
             "request": request,
             "tasks": FlowItem.iter_items(
-                name, statuses=FlowStatus.error_statuses, limit=1000, offset=0
+                name, statuses=Statuses.error_statuses, limit=1000, offset=0
             ),
         },
     )
@@ -224,7 +224,7 @@ async def fatal_error_tasks_view(name: str, request: Request):
         context={
             "request": request,
             "tasks": FlowItem.iter_items(
-                name, statuses=[FlowStatus.fatal_error], limit=1000, offset=0
+                name, statuses=[Statuses.fatal_error], limit=1000, offset=0
             ),
         },
     )

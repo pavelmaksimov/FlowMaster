@@ -9,7 +9,7 @@ import pydantic
 from playhouse.hybrid import hybrid_property
 
 from flowmaster.database import db
-from flowmaster.enums import FlowStatus
+from flowmaster.enums import Statuses
 from flowmaster.utils import iter_period_from_range, iter_range_datetime
 from flowmaster.utils.logging_helper import logger
 
@@ -45,7 +45,7 @@ class FlowItem(BaseDBModel):
 
     # 'operator' move to dataschema for 'data' field
     operator = playhouse.sqlite_ext.CharField(null=True)
-    status = playhouse.sqlite_ext.CharField(default=FlowStatus.add, null=False)
+    status = playhouse.sqlite_ext.CharField(default=Statuses.add, null=False)
     # 'etl_step' move to dataschema for 'data' field
     etl_step = playhouse.sqlite_ext.CharField(null=True)
     data = playhouse.sqlite_ext.JSONField(
@@ -83,7 +83,7 @@ class FlowItem(BaseDBModel):
 
     @classmethod
     def count_items(
-        cls, flow_name: str, statuses: Optional[list[FlowStatus.LiteralT]] = None
+        cls, flow_name: str, statuses: Optional[list[Statuses.LiteralT]] = None
     ) -> int:
         query = cls.select().where(cls.name == flow_name)
         if statuses is not None:
@@ -132,9 +132,9 @@ class FlowItem(BaseDBModel):
     def change_status(
         cls,
         flow_name: str,
-        new_status: FlowStatus.LiteralT,
+        new_status: Statuses.LiteralT,
         *,
-        filter_statuses: Optional[tuple[FlowStatus.LiteralT]] = None,
+        filter_statuses: Optional[tuple[Statuses.LiteralT]] = None,
         from_time: Optional[dt.datetime] = None,
         to_time: Optional[dt.datetime] = None,
     ) -> int:
@@ -185,7 +185,7 @@ class FlowItem(BaseDBModel):
     def recreate_items(
         cls,
         flow_name: str,
-        filter_statuses: Optional[tuple[FlowStatus.LiteralT]] = None,
+        filter_statuses: Optional[tuple[Statuses.LiteralT]] = None,
         from_time: Optional[dt.datetime] = None,
         to_time: Optional[dt.datetime] = None,
     ) -> list["FlowItem"]:
@@ -339,7 +339,7 @@ class FlowItem(BaseDBModel):
             # Check limit fatal errors.
             items = (
                 cls.select()
-                .where(cls.name == flow_name, cls.status == FlowStatus.fatal_error)
+                .where(cls.name == flow_name, cls.status == Statuses.fatal_error)
                 .order_by(cls.updated.desc())
                 .limit(max_fatal_errors)
             )
@@ -362,7 +362,7 @@ class FlowItem(BaseDBModel):
         )
         items = cls.select().where(
             cls.name == flow_name,
-            cls.status.in_(FlowStatus.error_statuses),
+            cls.status.in_(Statuses.error_statuses),
             cls.retries < retries,
             cls.get_utcnow() >= ex,
             # TODO: В поле info записывать, что поток не будет перезапущен, т.к. истек срок выполнения.
@@ -375,7 +375,7 @@ class FlowItem(BaseDBModel):
             # TODO: recreate items
             cls.update(
                 **{
-                    cls.status.name: FlowStatus.add,
+                    cls.status.name: Statuses.add,
                     cls.retries.name: cls.retries + 1,
                     cls.updated.name: dt.datetime.now(),
                 }
@@ -434,7 +434,7 @@ class FlowItem(BaseDBModel):
                 cls.select()
                 .where(
                     cls.name == flow_name,
-                    cls.status == FlowStatus.add,
+                    cls.status == Statuses.add,
                     (dt.datetime.utcnow() <= cls.expires_utc | cls.expires_utc == None),
                 )
                 .order_by(cls.worktime.desc())
@@ -443,11 +443,11 @@ class FlowItem(BaseDBModel):
     @classmethod
     def clear_statuses_of_lost_items(cls) -> None:
         cls.update(
-            **{cls.status.name: FlowStatus.error, cls.log.name: "ExpiredError"}
+            **{cls.status.name: Statuses.error, cls.log.name: "ExpiredError"}
         ).where(dt.datetime.utcnow() <= cls.expires_utc).execute()
 
-        cls.update(**{cls.status.name: FlowStatus.add}).where(
-            cls.status.in_([FlowStatus.run])
+        cls.update(**{cls.status.name: Statuses.add}).where(
+            cls.status.in_([Statuses.run])
         ).execute()
 
     @classmethod
@@ -505,7 +505,7 @@ class FlowItem(BaseDBModel):
     def iter_items(
         cls,
         flow_name: str,
-        statuses: Optional[Sequence[FlowStatus.LiteralT]] = None,
+        statuses: Optional[Sequence[Statuses.LiteralT]] = None,
         limit: int = 20,
         offset: int = 0,
     ) -> peewee.ModelSelect:

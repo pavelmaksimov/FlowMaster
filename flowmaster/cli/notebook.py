@@ -1,6 +1,6 @@
 import typer
 
-from flowmaster.enums import FlowStatus
+from flowmaster.enums import Statuses
 from flowmaster.models import FlowItem
 from flowmaster.service import (
     iter_active_notebook_filenames,
@@ -36,7 +36,7 @@ def validate():
 @app.command()
 def errors():
     for name in list_notebook():
-        count = FlowItem.count_items(name, statuses=[FlowStatus.error_statuses])
+        count = FlowItem.count_items(name, statuses=[Statuses.error_statuses])
         if count > 0:
             count_text = typer.style(count, fg=typer.colors.RED, bold=True)
         else:

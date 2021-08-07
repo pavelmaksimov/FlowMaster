@@ -4,7 +4,7 @@ import pendulum
 import pytest
 from mock import Mock
 
-from flowmaster.enums import FlowStatus
+from flowmaster.enums import Statuses
 from flowmaster.models import FlowItem
 from flowmaster.utils import iter_range_datetime
 
@@ -23,7 +23,7 @@ def test_retries(create_retries, retries, result):
             FlowItem.name.name: FLOW_NAME,
             FlowItem.worktime.name: pendulum.datetime(2020, 1, 1, tz="Europe/Moscow"),
             FlowItem.started_utc.name: dt.datetime(2020, 1, 1),
-            FlowItem.status.name: FlowStatus.error,
+            FlowItem.status.name: Statuses.error,
             FlowItem.retries.name: create_retries,
         }
     )
@@ -31,7 +31,7 @@ def test_retries(create_retries, retries, result):
     FlowItem.retry_error_items(FLOW_NAME, retries=retries, retry_delay=60)
 
     items = FlowItem.select().where(
-        FlowItem.name == FLOW_NAME, FlowItem.status == FlowStatus.add
+        FlowItem.name == FLOW_NAME, FlowItem.status == Statuses.add
     )
 
     assert len(items) == int(result)
@@ -49,7 +49,7 @@ def test_retry_delay(retry_delay, passed_sec, is_run):
             FlowItem.name.name: FLOW_NAME,
             FlowItem.worktime.name: pendulum.datetime(2020, 1, 1, tz="Europe/Moscow"),
             FlowItem.started_utc.name: dt.datetime(2020, 1, 1, 0, 0, 0),
-            FlowItem.status.name: FlowStatus.error,
+            FlowItem.status.name: Statuses.error,
             FlowItem.retries.name: 0,
         }
     )
@@ -59,7 +59,7 @@ def test_retry_delay(retry_delay, passed_sec, is_run):
     FlowItem.retry_error_items(FLOW_NAME, retries=1, retry_delay=retry_delay)
 
     items = FlowItem.select().where(
-        FlowItem.name == FLOW_NAME, FlowItem.status == FlowStatus.add
+        FlowItem.name == FLOW_NAME, FlowItem.status == Statuses.add
     )
 
     assert len(items) == int(is_run)
@@ -119,7 +119,7 @@ def test_create_update_items():
             **{
                 FlowItem.name.name: FLOW_NAME,
                 FlowItem.worktime.name: worktime - dt.timedelta(i),
-                FlowItem.status.name: FlowStatus.success,
+                FlowItem.status.name: Statuses.success,
             }
         )
 
@@ -131,7 +131,7 @@ def test_create_update_items():
     )
 
     assert len(items) == 2
-    assert FlowItem.count_items(FLOW_NAME, statuses=[FlowStatus.add]) == 2
+    assert FlowItem.count_items(FLOW_NAME, statuses=[Statuses.add]) == 2
     for i in items:
         assert i.retries == 0
 
@@ -156,7 +156,7 @@ def test_create_update_error_items():
             **{
                 FlowItem.name.name: FLOW_NAME,
                 FlowItem.worktime.name: worktime - dt.timedelta(i),
-                FlowItem.status.name: FlowStatus.error,
+                FlowItem.status.name: Statuses.error,
             }
         )
 
@@ -168,7 +168,7 @@ def test_create_update_error_items():
     )
 
     assert len(items) == 2
-    assert FlowItem.count_items(FLOW_NAME, statuses=[FlowStatus.add]) == 2
+    assert FlowItem.count_items(FLOW_NAME, statuses=[Statuses.add]) == 2
     for i in items:
         assert i.retries == 0
 
@@ -184,7 +184,7 @@ def test_create_update_items_before_start_time():
         **{
             FlowItem.name.name: FLOW_NAME,
             FlowItem.worktime.name: worktime - dt.timedelta(1),
-            FlowItem.status.name: FlowStatus.error,
+            FlowItem.status.name: Statuses.error,
         }
     )
     items = FlowItem.recreate_prev_items(
@@ -208,7 +208,7 @@ def test_create_update_items_start_time_equals_worktime():
         **{
             FlowItem.name.name: FLOW_NAME,
             FlowItem.worktime.name: worktime,
-            FlowItem.status.name: FlowStatus.error,
+            FlowItem.status.name: Statuses.error,
         }
     )
     items = FlowItem.recreate_prev_items(
@@ -263,7 +263,7 @@ def test_create_missing_items():
 
     assert (
         FlowItem.select()
-        .where(FlowItem.name == FLOW_NAME, FlowItem.status == FlowStatus.add)
+        .where(FlowItem.name == FLOW_NAME, FlowItem.status == Statuses.add)
         .count()
     ) == 6
 
@@ -283,12 +283,12 @@ def test_change_status():
 
     FlowItem.change_status(
         FLOW_NAME,
-        new_status=FlowStatus.success,
+        new_status=Statuses.success,
         from_time=worktime - dt.timedelta(5),
         to_time=worktime,
     )
 
-    assert FlowItem.count_items(FLOW_NAME, statuses=[FlowStatus.success]) == len(items)
+    assert FlowItem.count_items(FLOW_NAME, statuses=[Statuses.success]) == len(items)
 
 
 def test_allow_execute_flow():
@@ -305,7 +305,7 @@ def test_allow_execute_flow():
     FlowItem.create_items(
         flow_name=FLOW_NAME,
         worktime_list=worktime_list,
-        status=FlowStatus.fatal_error,
+        status=Statuses.fatal_error,
         notebook_hash="",
     )
     assert (
@@ -335,7 +335,7 @@ def test_items_for_execute_seconds_interval_without_keep_sequence(flowitem_model
     FlowItem.create_items(
         flowitem_model.name_for_test,
         worktime_list=[worktime - dt.timedelta(minutes=4)],
-        **{flowitem_model.status.name: FlowStatus.success}
+        **{flowitem_model.status.name: Statuses.success}
     )
 
     items = FlowItem.get_items_for_execute(

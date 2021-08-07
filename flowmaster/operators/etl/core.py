@@ -2,7 +2,7 @@ import datetime as dt
 import time
 from typing import Iterator, Union, Optional
 
-from flowmaster.enums import FlowStatus, FlowETLStep, FlowOperator
+from flowmaster.enums import Statuses, FlowETLStep, FlowOperator
 from flowmaster.exceptions import FatalError
 from flowmaster.executors import (
     SleepIteration,
@@ -48,7 +48,7 @@ class ETLOperator(BaseOperator):
 
         try:
             yield {
-                self.Model.status.name: FlowStatus.run,
+                self.Model.status.name: Statuses.run,
                 self.Model.started_utc.name: dt.datetime.utcnow(),
                 self.Model.data.name: self.operator_context.dict(exclude_unset=True),
             }
@@ -110,21 +110,21 @@ class ETLOperator(BaseOperator):
 
         except FatalError as er:
             yield {
-                self.Model.status.name: FlowStatus.fatal_error,
+                self.Model.status.name: Statuses.fatal_error,
                 self.Model.log.name: str(er),
             }
             raise
 
         except Exception as er:
             yield {
-                self.Model.status.name: FlowStatus.error,
+                self.Model.status.name: Statuses.error,
                 self.Model.log.name: str(er),
             }
             raise
 
         except:
             yield {
-                self.Model.status.name: FlowStatus.error,
+                self.Model.status.name: Statuses.error,
                 self.Model.log.name: "Unknown error",
             }
             raise
@@ -133,7 +133,7 @@ class ETLOperator(BaseOperator):
             self.operator_context.export_kwargs.clear()
             yield {
                 self.Model.etl_step.name: None,
-                self.Model.status.name: FlowStatus.success,
+                self.Model.status.name: Statuses.success,
                 self.Model.retries.name: 0,
                 self.Model.data.name: self.operator_context.dict(exclude_unset=True),
             }
@@ -216,7 +216,7 @@ class ETLOperator(BaseOperator):
         else:
             if dry_run is False:
                 self.send_notifications(
-                    FlowStatus.success,
+                    Statuses.success,
                     period=self._get_period_text(start_period, end_period),
                 )
 

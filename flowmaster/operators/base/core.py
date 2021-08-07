@@ -2,7 +2,7 @@ import time
 from pathlib import Path
 from typing import Iterator
 
-from flowmaster.enums import FlowStatus
+from flowmaster.enums import Statuses
 from flowmaster.executors import ExecutorIterationTask, SleepIteration
 from flowmaster.operators.base.policy import Notebook
 from flowmaster.operators.base.work import Work
@@ -49,7 +49,7 @@ class BaseOperator:
             encoding="utf8",
         )
 
-    def send_notifications(self, status: FlowStatus.LiteralT, **kwargs) -> None:
+    def send_notifications(self, status: Statuses.LiteralT, **kwargs) -> None:
         if self.notebook.work.notifications is None:
             return
 
@@ -59,11 +59,11 @@ class BaseOperator:
 
         codex_tg = self.notebook.work.notifications.codex_telegram
 
-        if status == FlowStatus.success:
+        if status == Statuses.success:
             if codex_tg.on_success:
                 send_codex_telegram_message(codex_tg.links, message)
 
-        elif status in FlowStatus.error_statuses:
+        elif status in Statuses.error_statuses:
             if not self.Model.allow_execute_flow(
                 self.name,
                 notebook_hash=self.notebook.hash,

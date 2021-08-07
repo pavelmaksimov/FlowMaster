@@ -5,7 +5,7 @@ import pendulum
 
 
 def test_ordering_flow_tasks(flowitem_model, ya_metrika_logs_to_csv_notebook):
-    from flowmaster.enums import FlowStatus
+    from flowmaster.enums import Statuses
 
     with mock.patch(
         "flowmaster.service.iter_active_notebook_filenames"
@@ -20,14 +20,14 @@ def test_ordering_flow_tasks(flowitem_model, ya_metrika_logs_to_csv_notebook):
         assert len(tasks) == 5
         assert (
             flowitem_model.count_items(
-                ya_metrika_logs_to_csv_notebook.name, statuses=[FlowStatus.run]
+                ya_metrika_logs_to_csv_notebook.name, statuses=[Statuses.run]
             )
             == 5
         )
 
 
 def test_expires_items(flowitem_model, flowmasterdata_items_to_csv_notebook):
-    from flowmaster.enums import FlowStatus
+    from flowmaster.enums import Statuses
 
     with mock.patch(
         "flowmaster.service.iter_active_notebook_filenames"
@@ -41,7 +41,7 @@ def test_expires_items(flowitem_model, flowmasterdata_items_to_csv_notebook):
 
         work = Work(flowmasterdata_items_to_csv_notebook)
         for i in flowitem_model.iter_items(
-            flowmasterdata_items_to_csv_notebook.name, statuses=[FlowStatus.run]
+            flowmasterdata_items_to_csv_notebook.name, statuses=[Statuses.run]
         ):
             assert pendulum.parse(i.expires_utc, tz="UTC") == work.expires
             assert i.name == flowmasterdata_items_to_csv_notebook.name

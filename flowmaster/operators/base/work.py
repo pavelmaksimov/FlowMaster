@@ -4,7 +4,7 @@ from typing import Iterator, Optional, TYPE_CHECKING
 
 import pendulum
 
-from flowmaster.enums import FlowStatus
+from flowmaster.enums import Statuses
 from flowmaster.models import FlowItem
 from flowmaster.utils import iter_range_datetime, iter_period_from_range
 from flowmaster.utils.logging_helper import Logger, getLogger
@@ -123,7 +123,7 @@ def prepare_items_for_order(
     # The status is changed so that there is no repeated ordering of tasks.
     FlowItem.change_status(
         flow.name,
-        new_status=FlowStatus.run,
+        new_status=Statuses.run,
         from_time=start_period,
         to_time=end_period,
     )

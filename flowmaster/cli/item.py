@@ -2,7 +2,7 @@ import datetime as dt
 
 import typer
 
-from flowmaster.enums import FlowStatus
+from flowmaster.enums import Statuses
 from flowmaster.models import FlowItem
 
 app = typer.Typer()
@@ -19,13 +19,13 @@ def list_items(name: str, limit: int = 20):
             typer.style(f"log={i.log}", fg=typer.colors.WHITE) if i.log else "",
         ]
 
-        if i.status in FlowStatus.error_statuses:
+        if i.status in Statuses.error_statuses:
             msg_parts[1] = typer.style(msg_parts[1], fg=typer.colors.RED, bold=True)
-        elif i.status == FlowStatus.add:
+        elif i.status == Statuses.add:
             msg_parts[1] = typer.style(msg_parts[1], fg=typer.colors.WHITE, bold=True)
-        elif i.status == FlowStatus.run:
+        elif i.status == Statuses.run:
             msg_parts[1] = typer.style(msg_parts[1], fg=typer.colors.YELLOW, bold=True)
-        elif i.status == FlowStatus.success:
+        elif i.status == Statuses.success:
             msg_parts[1] = typer.style(msg_parts[1], fg=typer.colors.GREEN, bold=True)
 
         typer.echo("".join(msg_parts))
@@ -34,7 +34,7 @@ def list_items(name: str, limit: int = 20):
 @app.command()
 def list_errors(name: str, limit: int = 1000):
     for i in FlowItem.iter_items(name, limit=limit):
-        if i.status in FlowStatus.error_statuses:
+        if i.status in Statuses.error_statuses:
             msg_parts = [
                 f'  {i.worktime.strftime("%Y-%m-%dT%T").replace("T00:00:00", "")}  ',
                 typer.style(f"{i.status}  ", fg=typer.colors.RED, bold=True),
@@ -61,7 +61,7 @@ def restart(
 def restart_errors(name: str):
     for name_ in name.split(","):
         count = len(
-            FlowItem.recreate_items(name, filter_statuses=FlowStatus.error_statuses)
+            FlowItem.recreate_items(name, filter_statuses=Statuses.error_statuses)
         )
         typer.secho(f"  {name_} {typer.style(f'{count=}', fg=typer.colors.WHITE)} OK")
 

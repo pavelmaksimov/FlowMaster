@@ -1,7 +1,7 @@
 from typing import Literal
 
 
-class FlowStatus:
+class Statuses:
     add = "ADD"
     run = "RUN"
     success = "SUCCESS"
