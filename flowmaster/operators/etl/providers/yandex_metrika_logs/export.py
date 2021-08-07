@@ -8,8 +8,8 @@ from tapi_yandex_metrika.exceptions import YandexMetrikaTokenError
 from flowmaster.exceptions import AuthError
 from flowmaster.executors import SleepIteration
 from flowmaster.operators.etl.dataschema import ExportContext
+from flowmaster.operators.etl.enums import DataOrient
 from flowmaster.operators.etl.providers.abstract import ExportAbstract
-from flowmaster.operators.etl.types import DataOrient
 from flowmaster.utils.logging_helper import Logger
 
 if TYPE_CHECKING:

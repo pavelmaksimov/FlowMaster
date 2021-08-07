@@ -10,7 +10,7 @@ def test_flow(ya_metrika_logs_to_csv_notebook):
         YandexMetrikaLogsExport,
     )
     from flowmaster.operators.etl.core import ETLOperator
-    from flowmaster.operators.etl.types import DataOrient
+    from flowmaster.operators.etl.enums import DataOrient
 
     def export_func(
         start_period, end_period, **kwargs

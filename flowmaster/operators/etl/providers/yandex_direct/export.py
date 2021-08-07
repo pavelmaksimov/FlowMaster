@@ -7,11 +7,11 @@ from tapi_yandex_direct import YandexDirect, exceptions
 from flowmaster.exceptions import AuthError
 from flowmaster.executors import SleepIteration
 from flowmaster.operators.etl.dataschema import ExportContext
+from flowmaster.operators.etl.enums import DataOrient
 from flowmaster.operators.etl.providers.abstract import ExportAbstract
 from flowmaster.operators.etl.providers.yandex_direct.policy import (
     YandexDirectExportPolicy as ExportPolicy,
 )
-from flowmaster.operators.etl.types import DataOrient
 
 if TYPE_CHECKING:
     from flowmaster.operators.etl.policy import ETLNotebook

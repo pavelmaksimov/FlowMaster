@@ -3,8 +3,8 @@ from typing import TYPE_CHECKING, Optional, Iterator
 from faker import Faker
 
 from flowmaster.operators.etl.dataschema import ExportContext
+from flowmaster.operators.etl.enums import DataOrient
 from flowmaster.operators.etl.providers.abstract import ExportAbstract
-from flowmaster.operators.etl.types import DataOrient
 from flowmaster.utils import chunker
 from flowmaster.utils.logging_helper import Logger
 

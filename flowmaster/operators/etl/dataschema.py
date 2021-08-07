@@ -3,7 +3,7 @@ from typing import Optional, Union
 
 import pydantic
 
-from flowmaster.operators.etl.types import DataOrient
+from flowmaster.operators.etl.enums import DataOrient
 
 
 class ETLContext(pydantic.BaseModel):

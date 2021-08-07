@@ -3,11 +3,11 @@ from typing import TYPE_CHECKING, Any, Optional
 from datagun import DataSet, NULL_VALUES
 
 from flowmaster.operators.etl.dataschema import TransformContext
+from flowmaster.operators.etl.enums import DataOrient
 from flowmaster.operators.etl.transform.tschema import (
     FileTransformSchema,
     ClickhouseTransformSchema,
 )
-from flowmaster.operators.etl.types import DataOrient
 from flowmaster.utils.logging_helper import Logger, getLogger
 
 if TYPE_CHECKING:

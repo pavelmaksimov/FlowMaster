@@ -6,12 +6,12 @@ from tests.fixtures.yandex_metrika import yml_visits_to_clickhouse_notebook as N
 
 from flowmaster.operators.etl.core import ETLOperator
 from flowmaster.operators.etl.dataschema import ExportContext
+from flowmaster.operators.etl.enums import DataOrient
 from flowmaster.operators.etl.loaders.clickhouse.policy import ClickhouseLoadPolicy
 from flowmaster.operators.etl.loaders.clickhouse.service import ClickhouseLoader
 from flowmaster.operators.etl.providers.yandex_metrika_logs.export import (
     YandexMetrikaLogsExport,
 )
-from flowmaster.operators.etl.types import DataOrient
 from flowmaster.utils.yaml_helper import YamlHelper
 from tests import get_tests_dir
 

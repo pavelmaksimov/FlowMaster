@@ -14,10 +14,10 @@ from flowmaster.executors import (
 )
 from flowmaster.operators.etl.core import ETLOperator
 from flowmaster.operators.etl.dataschema import ExportContext
+from flowmaster.operators.etl.enums import DataOrient
 from flowmaster.operators.etl.providers.yandex_metrika_logs.export import (
     YandexMetrikaLogsExport,
 )
-from flowmaster.operators.etl.types import DataOrient
 from flowmaster.pool import pools
 
 logger_ = getLogger(__name__)

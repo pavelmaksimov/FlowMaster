@@ -5,8 +5,8 @@ import peewee
 
 from flowmaster.models import FlowItem
 from flowmaster.operators.etl.dataschema import ExportContext
+from flowmaster.operators.etl.enums import DataOrient
 from flowmaster.operators.etl.providers.abstract import ExportAbstract
-from flowmaster.operators.etl.types import DataOrient
 
 if TYPE_CHECKING:
     from flowmaster.operators.etl.policy import ETLNotebook

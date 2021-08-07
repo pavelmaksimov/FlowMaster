@@ -6,11 +6,11 @@ from typing import TYPE_CHECKING, Optional
 import jinja2
 import orjson
 
+from flowmaster.operators.etl.enums import DataOrient
 from flowmaster.operators.etl.loaders.csv.policy import (
     CSVLoadPolicy,
     CSVTransformPolicy,
 )
-from flowmaster.operators.etl.types import DataOrient
 from flowmaster.utils.logging_helper import Logger, getLogger
 
 if TYPE_CHECKING:

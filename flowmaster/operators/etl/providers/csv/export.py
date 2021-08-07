@@ -2,8 +2,8 @@ import csv
 from typing import TYPE_CHECKING, Iterator
 
 from flowmaster.operators.etl.dataschema import ExportContext
+from flowmaster.operators.etl.enums import DataOrient
 from flowmaster.operators.etl.providers.abstract import ExportAbstract
-from flowmaster.operators.etl.types import DataOrient
 from flowmaster.utils import chunker
 
 if TYPE_CHECKING:

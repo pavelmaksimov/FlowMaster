@@ -7,8 +7,8 @@ from tapi_yandex_metrika.resource_mapping import MANAGEMENT_RESOURCE_MAPPING
 
 from flowmaster.exceptions import AuthError
 from flowmaster.operators.etl.dataschema import ExportContext
+from flowmaster.operators.etl.enums import DataOrient
 from flowmaster.operators.etl.providers.abstract import ExportAbstract
-from flowmaster.operators.etl.types import DataOrient
 from flowmaster.utils.logging_helper import Logger
 
 if TYPE_CHECKING:

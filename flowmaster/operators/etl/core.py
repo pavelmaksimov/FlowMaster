@@ -11,10 +11,10 @@ from flowmaster.executors import (
 )
 from flowmaster.operators.base.core import BaseOperator
 from flowmaster.operators.etl.dataschema import ETLContext
+from flowmaster.operators.etl.enums import ETLSteps
 from flowmaster.operators.etl.loaders import storage_classes
 from flowmaster.operators.etl.policy import ETLNotebook
 from flowmaster.operators.etl.providers import provider_classes
-from flowmaster.operators.etl.types import ETLSteps
 from flowmaster.operators.etl.work import ETLWork
 from flowmaster.utils import iter_range_datetime
 from flowmaster.utils.logging_helper import create_logfile
