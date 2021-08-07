@@ -4,16 +4,19 @@ from pydantic import BaseModel
 
 from flowmaster.operators.base.policy import BasePolicy
 from flowmaster.operators.etl.providers.yandex_metrika_management.export import (
-    YandexMetrikaManagementExport as Api,
+    YandexMetrikaManagementExport,
 )
 
 
 class BaseExportPolicy(BasePolicy):
+    class ResourceNames(YandexMetrikaManagementExport.ResourceNames):
+        ...
+
     class CredentialsPolicy(BaseModel):
         access_token: str
 
     credentials: CredentialsPolicy
-    resource: Api.ResourceNames.LiteralT
+    resource: ResourceNames.LiteralT
     concurrency: int = 5
 
 
@@ -133,19 +136,19 @@ class ClientsExportPolicy(BaseExportPolicy):
     params: ClassVar = BaseModel()
 
 
-class YandexMetrikaManagementExportPolicy(BaseModel):
+class YandexMetrikaManagementExportPolicy(BaseExportPolicy):
     def __new__(
         cls, **kwargs
     ) -> Union[GoalsExportPolicy, CountersExportPolicy, ClientsExportPolicy]:
         resource = kwargs.get("resource")
-        if resource == Api.ResourceNames.goals:
+        if resource == YandexMetrikaManagementExport.ResourceNames.goals:
             return GoalsExportPolicy(**kwargs)
-        elif resource == Api.ResourceNames.counters:
+        elif resource == YandexMetrikaManagementExport.ResourceNames.counters:
             return CountersExportPolicy(**kwargs)
-        elif resource == Api.ResourceNames.clients:
+        elif resource == YandexMetrikaManagementExport.ResourceNames.clients:
             return ClientsExportPolicy(**kwargs)
         else:
             raise NotImplementedError(
                 f"'{resource}' resource not supported. "
-                f"Permitted: {Api.ResourceNames.LiteralT.__args__}"
+                f"Permitted: {YandexMetrikaManagementExport.ResourceNames.LiteralT.__args__}"
             )
