@@ -201,7 +201,6 @@ class ETLOperator(BaseOperator):
             if dry_run is False:
                 self.send_notifications(
                     **{
-                        "status": FlowStatus.error,
                         "period": self._get_period_text(start_period, end_period),
                         **log_data,
                     }
