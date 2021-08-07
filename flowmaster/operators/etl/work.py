@@ -8,7 +8,7 @@ from flowmaster.utils.logging_helper import Logger, getLogger
 from flowmaster.utils.logging_helper import logger
 
 if TYPE_CHECKING:
-    from flowmaster.operators.etl.service import ETLOperator
+    from flowmaster.operators.etl.core import ETLOperator
     from flowmaster.operators.etl.policy import ETLNotebook
 
 
@@ -74,7 +74,7 @@ def ordering_etl_flow_tasks(
     *, dry_run: bool = False
 ) -> Iterator[ExecutorIterationTask]:
     """Prepare flow function to be sent to the queue and executed"""
-    from flowmaster.operators.etl.service import ETLOperator
+    from flowmaster.operators.etl.core import ETLOperator
     from flowmaster.operators.etl.policy import ETLNotebook
 
     for name in iter_active_notebook_filenames():

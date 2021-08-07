@@ -10,7 +10,7 @@ from flowmaster.utils.logging_helper import Logger, getLogger
 
 if TYPE_CHECKING:
     from flowmaster.operators.base.policy import Notebook
-    from flowmaster.operators.etl.service import BaseOperator
+    from flowmaster.operators.etl.core import BaseOperator
     from flowmaster.executors import ExecutorIterationTask
 
 

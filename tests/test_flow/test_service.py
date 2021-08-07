@@ -9,7 +9,7 @@ def test_flow(ya_metrika_logs_to_csv_notebook):
     from flowmaster.operators.etl.providers.yandex_metrika_logs.export import (
         YandexMetrikaLogsExport,
     )
-    from flowmaster.operators.etl.service import ETLOperator
+    from flowmaster.operators.etl.core import ETLOperator
     from flowmaster.operators.etl.types import DataOrient
 
     def export_func(start_period, end_period) -> Iterator[tuple[dict, list, list]]:

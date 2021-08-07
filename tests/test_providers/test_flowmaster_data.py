@@ -1,7 +1,7 @@
 import datetime as dt
 
 from flowmaster.models import FlowItem
-from flowmaster.operators.etl.service import ETLOperator
+from flowmaster.operators.etl.core import ETLOperator
 
 
 def test_flow_flowmaster_items(flowmasterdata_items_to_csv_notebook):

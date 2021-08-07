@@ -6,11 +6,11 @@ from tests.fixtures.yandex_metrika import (
     ya_metrika_logs_to_csv_notebook,
 )
 
+from flowmaster.operators.etl.core import ETLOperator
 from flowmaster.operators.etl.policy import ETLNotebook
 from flowmaster.operators.etl.providers.yandex_metrika_logs.export import (
     YandexMetrikaLogsExport,
 )
-from flowmaster.operators.etl.service import ETLOperator
 from flowmaster.utils.yaml_helper import YamlHelper
 from tests import get_tests_dir
 

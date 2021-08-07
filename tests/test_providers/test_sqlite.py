@@ -1,6 +1,6 @@
 import datetime as dt
 
-from flowmaster.operators.etl.service import ETLOperator
+from flowmaster.operators.etl.core import ETLOperator
 
 
 def test_flow_sqlite_to_csv(sqlite_to_csv_notebook):

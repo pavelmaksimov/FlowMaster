@@ -10,7 +10,7 @@ from flowmaster.executors import (
     ExecutorIterationTask,
 )
 from flowmaster.models import FlowStatus, FlowETLStep, FlowOperator
-from flowmaster.operators.base.service import BaseOperator
+from flowmaster.operators.base.core import BaseOperator
 from flowmaster.operators.etl.dataschema import ETLContext
 from flowmaster.operators.etl.loaders import storage_classes
 from flowmaster.operators.etl.policy import ETLNotebook

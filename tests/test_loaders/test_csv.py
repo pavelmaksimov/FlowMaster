@@ -1,6 +1,6 @@
 from freezegun import freeze_time
 
-from flowmaster.operators.etl.service import ETLOperator
+from flowmaster.operators.etl.core import ETLOperator
 
 
 @freeze_time("2021-01-01")
