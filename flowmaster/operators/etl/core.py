@@ -2,7 +2,7 @@ import datetime as dt
 import time
 from typing import Iterator, Union, Optional
 
-from flowmaster.enums import Statuses, FlowOperator
+from flowmaster.enums import Statuses, Operators
 from flowmaster.exceptions import FatalError
 from flowmaster.executors import (
     SleepIteration,
@@ -185,7 +185,7 @@ class ETLOperator(BaseOperator):
             self.name,
             datetime_list,
             **{
-                self.Model.operator.name: FlowOperator.etl,
+                self.Model.operator.name: Operators.etl,
                 self.Model.data.name: self.operator_context.dict(exclude_unset=True),
                 self.Model.logpath.name: str(self.get_logfile_path().absolute()),
             },

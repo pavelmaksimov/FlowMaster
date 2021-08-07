@@ -11,6 +11,6 @@ class Statuses:
     LiteralT = Literal[add, run, success, error, fatal_error]
 
 
-class FlowOperator:
+class Operators:
     etl = "ETL"
     LiteralT = Literal[etl]
