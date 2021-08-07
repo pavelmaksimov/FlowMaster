@@ -274,7 +274,7 @@ class ThreadAsyncExecutor:
     def run_continuously(
         self, order_interval: int = 15, orders: int = None, work_duration: int = None
     ) -> None:
-        def target():
+        def scheduler():
             logger.info("Start scheduler")
             begin = time.time()
             iter_begin = time.time()
@@ -309,8 +309,8 @@ class ThreadAsyncExecutor:
             logger.info("Stop scheduler")
 
         schedule_thread = threading.Thread(
-            target=target,
-            name="Flowmaster_schedule",
+            target=scheduler,
+            name="Flowmaster_scheduler",
         )
         self.threads["schedule_thread"] = schedule_thread
         schedule_thread.start()
