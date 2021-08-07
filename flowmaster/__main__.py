@@ -1,4 +1,3 @@
-import pathlib
 import platform
 from functools import partial
 
@@ -8,6 +7,7 @@ import uvicorn
 import flowmaster.cli.db
 import flowmaster.cli.item
 import flowmaster.cli.notebook
+from flowmaster import prepare
 from flowmaster.setttings import Settings
 from flowmaster.web.views import webapp
 
@@ -17,30 +17,7 @@ app.add_typer(flowmaster.cli.db.app, name="db")
 app.add_typer(flowmaster.cli.item.app, name="item")
 
 
-@app.command()
-def init():
-    from flowmaster.models import FlowItem
-    from flowmaster.database import db
-
-    typer.echo(f"\nAPP_HOME={Settings.APP_HOME}")
-
-    pathlib.Path.mkdir(Settings.APP_HOME, exist_ok=True)
-    pathlib.Path.mkdir(Settings.FILE_STORAGE_DIR, exist_ok=True)
-    pathlib.Path.mkdir(Settings.LOGS_DIR, exist_ok=True)
-    pathlib.Path.mkdir(Settings.NOTEBOOKS_DIR, exist_ok=True)
-    pathlib.Path.mkdir(Settings.ARCHIVE_NOTEBOOKS_DIR, exist_ok=True)
-    pathlib.Path.mkdir(Settings.PLUGINS_DIR, exist_ok=True)
-
-    if not pathlib.Path.exists(Settings.POOL_CONFIG_FILEPATH):
-        with open(Settings.POOL_CONFIG_FILEPATH, "w") as f:
-            f.write("flows: 100\n")
-
-    db.create_tables([FlowItem])
-
-
-def prepare_for_run(dry_run: bool = False):
-    init()
-
+def prepare_items(dry_run: bool = False):
     typer.echo("\n===================" "\nFlowMaster" "\n===================\n")
 
     from flowmaster.models import FlowItem
@@ -78,7 +55,7 @@ def run_web(port):
 
 @app.command()
 def run_local(interval: int = 20, dry_run: bool = False):
-    prepare_for_run(dry_run=dry_run)
+    prepare_items(dry_run=dry_run)
 
     from flowmaster.utils.local_executor import sync_executor
 
@@ -94,7 +71,10 @@ def run(
     dry_run: bool = False,
     port: int = Settings.WEBUI_PORT,
 ):
-    prepare_for_run(dry_run=dry_run)
+    typer.echo(f"\nAPP_HOME={Settings.APP_HOME}")
+
+    prepare()
+    prepare_items(dry_run=dry_run)
     run_web(port)
 
     from flowmaster.operators.base.work import ordering_flow_tasks
