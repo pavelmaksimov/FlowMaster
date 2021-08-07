@@ -38,12 +38,19 @@ class FlowOperator:
 class DateTimeTZField(playhouse.sqlite_ext.DateTimeField):
     def python_value(self, value: str) -> dt.datetime:
         dt_, tz_name = value.split(" ")
-        tz_info = pendulum.tz.timezone(tz_name)
+        tz_info = pendulum.timezone(tz_name)
         return dt.datetime.fromisoformat(dt_).replace(tzinfo=tz_info)
 
-    def db_value(self, value: dt.datetime) -> Optional[str]:
-        dt_ = pendulum.instance(value)
-        return f"{value.isoformat()} {dt_.timezone_name}" if value else None
+    def db_value(
+        self, value: Optional[Union[dt.datetime, pendulum.DateTime]]
+    ) -> Optional[str]:
+        if value is not None:
+            if not isinstance(value, pendulum.DateTime):
+                value = pendulum.instance(value)
+
+            dt_str = value.replace(tzinfo=None).isoformat()
+
+            return f"{dt_str} {value.timezone_name}"
 
 
 class BaseDBModel(playhouse.sqlite_ext.Model):
