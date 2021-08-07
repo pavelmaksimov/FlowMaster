@@ -32,8 +32,14 @@ setup(
     author="Pavel Maksimov",
     author_email="vur21@ya.ru",
     url="https://github.com/pavelmaksimov/flowmaster",
-    packages=find_packages(),
-    include_package_data=True,
+    packages=find_packages(exclude=("*tests2*",)),
+    package_data={
+        package: [
+            "web/templates/*.html",
+            "web/templates/includes/*.html",
+            "web/templates/pages/*.html",
+        ],
+    },
     install_requires=[
         "requests",
         "pytz",
