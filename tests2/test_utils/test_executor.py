@@ -1,4 +1,5 @@
 import pendulum
+from tests.fixtures.yandex_metrika import ya_metrika_logs_to_csv_notebook as NOTEBOOK
 
 from flowmaster.executors import (
     catch_exceptions,
@@ -11,7 +12,6 @@ from flowmaster.operators.etl.providers.yandex_metrika_logs import (
 from flowmaster.operators.etl.service import ETLOperator
 from flowmaster.utils.yaml_helper import YamlHelper
 from tests import get_tests_dir
-from tests.fixtures.yandex_metrika import yml_visits_to_csv_notebook as NOTEBOOK
 
 credentials = YamlHelper.parse_file(get_tests_dir("tests2") / "credentials.yml")
 NOTEBOOK.export.credentials = YandexMetrikaLogsExportPolicy.CredentialsPolicy(

@@ -1,10 +1,5 @@
 from pathlib import Path
 
-from flowmaster.database import db
-from flowmaster.models import FlowItem
-
-db.create_tables([FlowItem])
-
 
 def get_tests_dir(test_dir_name: str = "tests") -> Path:
     cwd = Path.cwd()

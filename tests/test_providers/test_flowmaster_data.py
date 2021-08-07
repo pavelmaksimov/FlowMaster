@@ -30,19 +30,20 @@ def test_flow_flowmasterdata_pools(
 
     with etl_flow.Load.open_file(mode="r") as loadfile:
         data = loadfile.readlines()
-        print(data)
 
     assert [
         row
         for row in data
-        if "____test_flowmasterdata_items_to_csv_export_concurrency__" in row
+        if "____test_flowmasterdata_items_to_csv___export_concurrency__" in row
     ]
     assert [
         row
         for row in data
-        if "____test_flowmasterdata_items_to_csv_transform_concurrency__" in row
+        if "____test_flowmasterdata_items_to_csv___transform_concurrency__" in row
     ]
     assert [
-        row for row in data if "____test_flowmasterdata_items_to_csv_load_concurrency__" in row
+        row
+        for row in data
+        if "____test_flowmasterdata_items_to_csv___load_concurrency__" in row
     ]
     assert [row for row in data if "name\tsize\tlimit\tdatetime" in row]

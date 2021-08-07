@@ -2,6 +2,9 @@ import datetime as dt
 from typing import Iterator
 
 from mock import Mock
+from tests.fixtures.yandex_metrika import (
+    ya_metrika_logs_to_csv_notebook,
+)
 
 from flowmaster.operators.etl.policy import ETLNotebook
 from flowmaster.operators.etl.providers.yandex_metrika_logs.export import (
@@ -10,9 +13,6 @@ from flowmaster.operators.etl.providers.yandex_metrika_logs.export import (
 from flowmaster.operators.etl.service import ETLOperator
 from flowmaster.utils.yaml_helper import YamlHelper
 from tests import get_tests_dir
-from tests.fixtures.yandex_metrika import (
-    yml_visits_to_csv_notebook,
-)
 
 credentials = YamlHelper.parse_file(get_tests_dir("tests2") / "credentials.yml")
 
@@ -21,13 +21,13 @@ def test_codex_telegram():
     def export_func(start_period, end_period) -> Iterator[tuple[dict, list, list]]:
         yield ({}, ["date"], [[start_period]])
 
-    yml_visits_to_csv_notebook.work.notifications = ETLNotebook.WorkPolicy.NotificationsPolicy(
+    ya_metrika_logs_to_csv_notebook.work.notifications = ETLNotebook.WorkPolicy.NotificationsPolicy(
         codex_telegram=ETLNotebook.WorkPolicy.NotificationsPolicy.CodexTelegramPolicy(
             links=[credentials["codex_telegram"]],
             on_success=True,
         )
     )
-    notebook = ETLNotebook(**dict(yml_visits_to_csv_notebook))
+    notebook = ETLNotebook(**dict(ya_metrika_logs_to_csv_notebook))
 
     YandexMetrikaLogsExport.__call__ = Mock(side_effect=export_func)
     etl_flow = ETLOperator(notebook)

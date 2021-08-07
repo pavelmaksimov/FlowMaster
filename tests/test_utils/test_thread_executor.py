@@ -19,7 +19,6 @@ from flowmaster.operators.etl.providers.yandex_metrika_logs.export import (
 from flowmaster.operators.etl.service import ETLOperator
 from flowmaster.operators.etl.types import DataOrient
 from flowmaster.pool import pools
-from tests.fixtures.yandex_metrika import yml_visits_to_csv_notebook
 
 logger_ = getLogger(__name__)
 logger_.level = 20
@@ -109,7 +108,7 @@ def test_pool_sleep_iterations():
     assert len(completed_tasks) == count_task * orders
 
 
-def test_concurrency():
+def test_concurrency(ya_metrika_logs_to_csv_notebook):
     duration_func = 2
     count_task = 2
     concurrency = 1
@@ -131,15 +130,15 @@ def test_concurrency():
         worktimes = [dt.datetime(2021, 1, i + 1) for i in range(count_task)]
 
         for worktime in worktimes:
-            yml_visits_to_csv_notebook.load.file_name = (
+            ya_metrika_logs_to_csv_notebook.load.file_name = (
                 f"{test_concurrency.__name__}.tsv"
             )
-            yml_visits_to_csv_notebook.work.concurrency = concurrency
-            yml_visits_to_csv_notebook.export.concurrency = 4
-            yml_visits_to_csv_notebook.transform.concurrency = 4
-            yml_visits_to_csv_notebook.load.concurrency = 4
+            ya_metrika_logs_to_csv_notebook.work.concurrency = concurrency
+            ya_metrika_logs_to_csv_notebook.export.concurrency = 4
+            ya_metrika_logs_to_csv_notebook.transform.concurrency = 4
+            ya_metrika_logs_to_csv_notebook.load.concurrency = 4
 
-            flow = ETLOperator(yml_visits_to_csv_notebook)
+            flow = ETLOperator(ya_metrika_logs_to_csv_notebook)
             yield flow(start_period=worktime, end_period=worktime)
 
     executor = ThreadAsyncExecutor(ordering_task_func=order_task, dry_run=True)
@@ -153,7 +152,7 @@ def test_concurrency():
     assert sorted(completed_tasks)[-1] >= count_task * duration_func / concurrency
 
 
-def test_pools():
+def test_pools(ya_metrika_logs_to_csv_notebook):
     duration_func = 2
     count_task = 2
     pool_size = 2
@@ -176,10 +175,12 @@ def test_pools():
         pools.append_pools({"two": pool_size})
 
         for worktime in worktimes:
-            yml_visits_to_csv_notebook.load.file_name = f"{test_pools.__name__}.tsv"
-            yml_visits_to_csv_notebook.export.pools = ["two"]
+            ya_metrika_logs_to_csv_notebook.load.file_name = (
+                f"{test_pools.__name__}.tsv"
+            )
+            ya_metrika_logs_to_csv_notebook.export.pools = ["two"]
 
-            flow = ETLOperator(yml_visits_to_csv_notebook)
+            flow = ETLOperator(ya_metrika_logs_to_csv_notebook)
             task = flow(start_period=worktime, end_period=worktime)
 
             yield task
