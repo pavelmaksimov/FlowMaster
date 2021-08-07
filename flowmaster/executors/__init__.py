@@ -3,7 +3,7 @@ import functools
 import queue
 import threading
 import time
-from typing import Optional, TypeVar, Union, Callable, Iterator
+from typing import Optional, TypeVar, Union, Callable
 
 import pendulum
 from pydantic import BaseModel, PrivateAttr
@@ -84,13 +84,13 @@ class ExecutorIterationTask:
 
     def __init__(
         self,
-        generator,
+        iterator,
         /,
         *,
         expires: Optional[dt.datetime] = None,
         soft_time_limit_seconds: Optional[int] = None,
     ):
-        self.generator = generator  # TODO: rename to iterator
+        self.iterator = iterator
         self.soft_time_limit_seconds = soft_time_limit_seconds
         self.expires = expires
 
@@ -120,7 +120,7 @@ class ExecutorIterationTask:
 
     def _iterate(self) -> dict:  # TODO: New Type flow_iteration_log
         if self._sleep_item is None:
-            result = next(self.generator)
+            result = next(self.iterator)
         else:
             result = self._sleep_item
             self._sleep_item = None
@@ -168,17 +168,22 @@ class ExecutorIterationTask:
             self.duration = time.time() - self.begin_time
             self.check_limit()
 
-    def __call__(self) -> Iterator[dict]:  # TODO: New Type flow_iteration_log
-        while True:
-            try:
-                yield next(self)
-            except SleepException as sleep_iteration:
-                time.sleep(sleep_iteration.sleep)
-            except StopIteration:
-                break
+    def execute(self) -> list:
+        """
+        Executes the flow immediately, bypassing the executor and the scheduler.
+        All restrictions will be taken into account.
+        """
 
-    def execute(self) -> list[dict]:  # TODO: New Type flow_iteration_log
-        return list(self())
+        def _():
+            while True:
+                try:
+                    yield next(self)
+                except SleepException as sleep_iteration:
+                    time.sleep(sleep_iteration.sleep)
+                except StopIteration:
+                    break
+
+        return list(_())
 
 
 class ThreadAsyncExecutor:
