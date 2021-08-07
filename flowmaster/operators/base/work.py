@@ -28,6 +28,7 @@ class Work:
         self.retries = notebook.work.retries
         self.max_fatal_errors = notebook.work.max_fatal_errors
         self.soft_time_limit_seconds = notebook.work.soft_time_limit_seconds
+        # TODO: move to policy
         if notebook.work.time_limit_seconds_from_worktime is not None:
             self.expires = self.current_worktime + dt.timedelta(
                 seconds=notebook.work.time_limit_seconds_from_worktime
@@ -63,6 +64,8 @@ class Work:
 
         if self.start_datetime > end_time:
             start_time = self.start_datetime - self.interval_timedelta
+            if start_time > end_time:
+                raise ValueError(f"{start_time=} > {end_time=}")
         else:
             start_time = self.start_datetime
 

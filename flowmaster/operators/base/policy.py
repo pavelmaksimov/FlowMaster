@@ -22,7 +22,7 @@ class _SchedulePolicy(BaseModel):
     interval: Union[PositiveInt, Literal["daily", "hourly"]]
     timezone: str
     start_time: str
-    from_date: Optional[dt.date] = None
+    from_date: Optional[Union[str, pendulum.DateTime]] = None
     period_length: int = 1
     keep_sequence: bool = False
     _start_datetime: dt.datetime = PrivateAttr()
@@ -34,6 +34,22 @@ class _SchedulePolicy(BaseModel):
         if values.get("from_date") is None and keep_sequence is True:
             raise ValueError("keep_sequence cannot exist if from_date is missing")
         return keep_sequence
+
+    @validator("from_date", pre=True)
+    def _validate_from_date(
+        cls, from_date: Optional[Union[str, pendulum.DateTime]], values, **kwargs
+    ) -> Optional[pendulum.DateTime]:
+        if from_date and not isinstance(from_date, pendulum.DateTime):
+            raise TypeError(f"{from_date=} is type {type(from_date)}")
+        elif (
+            isinstance(from_date, pendulum.DateTime)
+            and from_date.timezone_name != values["timezone"]
+        ):
+            from_date = from_date.astimezone(pendulum.timezone(values["timezone"]))
+        elif isinstance(from_date, str):
+            from_date = pendulum.parse(from_date, tz=values["timezone"])
+
+        return from_date
 
     def _set_keep_sequence(self):
         if self.from_date is not None:
@@ -56,9 +72,7 @@ class _SchedulePolicy(BaseModel):
         self._start_datetime = pendulum.parse(self.start_time, tz=self.timezone)
 
         if self.from_date is not None:
-            self._start_datetime = pendulum.parse(
-                self.from_date.isoformat(), tz=self.timezone
-            ).replace(
+            self._start_datetime = self.from_date.replace(
                 hour=self._start_datetime.hour,
                 minute=self._start_datetime.minute,
                 second=self._start_datetime.second,
