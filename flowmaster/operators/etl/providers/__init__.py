@@ -19,6 +19,7 @@ from flowmaster.operators.etl.providers.yandex_metrika_stats import (
 from flowmaster.setttings import Settings
 from flowmaster.utils.import_helper import iter_module_objects
 
+# TODO: replace to class.
 provider_classes = {
     FakeDataProvider.name: FakeDataProvider,
     YandexMetrikaStatsProvider.name: YandexMetrikaStatsProvider,

@@ -54,11 +54,11 @@ class CriteoExport(ExportAbstract):
             self.logger.info("Iter export data")
             iter_num += 1
             try:
-                [
+                (
                     response_content,
                     http_code,
                     response_headers,
-                ] = self.analytics_api.get_adset_report_with_http_info(
+                ) = self.analytics_api.get_adset_report_with_http_info(
                     statistics_report_query_message=stats_query_message,
                     async_req=True,
                     _preload_content=False,
