@@ -1,6 +1,7 @@
 import typer
 
-from flowmaster.models import FlowItem, FlowStatus
+from flowmaster.enums import FlowStatus
+from flowmaster.models import FlowItem
 from flowmaster.service import (
     iter_active_notebook_filenames,
     iter_archive_notebook_filenames,

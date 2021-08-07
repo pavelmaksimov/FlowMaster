@@ -139,7 +139,7 @@ def test_concurrency(ya_metrika_logs_to_csv_notebook):
             ya_metrika_logs_to_csv_notebook.load.concurrency = 4
 
             flow = ETLOperator(ya_metrika_logs_to_csv_notebook)
-            yield flow(start_period=worktime, end_period=worktime)
+            yield flow.task(start_period=worktime, end_period=worktime)
 
     executor = ThreadAsyncExecutor(ordering_task_func=order_task, dry_run=True)
     executor.start(workers=count_task, orders=1)
@@ -181,7 +181,7 @@ def test_pools(ya_metrika_logs_to_csv_notebook):
             ya_metrika_logs_to_csv_notebook.export.pools = ["two"]
 
             flow = ETLOperator(ya_metrika_logs_to_csv_notebook)
-            task = flow(start_period=worktime, end_period=worktime)
+            task = flow.task(start_period=worktime, end_period=worktime)
 
             yield task
 

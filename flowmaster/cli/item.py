@@ -2,7 +2,8 @@ import datetime as dt
 
 import typer
 
-from flowmaster.models import FlowItem, FlowStatus
+from flowmaster.enums import FlowStatus
+from flowmaster.models import FlowItem
 
 app = typer.Typer()
 

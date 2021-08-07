@@ -4,7 +4,8 @@ from typing import Iterator, Optional, TYPE_CHECKING
 
 import pendulum
 
-from flowmaster.models import FlowItem, FlowStatus
+from flowmaster.enums import FlowStatus
+from flowmaster.models import FlowItem
 from flowmaster.utils import iter_range_datetime, iter_period_from_range
 from flowmaster.utils.logging_helper import Logger, getLogger
 

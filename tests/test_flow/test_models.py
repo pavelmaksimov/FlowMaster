@@ -4,7 +4,8 @@ import pendulum
 import pytest
 from mock import Mock
 
-from flowmaster.models import FlowItem, FlowStatus
+from flowmaster.enums import FlowStatus
+from flowmaster.models import FlowItem
 from flowmaster.utils import iter_range_datetime
 
 FLOW_NAME = "test_schedule"

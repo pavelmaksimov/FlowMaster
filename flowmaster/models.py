@@ -1,5 +1,5 @@
 import datetime as dt
-from typing import Union, Iterable, Optional, Literal, Sequence
+from typing import Union, Iterable, Optional, Sequence
 
 import orjson
 import peewee
@@ -9,30 +9,9 @@ import pydantic
 from playhouse.hybrid import hybrid_property
 
 from flowmaster.database import db
+from flowmaster.enums import FlowStatus
 from flowmaster.utils import iter_period_from_range, iter_range_datetime
 from flowmaster.utils.logging_helper import logger
-
-
-class FlowStatus:
-    add = "ADD"
-    run = "RUN"
-    success = "SUCCESS"
-    error = "ERROR"
-    fatal_error = "FATAL_ERROR"
-    error_statuses = (error, fatal_error)
-    LiteralT = Literal[add, run, success, error, fatal_error]
-
-
-class FlowETLStep:
-    export = "EXPORT"
-    transform = "TRANSFORM"
-    load = "LOAD"
-    LiteralT = Literal[export, transform, load]
-
-
-class FlowOperator:
-    etl = "ETL"
-    LiteralT = Literal[etl]
 
 
 class DateTimeTZField(playhouse.sqlite_ext.DateTimeField):

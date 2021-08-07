@@ -5,7 +5,8 @@ from fastapi import FastAPI, Request, Form
 from fastapi.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
 
-from flowmaster.models import FlowItem, FlowStatus
+from flowmaster.enums import FlowStatus
+from flowmaster.models import FlowItem
 from flowmaster.service import (
     get_notebook,
     validate_notebook_policy,

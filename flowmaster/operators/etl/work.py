@@ -55,6 +55,8 @@ class ETLWork(Work):
         """
         Collects all flow items for execute.
         """
+        # TODO: Переименовать update_stale_data в update_range, этот параметр не только для ETL,
+        #  он и для других операторов нужен, поэтому удалить эту и завернуть все в одну функцию.
         return self.Model.get_items_for_execute(
             self.name,
             self.current_worktime,
@@ -74,6 +76,8 @@ def ordering_etl_flow_tasks(
     *, dry_run: bool = False
 ) -> Iterator[ExecutorIterationTask]:
     """Prepare flow function to be sent to the queue and executed"""
+    # TODO: избавиться от функции, переделать так, чтобы одна функция была для заказа
+
     from flowmaster.operators.etl.core import ETLOperator
     from flowmaster.operators.etl.policy import ETLNotebook
 
@@ -91,7 +95,7 @@ def ordering_etl_flow_tasks(
         flow = ETLOperator(notebook)
 
         for start_period, end_period in flow.Work.iter_period_for_execute():
-            etl_flow_task = flow(start_period, end_period, dry_run=dry_run)
+            etl_flow_task = flow.task(start_period, end_period, dry_run=dry_run)
 
             with prepare_items_for_order(flow, start_period, end_period):
                 logger.info(

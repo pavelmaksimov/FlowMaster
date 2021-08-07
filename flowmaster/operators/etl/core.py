@@ -2,14 +2,13 @@ import datetime as dt
 import time
 from typing import Iterator, Union, Optional
 
+from flowmaster.enums import FlowStatus, FlowETLStep, FlowOperator
 from flowmaster.exceptions import FatalError
 from flowmaster.executors import (
     SleepIteration,
     NextIterationInPools,
     AsyncIterationT,
-    ExecutorIterationTask,
 )
-from flowmaster.models import FlowStatus, FlowETLStep, FlowOperator
 from flowmaster.operators.base.core import BaseOperator
 from flowmaster.operators.etl.dataschema import ETLContext
 from flowmaster.operators.etl.loaders import storage_classes
@@ -36,8 +35,13 @@ class ETLOperator(BaseOperator):
 
         self.operator_context = ETLContext(storage=notebook.storage)
 
-    def iterator(
-        self, start_period: dt.datetime, end_period: dt.datetime, **kwargs
+    def __call__(
+        self,
+        start_period: dt.datetime,
+        end_period: dt.datetime,
+        *,
+        dry_run: bool = False,
+        **kwargs,
     ) -> Iterator[Union[dict, AsyncIterationT]]:
 
         begin_time = time.time()
@@ -156,7 +160,7 @@ class ETLOperator(BaseOperator):
         )
         return create_logfile(f"{period_text}.log", self.name)
 
-    def task_generator(
+    def _iterator(
         self,
         start_period: dt.datetime,
         end_period: dt.datetime,
@@ -174,6 +178,8 @@ class ETLOperator(BaseOperator):
         datetime_list = iter_range_datetime(
             start_period, end_period, self.Work.interval_timedelta
         )
+
+        # TODO: Записи уже должны быть, их не надо создавать
         self.items = self.Model.create_items(
             self.name,
             datetime_list,
@@ -188,7 +194,7 @@ class ETLOperator(BaseOperator):
         try:
             self.logger.info("Start flow: {} {}", self.name, period_text)
 
-            for item in self.iterator(start_period, end_period, **kwargs):
+            for item in self(start_period, end_period, dry_run=dry_run, **kwargs):
                 if isinstance(item, dict):
                     log_data = item
                     self.Model.update_items(self.items, **log_data)
@@ -217,19 +223,3 @@ class ETLOperator(BaseOperator):
         finally:
             self.Model.update_items(self.items)
             self.logger.info("End flow: {}  {}", self.name, period_text)
-
-    def __call__(
-        self,
-        start_period: dt.datetime,
-        end_period: dt.datetime,
-        *,
-        dry_run: bool = False,
-        **kwargs,
-    ) -> ExecutorIterationTask:
-        # TODO: перенести ExecutorIterationTask в BaseOperator,
-        #  чтобы не добавлять его везде и как то через маг.классы итерации спрятать
-        return ExecutorIterationTask(
-            self.task_generator(start_period, end_period, dry_run=dry_run, **kwargs),
-            expires=self.Work.expires,
-            soft_time_limit_seconds=self.Work.soft_time_limit_seconds,
-        )

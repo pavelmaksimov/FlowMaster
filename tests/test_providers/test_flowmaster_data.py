@@ -8,7 +8,7 @@ def test_flow_flowmaster_items(flowmasterdata_items_to_csv_notebook):
     FlowItem.clear(flowmasterdata_items_to_csv_notebook.name)
 
     etl_flow = ETLOperator(flowmasterdata_items_to_csv_notebook)
-    list(etl_flow(dt.datetime(2021, 2, 5), dt.datetime(2021, 2, 5)))
+    etl_flow.dry_run(dt.datetime(2021, 2, 5), dt.datetime(2021, 2, 5))
 
     with etl_flow.Load.open_file(mode="r") as loadfile:
         data = loadfile.readlines()
@@ -26,7 +26,7 @@ def test_flow_flowmasterdata_pools(
     flowmasterdata_items_to_csv_notebook.export = flowmasterdata_pools_export_policy
 
     etl_flow = ETLOperator(flowmasterdata_items_to_csv_notebook)
-    list(etl_flow(dt.datetime(2021, 2, 1), dt.datetime(2021, 2, 1)))
+    etl_flow.dry_run(dt.datetime(2021, 2, 1), dt.datetime(2021, 2, 1))
 
     with etl_flow.Load.open_file(mode="r") as loadfile:
         data = loadfile.readlines()

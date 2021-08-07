@@ -5,7 +5,7 @@ import pendulum
 
 
 def test_ordering_flow_tasks(flowitem_model, ya_metrika_logs_to_csv_notebook):
-    from flowmaster.models import FlowStatus
+    from flowmaster.enums import FlowStatus
 
     with mock.patch(
         "flowmaster.service.iter_active_notebook_filenames"
@@ -27,7 +27,7 @@ def test_ordering_flow_tasks(flowitem_model, ya_metrika_logs_to_csv_notebook):
 
 
 def test_expires_items(flowitem_model, flowmasterdata_items_to_csv_notebook):
-    from flowmaster.models import FlowStatus
+    from flowmaster.enums import FlowStatus
 
     with mock.patch(
         "flowmaster.service.iter_active_notebook_filenames"
