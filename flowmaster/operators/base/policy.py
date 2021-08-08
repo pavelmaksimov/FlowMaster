@@ -39,15 +39,22 @@ class _SchedulePolicy(BaseModel):
     def _validate_from_date(
         cls, from_date: Optional[Union[str, pendulum.DateTime]], values, **kwargs
     ) -> Optional[pendulum.DateTime]:
-        if from_date and not isinstance(from_date, pendulum.DateTime):
-            raise TypeError(f"{from_date=} is type {type(from_date)}")
-        elif (
+        if (
             isinstance(from_date, pendulum.DateTime)
             and from_date.timezone_name != values["timezone"]
         ):
             from_date = from_date.astimezone(pendulum.timezone(values["timezone"]))
         elif isinstance(from_date, str):
             from_date = pendulum.parse(from_date, tz=values["timezone"])
+        elif isinstance(from_date, dt.date):
+            from_date = pendulum.parse(
+                from_date.strftime("%Y-%m-%dT%H:%M:%S"), tz=values["timezone"]
+            )
+        elif isinstance(from_date, dt.datetime):
+            from_date = pendulum.instance(from_date, tz=values["timezone"])
+
+        if from_date and not isinstance(from_date, pendulum.DateTime):
+            raise TypeError(f"{from_date=} is type {type(from_date)}")
 
         return from_date
 
