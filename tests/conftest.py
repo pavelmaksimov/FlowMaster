@@ -62,6 +62,19 @@ def flowitem_model():
 
 
 @pytest.fixture()
+def flowitem(pendulum_utctoday, flowitem_model):
+    name = str(uuid.uuid4())
+    flowitem_model.clear(name, from_time=pendulum_utctoday, to_time=pendulum_utctoday)
+
+    yield flowitem_model.create(
+        **{
+            flowitem_model.name.name: name,
+            flowitem_model.worktime.name: pendulum_utctoday,
+        }
+    )
+
+
+@pytest.fixture()
 def work_policy(pendulum_utcnow):
     from flowmaster.operators.etl.policy import ETLNotebook
 

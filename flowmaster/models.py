@@ -32,6 +32,24 @@ class DateTimeTZField(playhouse.sqlite_ext.DateTimeField):
             return f"{dt_str} {value.timezone_name}"
 
 
+class DateTimeUTCField(playhouse.sqlite_ext.DateTimeField):
+    def python_value(self, value: str) -> pendulum.DateTime:
+        if value is not None:
+            return pendulum.parse(value, tz=pendulum.timezone("UTC"))
+
+    def db_value(
+        self, value: Optional[Union[dt.datetime, pendulum.DateTime]]
+    ) -> Optional[str]:
+        if value is not None:
+            if value.tzinfo is None:
+                raise ValueError("Timezone not set.")
+
+            value = value.astimezone(pendulum.timezone("UTC"))
+            value = value.replace(tzinfo=None).isoformat()
+
+        return value
+
+
 class BaseDBModel(playhouse.sqlite_ext.Model):
     class Meta:
         database = db
@@ -57,12 +75,12 @@ class FlowItem(BaseDBModel):
     # TODO: rename log to info
     log = playhouse.sqlite_ext.TextField(null=True)
     logpath = playhouse.sqlite_ext.TextField(null=True)
-    expires_utc = playhouse.sqlite_ext.DateTimeField(null=True)
-    started_utc = playhouse.sqlite_ext.DateTimeField(null=True)
-    finished_utc = playhouse.sqlite_ext.DateTimeField(null=True)
+    expires_utc = DateTimeUTCField(null=True)
+    started_utc = DateTimeUTCField(null=True)
+    finished_utc = DateTimeUTCField(null=True)
 
-    created = playhouse.sqlite_ext.DateTimeField(default=dt.datetime.now())
-    updated = playhouse.sqlite_ext.DateTimeField(default=dt.datetime.now())
+    created = DateTimeUTCField(default=pendulum.now("UTC"))
+    updated = DateTimeUTCField(default=pendulum.now("UTC"))
 
     class Meta:
         primary_key = playhouse.sqlite_ext.CompositeKey("name", "worktime")
@@ -364,7 +382,7 @@ class FlowItem(BaseDBModel):
             cls.name == flow_name,
             cls.status.in_(Statuses.error_statuses),
             cls.retries < retries,
-            cls.get_utcnow() >= ex,
+            (cls.get_utcnow() >= ex | cls.finished_utc == None),
             # TODO: В поле info записывать, что поток не будет перезапущен, т.к. истек срок выполнения.
             #  Иначе не понятно, почему не перезапускаются.
             (dt.datetime.utcnow() <= cls.expires_utc | cls.expires_utc == None),

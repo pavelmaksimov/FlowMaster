@@ -11,6 +11,24 @@ from flowmaster.utils import iter_range_datetime
 FLOW_NAME = "test_schedule"
 
 
+def test_datetime_utc_field(pendulum_utctoday, flowitem):
+    flowitem.started_utc = pendulum.now("Europe/Moscow")
+    flowitem.save()
+
+    assert flowitem.started_utc == pendulum_utctoday
+
+
+def test_filter_by_datetime_utc_field(pendulum_utctoday, flowitem, flowitem_model):
+    flowitem.started_utc = pendulum.now("Europe/Minsk")
+    flowitem.save()
+    query = flowitem_model.select().where(flowitem_model.name == flowitem.name)
+
+    assert query.where(
+        flowitem_model.started_utc == pendulum.now("Europe/Moscow")
+    ).first()
+    assert query.where(flowitem_model.started_utc == pendulum.now("UTC")).first()
+
+
 @pytest.mark.parametrize(
     "create_retries,retries,result", [(0, 0, 0), (0, 1, 1), (1, 1, 0), (1, 0, 0)]
 )
