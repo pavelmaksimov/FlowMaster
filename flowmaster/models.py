@@ -18,6 +18,7 @@ class DateTimeTZField(playhouse.sqlite_ext.DateTimeField):
     def python_value(self, value: str) -> dt.datetime:
         dt_, tz_name = value.split(" ")
         tz_info = pendulum.timezone(tz_name)
+        # TODO: pendulum
         return dt.datetime.fromisoformat(dt_).replace(tzinfo=tz_info)
 
     def db_value(
@@ -42,7 +43,7 @@ class DateTimeUTCField(playhouse.sqlite_ext.DateTimeField):
     ) -> Optional[str]:
         if value is not None:
             if value.tzinfo is None:
-                raise ValueError("Timezone not set.")
+                raise ValueError(f"{value} timezone not set.")
 
             value = value.astimezone(pendulum.timezone("UTC"))
             value = value.replace(tzinfo=None).isoformat()
@@ -372,20 +373,24 @@ class FlowItem(BaseDBModel):
     @classmethod
     def retry_error_items(
         cls, flow_name: str, retries: int, retry_delay: int
-    ) -> Optional[peewee.ModelSelect]:
+    ) -> peewee.ModelSelect:
         # http://docs.peewee-orm.com/en/latest/peewee/hacks.html?highlight=time%20now#date-math
         # A function that checks to see if retry_delay passes to restart.
-        ex = peewee.fn.datetime(
-            peewee.fn.strftime("%s", cls.finished_utc) + retry_delay, "unixepoch"
-        )
+        next_start_time_timestamp = cls.finished_utc.to_timestamp() + retry_delay
         items = cls.select().where(
             cls.name == flow_name,
             cls.status.in_(Statuses.error_statuses),
             cls.retries < retries,
-            (cls.get_utcnow() >= ex | cls.finished_utc == None),
+            (
+                (pendulum.now("UTC").timestamp() >= next_start_time_timestamp)
+                | (cls.finished_utc.is_null())
+            ),
             # TODO: В поле info записывать, что поток не будет перезапущен, т.к. истек срок выполнения.
             #  Иначе не понятно, почему не перезапускаются.
-            (dt.datetime.utcnow() <= cls.expires_utc | cls.expires_utc == None),
+            (
+                (pendulum.now("UTC").timestamp() <= cls.expires_utc.to_timestamp())
+                | (cls.expires_utc.is_null())
+            ),
         )
         worktimes = [i.worktime for i in items]
 
@@ -395,7 +400,7 @@ class FlowItem(BaseDBModel):
                 **{
                     cls.status.name: Statuses.add,
                     cls.retries.name: cls.retries + 1,
-                    cls.updated.name: dt.datetime.now(),
+                    cls.updated.name: pendulum.now("UTC"),
                 }
             ).where(cls.name == flow_name, cls.worktime.in_(worktimes)).execute()
 
@@ -403,11 +408,11 @@ class FlowItem(BaseDBModel):
                 "Restart error items for {}, worktimes = {}", flow_name, worktimes
             )
 
-            return (
-                cls.select()
-                .where(cls.name == flow_name, cls.worktime.in_(worktimes))
-                .order_by(cls.worktime.desc())
-            )
+        return (
+            cls.select()
+            .where(cls.name == flow_name, cls.worktime.in_(worktimes))
+            .order_by(cls.worktime.desc())
+        )
 
     @classmethod
     def get_items_for_execute(
@@ -453,7 +458,7 @@ class FlowItem(BaseDBModel):
                 .where(
                     cls.name == flow_name,
                     cls.status == Statuses.add,
-                    (dt.datetime.utcnow() <= cls.expires_utc | cls.expires_utc == None),
+                    ((pendulum.now("UTC").timestamp() <= cls.expires_utc.to_timestamp()) | (cls.expires_utc.is_null())),
                 )
                 .order_by(cls.worktime.desc())
             )
@@ -462,7 +467,9 @@ class FlowItem(BaseDBModel):
     def clear_statuses_of_lost_items(cls) -> None:
         cls.update(
             **{cls.status.name: Statuses.error, cls.log.name: "ExpiredError"}
-        ).where(dt.datetime.utcnow() <= cls.expires_utc).execute()
+        ).where(
+            pendulum.now("UTC").timestamp() >= cls.expires_utc.to_timestamp()
+        ).execute()
 
         cls.update(**{cls.status.name: Statuses.add}).where(
             cls.status.in_([Statuses.run])
@@ -498,7 +505,7 @@ class FlowItem(BaseDBModel):
         save_expression_fields: bool = True,
         **kwargs,
     ) -> dict:
-        kwargs.update({cls.updated.name: dt.datetime.now()})
+        kwargs.update({cls.updated.name: pendulum.now("UTC")})
         not_saved_data = {}
 
         for item in items:
@@ -538,11 +545,6 @@ class FlowItem(BaseDBModel):
             query = query.where(cls.status.in_(statuses))
 
         return query
-
-    @staticmethod
-    def get_utcnow() -> dt.datetime:
-        """For mock"""
-        return dt.datetime.utcnow()
 
 
 db.create_tables([FlowItem])

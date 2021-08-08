@@ -3,6 +3,7 @@ from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Iterator, Optional, Type, Union
 
 import jinja2
+import pendulum
 from pydantic import BaseModel
 
 from flowmaster.utils.logging_helper import Logger, getLogger
@@ -42,7 +43,7 @@ class ExportAbstract(ABC):
                         **{
                             "start_period": start_period,
                             "end_period": end_period,
-                            "datetime": dt.datetime.now(),
+                            "datetime": pendulum.now("local"),
                         }
                     )
 
@@ -63,7 +64,7 @@ class ExportAbstract(ABC):
                     **{
                         "start_period": start_period,
                         "end_period": end_period,
-                        "datetime": dt.datetime.now(),
+                        "datetime": pendulum.now("UTC"),
                         "name": self.notebook.name,
                         "provider": self.notebook.provider,
                         "storage": self.notebook.storage,

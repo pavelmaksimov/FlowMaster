@@ -2,6 +2,8 @@ import datetime as dt
 import time
 from typing import Iterator, Union, Optional
 
+import pendulum
+
 from flowmaster.enums import Statuses, Operators
 from flowmaster.exceptions import FatalError
 from flowmaster.executors import (
@@ -50,7 +52,7 @@ class ETLOperator(BaseOperator):
         try:
             yield {
                 self.Model.status.name: Statuses.run,
-                self.Model.started_utc.name: dt.datetime.utcnow(),
+                self.Model.started_utc.name: pendulum.now("UTC"),
                 self.Model.data.name: self.operator_context.dict(exclude_unset=True),
             }
 
@@ -141,7 +143,7 @@ class ETLOperator(BaseOperator):
 
         finally:
             yield {
-                self.Model.finished_utc.name: dt.datetime.utcnow(),
+                self.Model.finished_utc.name: pendulum.now("UTC"),
                 self.Model.duration.name: round((time.time() - begin_time) / 60) or 1,
             }
 

@@ -1,7 +1,7 @@
-import datetime as dt
 from typing import TYPE_CHECKING, Iterator
 
 import peewee
+import pendulum
 
 from flowmaster.models import FlowItem
 from flowmaster.operators.etl.dataschema import ExportContext
@@ -54,12 +54,12 @@ class FlowmasterDataExport(ExportAbstract):
             {
                 "name": "tasks",
                 "size": task_queue.qsize(),
-                "datetime": dt.datetime.now(),
+                "datetime": pendulum.now("local"),
             },
             {
                 "name": "sleeptasks",
                 "size": sleeptask_queue.qsize(),
-                "datetime": dt.datetime.now(),
+                "datetime": pendulum.now("local"),
             },
         ]
 

@@ -1,6 +1,7 @@
-import datetime as dt
 from collections import defaultdict
 from typing import Literal
+
+import pendulum
 
 from flowmaster.setttings import Settings
 from flowmaster.utils.logging_helper import logger
@@ -80,7 +81,7 @@ class Pool:
                     "name": tag,
                     "size": self[tag],
                     "limit": limit,
-                    "datetime": dt.datetime.now(),
+                    "datetime": pendulum.now("local"),
                 }
             )
 

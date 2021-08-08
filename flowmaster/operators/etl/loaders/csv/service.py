@@ -1,10 +1,10 @@
-import datetime as dt
 import pathlib
 from functools import partial
 from typing import TYPE_CHECKING, Optional
 
 import jinja2
 import orjson
+import pendulum
 
 from flowmaster.operators.etl.enums import DataOrient
 from flowmaster.operators.etl.loaders.csv.policy import (
@@ -40,7 +40,7 @@ class CSVLoader:
             name=notebook.name,
             provider=notebook.provider,
             storage=notebook.storage,
-            datetime=dt.datetime.now(),
+            datetime=pendulum.now("local"),
         )
         self.file_name = jinja2.Template(notebook.load.file_name).render(**_template)
         self.add_data_before = jinja2.Template(notebook.load.add_data_before).render(

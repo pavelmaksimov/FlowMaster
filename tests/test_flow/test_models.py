@@ -2,7 +2,6 @@ import datetime as dt
 
 import pendulum
 import pytest
-from mock import Mock
 
 from flowmaster.enums import Statuses
 from flowmaster.models import FlowItem
@@ -32,55 +31,42 @@ def test_filter_by_datetime_utc_field(pendulum_utctoday, flowitem, flowitem_mode
 @pytest.mark.parametrize(
     "create_retries,retries,result", [(0, 0, 0), (0, 1, 1), (1, 1, 0), (1, 0, 0)]
 )
-def test_retries(create_retries, retries, result):
-    # TODO: Не работает с started_utc=None
-    FlowItem.delete().where(FlowItem.name == FLOW_NAME).execute()
-
-    FlowItem.create(
+def test_retries(create_retries, retries, result, pendulum_utctoday, flowitem_model):
+    name = "__test_retries__"
+    flowitem_model.clear(name)
+    flowitem_model.create(
         **{
-            FlowItem.name.name: FLOW_NAME,
-            FlowItem.worktime.name: pendulum.datetime(2020, 1, 1, tz="Europe/Moscow"),
-            FlowItem.started_utc.name: dt.datetime(2020, 1, 1),
+            FlowItem.name.name: name,
+            FlowItem.worktime.name: pendulum_utctoday,
+            FlowItem.finished_utc.name: pendulum_utctoday,
             FlowItem.status.name: Statuses.error,
             FlowItem.retries.name: create_retries,
         }
     )
-
-    FlowItem.retry_error_items(FLOW_NAME, retries=retries, retry_delay=60)
-
-    items = FlowItem.select().where(
-        FlowItem.name == FLOW_NAME, FlowItem.status == Statuses.add
-    )
+    items = FlowItem.retry_error_items(name, retries=retries, retry_delay=0)
 
     assert len(items) == int(result)
 
 
 @pytest.mark.parametrize(
-    "retry_delay,passed_sec,is_run", [(10, 9, False), (10, 10, True), (10, 11, True)]
+    "retry_delay,passed_sec", [(10, 5), (10, 10), (10, 11)]
 )
-def test_retry_delay(retry_delay, passed_sec, is_run):
-    # TODO: Не работает с started_utc=None
-    FlowItem.delete().where(FlowItem.name == FLOW_NAME).execute()
-
-    FlowItem.create(
+def test_retry_delay(retry_delay, passed_sec, pendulum_utctoday, flowitem_model):
+    name = "__test_retry_delay__"
+    flowitem_model.clear(name)
+    flowitem_model.create(
         **{
-            FlowItem.name.name: FLOW_NAME,
-            FlowItem.worktime.name: pendulum.datetime(2020, 1, 1, tz="Europe/Moscow"),
-            FlowItem.started_utc.name: dt.datetime(2020, 1, 1, 0, 0, 0),
+            FlowItem.name.name: name,
+            FlowItem.worktime.name: pendulum_utctoday,
+            FlowItem.finished_utc.name: pendulum_utctoday,
             FlowItem.status.name: Statuses.error,
             FlowItem.retries.name: 0,
         }
     )
+    pendulum.set_test_now(pendulum_utctoday.add(seconds=passed_sec))
+    items = list(flowitem_model.retry_error_items(name, retries=1, retry_delay=retry_delay))
 
-    FlowItem.get_utcnow = Mock(return_value=dt.datetime(2020, 1, 1, 0, 0, passed_sec))
-
-    FlowItem.retry_error_items(FLOW_NAME, retries=1, retry_delay=retry_delay)
-
-    items = FlowItem.select().where(
-        FlowItem.name == FLOW_NAME, FlowItem.status == Statuses.add
-    )
-
-    assert len(items) == int(is_run)
+    assert len(items) == int(passed_sec >= retry_delay)
 
 
 def test_create_next_execute_item(flowitem_model):
