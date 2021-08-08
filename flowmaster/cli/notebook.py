@@ -13,21 +13,21 @@ app = typer.Typer()
 
 @app.command("list")
 def list_notebook():
-    for name, _ in iter_active_notebook_filenames():
+    for name in iter_active_notebook_filenames():
         typer.echo(f"  {name}")
 
-    for name, _ in iter_archive_notebook_filenames():
+    for name in iter_archive_notebook_filenames():
         typer.echo(f"  {name} (archive)")
 
 
 @app.command()
 def validate():
-    for name, _ in iter_active_notebook_filenames():
+    for name in iter_active_notebook_filenames():
         validate, text, notebook_dict, policy, error = get_notebook(name)
         if validate:
             typer.echo(f"  {name} - OK")
 
-    for name, _ in iter_archive_notebook_filenames():
+    for name in iter_archive_notebook_filenames():
         validate, text, notebook_dict, policy, error = get_notebook(name)
         if validate:
             typer.echo(f"  {name} (archive) - OK")
