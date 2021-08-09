@@ -1,4 +1,4 @@
-import platform
+import threading
 from functools import partial
 
 import typer
@@ -30,32 +30,25 @@ def prepare_items(dry_run: bool = False):
 
 
 def run_web(port):
-    kwargs = dict(app=webapp, host="0.0.0.0", port=int(port))
-    if platform.system() == "Windows":
-        import threading
-
-        web_thread = threading.Thread(
-            target=uvicorn.run,
-            name="Flowmaster_web",
-            daemon=True,
-            kwargs=kwargs,
-        )
-    else:
-        import multiprocessing
-
-        web_thread = multiprocessing.Process(
-            target=uvicorn.run,
-            name="Flowmaster_web",
-            daemon=True,
-            kwargs=kwargs,
-        )
+    kwargs = dict(app=webapp, host="0.0.0.0", port=int(port), loop="asyncio")
+    web_thread = threading.Thread(
+        target=uvicorn.run,
+        name="Flowmaster_web",
+        daemon=True,
+        kwargs=kwargs,
+    )
     web_thread.start()
     typer.echo(f"WEB UI: 0.0.0.0:{port}\n")
 
 
 @app.command()
-def run_local(interval: int = 20, dry_run: bool = False):
+def run_local(
+    interval: int = 20,
+    dry_run: bool = False,
+    port: int = Settings.WEBUI_PORT,
+):
     prepare_items(dry_run=dry_run)
+    run_web(port)
 
     from flowmaster.utils.local_executor import sync_executor
 
