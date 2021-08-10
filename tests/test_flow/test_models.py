@@ -10,11 +10,11 @@ from flowmaster.utils import iter_range_datetime
 FLOW_NAME = "test_schedule"
 
 
-def test_datetime_utc_field(pendulum_utctoday, flowitem):
+def test_datetime_utc_field(flowitem):
     flowitem.started_utc = pendulum.now("Europe/Moscow")
     flowitem.save()
 
-    assert flowitem.started_utc == pendulum_utctoday
+    assert flowitem.started_utc == pendulum.now("UTC")
 
 
 def test_filter_by_datetime_utc_field(pendulum_utctoday, flowitem, flowitem_model):

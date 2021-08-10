@@ -27,7 +27,7 @@ def prepare_items(dry_run: bool = False):
 
     if dry_run:
         typer.echo(f"Dry-run mode!")
-        FlowItem.delete().where("fakedata.etl.flow" in FlowItem.name).execute()
+        FlowItem.clear("fakedata.etl.flow")
 
 
 def run_web(port):

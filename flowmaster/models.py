@@ -458,7 +458,13 @@ class FlowItem(BaseDBModel):
                 .where(
                     cls.name == flow_name,
                     cls.status == Statuses.add,
-                    ((pendulum.now("UTC").timestamp() <= cls.expires_utc.to_timestamp()) | (cls.expires_utc.is_null())),
+                    (
+                        (
+                            pendulum.now("UTC").timestamp()
+                            <= cls.expires_utc.to_timestamp()
+                        )
+                        | (cls.expires_utc.is_null())
+                    ),
                 )
                 .order_by(cls.worktime.desc())
             )

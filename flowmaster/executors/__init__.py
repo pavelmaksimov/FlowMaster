@@ -118,7 +118,7 @@ class ExecutorIterationTask:
                 f"{self.execute_duration=}, {self.duration=}, {self.expires=}"
             )
 
-    def _iterate(self) -> dict:  # TODO: New Type flow_iteration_log
+    def _iterate(self):
         if self._sleep_item is None:
             result = next(self.iterator)
         else:
