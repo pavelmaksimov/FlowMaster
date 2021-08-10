@@ -5,7 +5,7 @@ __version__ = "0.6.1"
 import pathlib
 
 
-def prepare():
+def create_initial_dirs_and_files() -> None:
     from flowmaster.setttings import Settings
 
     pathlib.Path.mkdir(Settings.APP_HOME, exist_ok=True)

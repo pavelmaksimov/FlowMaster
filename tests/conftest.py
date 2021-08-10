@@ -12,9 +12,9 @@ def preparation_for_tests(tmp_path):
     path = tmp_path.parent / "FlowMaster"
     os.environ["FLOWMASTER_HOME"] = str(path)
 
-    from flowmaster import prepare
+    from flowmaster import create_initial_dirs_and_files
 
-    prepare()
+    create_initial_dirs_and_files()
 
 
 @pytest.fixture()

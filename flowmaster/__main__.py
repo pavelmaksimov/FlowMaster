@@ -7,7 +7,7 @@ import uvicorn
 import flowmaster.cli.db
 import flowmaster.cli.item
 import flowmaster.cli.notebook
-from flowmaster import prepare
+from flowmaster import create_initial_dirs_and_files
 from flowmaster.setttings import Settings
 from flowmaster.web.views import webapp
 
@@ -26,6 +26,7 @@ def prepare_items(dry_run: bool = False):
     FlowItem.clear_statuses_of_lost_items()
 
     if dry_run:
+        typer.echo(f"Dry-run mode!")
         FlowItem.delete().where("fakedata.etl.flow" in FlowItem.name).execute()
 
 
@@ -66,15 +67,13 @@ def run(
 ):
     typer.echo(f"\nAPP_HOME={Settings.APP_HOME}")
 
-    prepare()
+    create_initial_dirs_and_files()
     prepare_items(dry_run=dry_run)
     run_web(port)
 
     from flowmaster.operators.base.work import ordering_flow_tasks
     from flowmaster.executors import ThreadAsyncExecutor
 
-    if dry_run:
-        typer.echo(f"Dry-run mode!")
     typer.echo("Executor: ThreadAsyncExecutor")
     typer.echo(f"Number of workers: {workers}")
     typer.echo(f"Scheduler interval: {interval}")
