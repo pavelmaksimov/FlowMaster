@@ -48,19 +48,16 @@ class ETLOperator(BaseOperator):
     ) -> Iterator[Union[dict, AsyncIterationT]]:
 
         begin_time = time.time()
-
         try:
             yield {
                 self.Model.status.name: Statuses.run,
                 self.Model.started_utc.name: pendulum.now("UTC"),
                 self.Model.data.name: self.operator_context.dict(exclude_unset=True),
             }
-
             with self.Load as load:
                 export_iterator = self.Provider.Export(
                     start_period, end_period, **kwargs
                 )
-
                 while True:
                     # Export step.
                     yield {self.Model.etl_step.name: ETLSteps.export}
@@ -144,7 +141,7 @@ class ETLOperator(BaseOperator):
         finally:
             yield {
                 self.Model.finished_utc.name: pendulum.now("UTC"),
-                self.Model.duration.name: round((time.time() - begin_time) / 60) or 1,
+                self.Model.duration.name: round(time.time() - begin_time) or 1,
             }
 
     @staticmethod
