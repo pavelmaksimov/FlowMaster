@@ -73,8 +73,7 @@ class FlowItem(BaseDBModel):
     notebook_hash = playhouse.sqlite_ext.CharField(default="", null=False)
     retries = playhouse.sqlite_ext.IntegerField(default=0)
     duration = playhouse.sqlite_ext.IntegerField(null=True)
-    # TODO: rename log to info
-    log = playhouse.sqlite_ext.TextField(null=True)
+    info = playhouse.sqlite_ext.TextField(null=True)
     logpath = playhouse.sqlite_ext.TextField(null=True)
     expires_utc = DateTimeUTCField(null=True)
     started_utc = DateTimeUTCField(null=True)
@@ -472,7 +471,7 @@ class FlowItem(BaseDBModel):
     @classmethod
     def clear_statuses_of_lost_items(cls) -> None:
         cls.update(
-            **{cls.status.name: Statuses.error, cls.log.name: "ExpiredError"}
+            **{cls.status.name: Statuses.error, cls.info.name: "ExpiredError"}
         ).where(
             pendulum.now("UTC").timestamp() >= cls.expires_utc.to_timestamp()
         ).execute()

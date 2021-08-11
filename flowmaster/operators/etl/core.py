@@ -111,21 +111,21 @@ class ETLOperator(BaseOperator):
         except FatalError as er:
             yield {
                 self.Model.status.name: Statuses.fatal_error,
-                self.Model.log.name: str(er),
+                self.Model.info.name: str(er),
             }
             raise
 
         except Exception as er:
             yield {
                 self.Model.status.name: Statuses.error,
-                self.Model.log.name: str(er),
+                self.Model.info.name: str(er),
             }
             raise
 
         except:
             yield {
                 self.Model.status.name: Statuses.error,
-                self.Model.log.name: "Unknown error",
+                self.Model.info.name: "Unknown error",
             }
             raise
 

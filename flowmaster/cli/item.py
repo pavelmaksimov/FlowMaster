@@ -16,7 +16,7 @@ def list_items(name: str, limit: int = 20):
             f"{i.status}  ",
             f"retries={i.retries}  ",
             f"duration={i.duration}  ",
-            typer.style(f"log={i.log}", fg=typer.colors.WHITE) if i.log else "",
+            typer.style(f"log={i.info}", fg=typer.colors.WHITE) if i.info else "",
         ]
 
         if i.status in Statuses.error_statuses:
@@ -40,7 +40,7 @@ def list_errors(name: str, limit: int = 1000):
                 typer.style(f"{i.status}  ", fg=typer.colors.RED, bold=True),
                 f"retries={i.retries}  ",
                 f"duration={i.duration}  ",
-                typer.style(f"log={i.log}", fg=typer.colors.WHITE) if i.log else "",
+                typer.style(f"log={i.info}", fg=typer.colors.WHITE) if i.info else "",
             ]
 
             typer.echo("".join(msg_parts))

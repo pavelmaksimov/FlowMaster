@@ -267,7 +267,7 @@ def flowmasterdata_items_export_policy():
             "notebook_hash",
             "retries",
             "duration",
-            "log",
+            "info",
             "started_utc",
             "finished_utc",
             "created",

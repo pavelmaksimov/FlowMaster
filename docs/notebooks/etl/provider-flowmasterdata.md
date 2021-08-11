@@ -19,7 +19,7 @@ export:
         - notebook_hash
         - retries
         - duration
-        - log
+        - info
         - started_utc
         - finished_utc
         - created
