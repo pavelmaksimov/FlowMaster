@@ -14,9 +14,9 @@ from flowmaster.executors import (
 from flowmaster.operators.base.core import BaseOperator
 from flowmaster.operators.etl.dataschema import ETLContext
 from flowmaster.operators.etl.enums import ETLSteps
-from flowmaster.operators.etl.loaders import storage_classes
+from flowmaster.operators.etl.loaders import Storages
 from flowmaster.operators.etl.policy import ETLNotebook
-from flowmaster.operators.etl.providers import provider_classes
+from flowmaster.operators.etl.providers import Providers
 from flowmaster.operators.etl.work import ETLWork
 from flowmaster.utils import iter_range_datetime
 from flowmaster.utils.logging_helper import create_logfile
@@ -29,12 +29,10 @@ class ETLOperator(BaseOperator):
         super(ETLOperator, self).__init__(notebook)
         self.notebook: ETLNotebook
 
-        provider_meta_class = provider_classes[notebook.provider]
-        load_class = storage_classes[notebook.storage]
-
         self.Work = ETLWork(notebook, self.logger)
-        self.Provider = provider_meta_class(notebook, self.logger)
-        self.Load = load_class(notebook, self.logger)
+        self.Provider = Providers(notebook, self.logger)
+        # TODO: Rename to 'self.Storage'.
+        self.Load = Storages(notebook, self.logger)
 
         self.operator_context = ETLContext(
             operator=Operators.etl, storage=notebook.storage
@@ -63,7 +61,11 @@ class ETLOperator(BaseOperator):
                 while True:
                     # Export step.
                     self.operator_context.step = ETLSteps.export
-                    yield {self.Model.data.name: self.operator_context.dict(exclude_unset=True)}
+                    yield {
+                        self.Model.data.name: self.operator_context.dict(
+                            exclude_unset=True
+                        )
+                    }
                     yield NextIterationInPools(pool_names=self.Work.export_pool_names)
                     try:
                         result = next(export_iterator)

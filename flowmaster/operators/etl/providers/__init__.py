@@ -20,29 +20,41 @@ from flowmaster.operators.etl.providers.yandex_metrika_stats import (
     YandexMetrikaStatsProvider,
 )
 from flowmaster.setttings import Settings
+from flowmaster.utils import KlassCollection
 from flowmaster.utils.import_helper import iter_module_objects
 
-# TODO: replace to class.
-provider_classes = {
-    FakeDataProvider.name: FakeDataProvider,
-    YandexMetrikaStatsProvider.name: YandexMetrikaStatsProvider,
-    YandexMetrikaManagementProvider.name: YandexMetrikaManagementProvider,
-    YandexMetrikaLogsProvider.name: YandexMetrikaLogsProvider,
-    YandexDirectProvider.name: YandexDirectProvider,
-    CSVProvider.name: CSVProvider,
-    SQLiteProvider.name: SQLiteProvider,
-    FlowmasterDataProvider.name: FlowmasterDataProvider,
-    CriteoProvider.name: CriteoProvider,
-    PostgresProvider.name: PostgresProvider,
-    MySQLProvider.name: MySQLProvider,
-    GoogleSheetsProvider.name: GoogleSheetsProvider,
-}
 
-# Fetching custom providers.
-for object in iter_module_objects(importlib.import_module(Settings.PLUGINS_DIRNAME)):
-    if (
-        isinstance(object, type)
-        and object.__name__ != ProviderAbstract.__name__
-        and issubclass(object, ProviderAbstract)
-    ):
-        provider_classes[object.name] = object
+class ProviderCollection(KlassCollection):
+    name_attr_of_klass = "provider"
+
+    def __init__(self, *args):
+        super(ProviderCollection, self).__init__(*args)
+        self.load_provider_plugins()
+
+    def load_provider_plugins(self) -> None:
+        """Fetching custom providers."""
+        for object in iter_module_objects(
+            importlib.import_module(Settings.PLUGINS_DIRNAME)
+        ):
+            if (
+                isinstance(object, type)
+                and object.__name__ != ProviderAbstract.__name__
+                and issubclass(object, ProviderAbstract)
+            ):
+                self.set(object)
+
+
+Providers = ProviderCollection(
+    CSVProvider,
+    CriteoProvider,
+    FakeDataProvider,
+    FlowmasterDataProvider,
+    GoogleSheetsProvider,
+    PostgresProvider,
+    MySQLProvider,
+    SQLiteProvider,
+    YandexMetrikaStatsProvider,
+    YandexMetrikaManagementProvider,
+    YandexMetrikaLogsProvider,
+    YandexDirectProvider,
+)
