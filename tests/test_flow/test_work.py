@@ -39,12 +39,12 @@ def test_expires_items(flowitem_model, flowmasterdata_items_to_csv_notebook):
 
         list(ordering_flow_tasks())
 
-        work = Work(flowmasterdata_items_to_csv_notebook)
-        for i in flowitem_model.iter_items(
-            flowmasterdata_items_to_csv_notebook.name, statuses=[Statuses.run]
-        ):
-            assert pendulum.parse(i.expires_utc, tz="UTC") == work.expires
-            assert i.name == flowmasterdata_items_to_csv_notebook.name
+    work = Work(flowmasterdata_items_to_csv_notebook)
+    for i in flowitem_model.iter_items(
+        flowmasterdata_items_to_csv_notebook.name, statuses=[Statuses.run]
+    ):
+        assert i.expires_utc == work.expires
+        assert i.name == flowmasterdata_items_to_csv_notebook.name
 
 
 def test_current_worktime_daily(ya_metrika_logs_to_csv_notebook):

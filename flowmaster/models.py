@@ -171,13 +171,7 @@ class FlowItem(BaseDBModel):
         from_time: dt.datetime,
         to_time: dt.datetime,
     ) -> int:
-        expires_utc = (
-            expires.astimezone(pendulum.timezone("UTC"))
-            .replace(tzinfo=None)
-            .isoformat()
-        )
-
-        query = cls.update(**{cls.expires_utc.name: expires_utc}).where(
+        query = cls.update(**{cls.expires_utc.name: expires}).where(
             cls.name == flow_name, cls.worktime >= from_time, cls.worktime <= to_time
         )
 
