@@ -16,10 +16,8 @@ from flowmaster.utils.logging_helper import logger
 
 class DateTimeTZField(playhouse.sqlite_ext.DateTimeField):
     def python_value(self, value: str) -> dt.datetime:
-        dt_, tz_name = value.split(" ")
-        tz_info = pendulum.timezone(tz_name)
-        # TODO: pendulum
-        return dt.datetime.fromisoformat(dt_).replace(tzinfo=tz_info)
+        dt_str, tz_name = value.split(" ")
+        return pendulum.parse(dt_str, tz=tz_name)
 
     def db_value(
         self, value: Optional[Union[dt.datetime, pendulum.DateTime]]
