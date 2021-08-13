@@ -260,7 +260,6 @@ def flowmasterdata_items_export_policy():
         columns=[
             "name",
             "worktime",
-            "operator",
             "status",
             "data",
             "notebook_hash",

@@ -12,7 +12,6 @@ export:
     columns:
         - name
         - worktime
-        - operator
         - status
         - data
         - notebook_hash

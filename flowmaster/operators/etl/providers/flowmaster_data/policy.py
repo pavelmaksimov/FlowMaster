@@ -12,7 +12,6 @@ class FlowmasterDataExportPolicy(BasePolicy):
             Literal[
                 "name",
                 "worktime",
-                "operator",
                 "status",
                 "data",
                 "notebook_hash",
