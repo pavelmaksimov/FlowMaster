@@ -22,7 +22,7 @@ class FlowmasterDataExportPolicy(BasePolicy):
                 "started_utc",
                 "finished_utc",
                 "created_utc",
-                "updated",
+                "updated_utc",
             ],
             # pools
             Literal["name", "size", "limit", "datetime"],

@@ -75,7 +75,7 @@ class FlowItem(BaseDBModel):
     started_utc = DateTimeUTCField(null=True)
     finished_utc = DateTimeUTCField(null=True)
     created_utc = DateTimeUTCField(default=pendulum.now("UTC"))
-    updated = DateTimeUTCField(default=pendulum.now("UTC"))
+    updated_utc = DateTimeUTCField(default=pendulum.now("UTC"))
 
     class Meta:
         primary_key = playhouse.sqlite_ext.CompositeKey("name", "worktime")
@@ -136,7 +136,7 @@ class FlowItem(BaseDBModel):
         if for_updated:
             items = items.order_by(cls.worktime.desc())
         else:
-            items = items.order_by(cls.updated.desc())
+            items = items.order_by(cls.updated_utc.desc())
 
         if items:
             return items.get()
@@ -353,7 +353,7 @@ class FlowItem(BaseDBModel):
             items = (
                 cls.select()
                 .where(cls.name == flow_name, cls.status == Statuses.fatal_error)
-                .order_by(cls.updated.desc())
+                .order_by(cls.updated_utc.desc())
                 .limit(max_fatal_errors)
             )
             is_allow = len(items) < max_fatal_errors
@@ -394,7 +394,7 @@ class FlowItem(BaseDBModel):
                 **{
                     cls.status.name: Statuses.add,
                     cls.retries.name: cls.retries + 1,
-                    cls.updated.name: pendulum.now("UTC"),
+                    cls.updated_utc.name: pendulum.now("UTC"),
                 }
             ).where(cls.name == flow_name, cls.worktime.in_(worktimes)).execute()
 
@@ -505,7 +505,7 @@ class FlowItem(BaseDBModel):
         save_expression_fields: bool = True,
         **kwargs,
     ) -> dict:
-        kwargs.update({cls.updated.name: pendulum.now("UTC")})
+        kwargs.update({cls.updated_utc.name: pendulum.now("UTC")})
         not_saved_data = {}
 
         for item in items:

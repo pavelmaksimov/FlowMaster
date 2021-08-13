@@ -22,7 +22,7 @@ export:
         - started_utc
         - finished_utc
         - created_utc
-        - updated
+        - updated_utc
     
     # Optional policies:
     
