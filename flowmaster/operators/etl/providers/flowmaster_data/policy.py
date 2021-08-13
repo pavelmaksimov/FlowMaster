@@ -21,7 +21,7 @@ class FlowmasterDataExportPolicy(BasePolicy):
                 "info",
                 "started_utc",
                 "finished_utc",
-                "created",
+                "created_utc",
                 "updated",
             ],
             # pools

@@ -21,7 +21,7 @@ export:
         - info
         - started_utc
         - finished_utc
-        - created
+        - created_utc
         - updated
     
     # Optional policies:

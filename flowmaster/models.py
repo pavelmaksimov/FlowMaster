@@ -74,8 +74,7 @@ class FlowItem(BaseDBModel):
     expires_utc = DateTimeUTCField(null=True)
     started_utc = DateTimeUTCField(null=True)
     finished_utc = DateTimeUTCField(null=True)
-
-    created = DateTimeUTCField(default=pendulum.now("UTC"))
+    created_utc = DateTimeUTCField(default=pendulum.now("UTC"))
     updated = DateTimeUTCField(default=pendulum.now("UTC"))
 
     class Meta:

@@ -269,7 +269,7 @@ def flowmasterdata_items_export_policy():
             "info",
             "started_utc",
             "finished_utc",
-            "created",
+            "created_utc",
             "updated",
         ],
         export_mode="all",
