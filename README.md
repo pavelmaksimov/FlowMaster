@@ -55,8 +55,12 @@ For Linux
 
 ## Installing
     pip install flowmaster==0.6.1
+
+    # For install web UI.
+    pip install flowmaster[webui]==0.6.1
+
     # Optional libraries.
-    pip install flowmaster[postgres]==0.6.1
+    pip install flowmaster[clickhouse,postgres,yandexdirect,yandexmetrika,criteo]==0.6.1
 
 ## Run
     flowmaster run
