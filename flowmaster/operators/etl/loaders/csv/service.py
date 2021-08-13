@@ -18,6 +18,12 @@ if TYPE_CHECKING:
     from flowmaster.operators.etl.dataschema import TransformContext, ETLContext
 
 
+def custom_encoder(obj):
+    if isinstance(obj, (pendulum.Date, pendulum.DateTime)):
+        return str(obj)
+    raise TypeError
+
+
 class CSVLoader:
     name = "csv"
     policy_model = CSVLoadPolicy
@@ -61,7 +67,7 @@ class CSVLoader:
         model.path = str(self.file_path)
 
     def values_to_text(self, data: list) -> str:
-        func_dump_value = lambda value: orjson.dumps(value).decode()
+        func_dump_value = lambda value: orjson.dumps(value, custom_encoder).decode()
         func_row_to_line = lambda row: self.sep.join(map(func_dump_value, row))
         data = self.newline.join(map(func_row_to_line, data))
         data += self.newline
