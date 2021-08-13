@@ -36,7 +36,9 @@ class ETLOperator(BaseOperator):
         self.Provider = provider_meta_class(notebook, self.logger)
         self.Load = load_class(notebook, self.logger)
 
-        self.operator_context = ETLContext(storage=notebook.storage)
+        self.operator_context = ETLContext(
+            operator=Operators.etl, storage=notebook.storage
+        )
 
     def __call__(
         self,
@@ -60,7 +62,8 @@ class ETLOperator(BaseOperator):
                 )
                 while True:
                     # Export step.
-                    yield {self.Model.etl_step.name: ETLSteps.export}
+                    self.operator_context.step = ETLSteps.export
+                    yield {self.Model.data.name: self.operator_context.dict(exclude_unset=True)}
                     yield NextIterationInPools(pool_names=self.Work.export_pool_names)
                     try:
                         result = next(export_iterator)
@@ -75,11 +78,11 @@ class ETLOperator(BaseOperator):
                         break
 
                     # Transform step.
+                    self.operator_context.step = ETLSteps.transform
                     self.operator_context.export_kwargs.update(
                         {**kwargs, **result.export_kwargs}
                     )
                     yield {
-                        self.Model.etl_step.name: ETLSteps.transform,
                         self.Model.data.name: self.operator_context.dict(
                             exclude_unset=True
                         ),
@@ -93,13 +96,13 @@ class ETLOperator(BaseOperator):
                     )
 
                     # Load step.
+                    self.operator_context.step = ETLSteps.load
                     self.operator_context.size += transform_context.size
                     self.operator_context.number_rows += len(transform_context.data)
                     self.operator_context.number_error_lines += len(
                         transform_context.data_errors
                     )
                     yield {
-                        self.Model.etl_step.name: ETLSteps.load,
                         self.Model.data.name: self.operator_context.dict(
                             exclude_unset=True
                         ),
@@ -130,9 +133,9 @@ class ETLOperator(BaseOperator):
             raise
 
         else:
+            self.operator_context.step = None
             self.operator_context.export_kwargs.clear()
             yield {
-                self.Model.etl_step.name: None,
                 self.Model.status.name: Statuses.success,
                 self.Model.retries.name: 0,
                 self.Model.data.name: self.operator_context.dict(exclude_unset=True),
@@ -184,7 +187,6 @@ class ETLOperator(BaseOperator):
             self.name,
             datetime_list,
             **{
-                self.Model.operator.name: Operators.etl,
                 self.Model.data.name: self.operator_context.dict(exclude_unset=True),
                 self.Model.logpath.name: str(self.get_logfile_path().absolute()),
             },

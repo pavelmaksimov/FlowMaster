@@ -262,7 +262,6 @@ def flowmasterdata_items_export_policy():
             "worktime",
             "operator",
             "status",
-            "etl_step",
             "data",
             "notebook_hash",
             "retries",

@@ -62,11 +62,7 @@ class FlowItem(BaseDBModel):
     name = playhouse.sqlite_ext.CharField()
     worktime = DateTimeTZField()
 
-    # 'operator' move to dataschema for 'data' field
-    operator = playhouse.sqlite_ext.CharField(null=True)
     status = playhouse.sqlite_ext.CharField(default=Statuses.add, null=False)
-    # 'etl_step' move to dataschema for 'data' field
-    etl_step = playhouse.sqlite_ext.CharField(null=True)
     data = playhouse.sqlite_ext.JSONField(
         default={}, json_dumps=orjson.dumps, json_loads=orjson.loads
     )
