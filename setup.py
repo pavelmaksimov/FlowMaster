@@ -62,6 +62,9 @@ setup(
         "python-multipart<=0.0.5",
         "criteo-marketing-transition==1.0.3",
     ],
+    extras_require={
+        "postgres": ["psycopg2"],
+    },
     license="GPLv3",
     keywords="etl,flowmaster,flow,airflow,prefect,schedule,scheduler,tasker",
     test_suite="tests",

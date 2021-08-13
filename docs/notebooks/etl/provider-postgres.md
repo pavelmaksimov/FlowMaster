@@ -1,12 +1,16 @@
-# Конфигурация экспорта из БД SQLite
+# Конфигурация экспорта из БД Postgres
 
 ```yaml
 ...
-provider: "sqlite"
+provider: "postgres"
 export:
     # Required policies:
     
-    db_path: str# 
+    user: str
+    password: str
+    host: str
+    port: PositiveInt = 5432
+    database: str
     table: str
     columns: list[str]
     

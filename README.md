@@ -16,7 +16,8 @@ Internally SQLite Database.
 
 At the moment there are connectors to sources
 - CSV file
-- SQLite database
+- SQLite
+- Postgres
 - Yandex Metrika Management API
 - Yandex Metrika Stats API
 - Yandex Metrika Logs API
@@ -54,6 +55,8 @@ For Linux
 
 ## Installing
     pip install flowmaster==0.6.1
+    # Optional libraries.
+    pip install flowmaster[postgres]==0.6.1
 
 ## Run
     flowmaster run

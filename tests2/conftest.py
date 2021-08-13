@@ -33,6 +33,11 @@ def clickhouse_credentials(credentials_dict):
 
 
 @pytest.fixture()
+def postgres_credentials(credentials_dict):
+    return credentials_dict["postgres"]
+
+
+@pytest.fixture()
 def yandex_direct_credentials(credentials_dict):
     return credentials_dict["yandex-direct"]["credentials"]
 
@@ -235,3 +240,51 @@ def ya_direct_campaigns_to_clickhouse_notebook(
     yield n
     flowitem_model.clear(name)
     loader.Table.drop_table()
+
+
+@pytest.fixture()
+def postgres_export_policy(postgres_credentials):
+    from flowmaster.operators.etl.providers import PostgresProvider
+
+    return PostgresProvider.policy_model(
+        table="test_table",
+        columns=["id", "key"],
+        sql_before=[
+            "CREATE TABLE IF NOT EXISTS test_table (id INTEGER, key TEXT);",
+            "TRUNCATE TABLE test_table",
+            "INSERT INTO test_table VALUES (1, 'one')",
+            "INSERT INTO test_table VALUES (2, 'two')",
+            "INSERT INTO test_table VALUES (3, 'three')",
+        ],
+        sql_after=["SELECT 2"],
+        chunk_size=1,
+        where="id != 3",
+        order_by="id DESC",
+        **postgres_credentials
+    )
+
+
+@pytest.fixture()
+def postgres_to_csv_notebook(
+    work_policy,
+    postgres_export_policy,
+    csv_transform_policy,
+    csv_load_policy,
+    flowitem_model,
+):
+    from flowmaster.operators.etl.loaders.csv.service import CSVLoader
+    from flowmaster.operators.etl.policy import ETLNotebook
+    from flowmaster.operators.etl.providers.postgres import PostgresProvider
+
+    name = "__test_postgres_to_csv__"
+    flowitem_model.clear(name)
+    yield ETLNotebook(
+        name=name,
+        provider=PostgresProvider.name,
+        storage=CSVLoader.name,
+        work=work_policy,
+        export=postgres_export_policy,
+        transform=csv_transform_policy,
+        load=csv_load_policy,
+    )
+    flowitem_model.clear(name)

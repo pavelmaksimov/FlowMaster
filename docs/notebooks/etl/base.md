@@ -16,6 +16,7 @@ provider: Literal[
     "yandex_direct",
     "csv",
     "sqlite",
+    "postgres",
     "flowmaster",
     "criteo",
 ]
@@ -106,6 +107,7 @@ transform:
 - [yandex_direct](yandex_direct.md)
 - [csv](provider-csv.md)
 - [sqlite](provider-sqlite.md)
+- [postgres](provider-postgres.md)
 - [flowmaster](provider-flowmasterdata.md)
 - [criteo](provider-criteo.md)
 
