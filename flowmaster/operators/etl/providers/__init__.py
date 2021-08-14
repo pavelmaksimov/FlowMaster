@@ -5,6 +5,7 @@ from flowmaster.operators.etl.providers.criteo import CriteoProvider
 from flowmaster.operators.etl.providers.csv import CSVProvider
 from flowmaster.operators.etl.providers.fakedata import FakeDataProvider
 from flowmaster.operators.etl.providers.flowmaster_data import FlowmasterDataProvider
+from flowmaster.operators.etl.providers.mysql import MySQLProvider
 from flowmaster.operators.etl.providers.postgres import PostgresProvider
 from flowmaster.operators.etl.providers.sqlite import SQLiteProvider
 from flowmaster.operators.etl.providers.yandex_direct import YandexDirectProvider
@@ -32,6 +33,7 @@ provider_classes = {
     FlowmasterDataProvider.name: FlowmasterDataProvider,
     CriteoProvider.name: CriteoProvider,
     PostgresProvider.name: PostgresProvider,
+    MySQLProvider.name: MySQLProvider,
 }
 
 # Fetching custom providers.

@@ -10,7 +10,6 @@
 - File
 - Clickhouse
 - BigQuery
-- Mysql
 
 #### Добавить хранилища
 

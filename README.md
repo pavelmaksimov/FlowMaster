@@ -17,7 +17,8 @@ Internally SQLite Database.
 At the moment there are connectors to sources
 - CSV file
 - SQLite
-- Postgres
+- Postgres 
+- MySQL
 - Yandex Metrika Management API
 - Yandex Metrika Stats API
 - Yandex Metrika Logs API
@@ -60,7 +61,7 @@ For Linux
     pip install flowmaster[webui]==0.6.1
 
     # Optional libraries.
-    pip install flowmaster[clickhouse,postgres,yandexdirect,yandexmetrika,criteo]==0.6.1
+    pip install flowmaster[clickhouse,postgres,mysql,yandexdirect,yandexmetrika,criteo]==0.6.1
 
 ## Run
     flowmaster run

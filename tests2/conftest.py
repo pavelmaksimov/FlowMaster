@@ -38,6 +38,11 @@ def postgres_credentials(credentials_dict):
 
 
 @pytest.fixture()
+def mysql_credentials(credentials_dict):
+    return credentials_dict["mysql"]
+
+
+@pytest.fixture()
 def yandex_direct_credentials(credentials_dict):
     return credentials_dict["yandex-direct"]["credentials"]
 
@@ -284,6 +289,54 @@ def postgres_to_csv_notebook(
         storage=CSVLoader.name,
         work=work_policy,
         export=postgres_export_policy,
+        transform=csv_transform_policy,
+        load=csv_load_policy,
+    )
+    flowitem_model.clear(name)
+
+
+@pytest.fixture()
+def mysql_export_policy(mysql_credentials):
+    from flowmaster.operators.etl.providers import MySQLProvider
+
+    return MySQLProvider.policy_model(
+        table="test_table",
+        columns=["id", "key"],
+        sql_before=[
+            "CREATE TABLE IF NOT EXISTS `test_table` (`id` INTEGER, `key` TEXT)",
+            "TRUNCATE TABLE test_table",
+            "INSERT INTO test_table VALUES (1, 'one')",
+            "INSERT INTO test_table VALUES (2, 'two')",
+            "INSERT INTO test_table VALUES (3, 'three')",
+        ],
+        sql_after=["SELECT 2"],
+        chunk_size=1,
+        where="`id` != 3",
+        order_by="`id` DESC",
+        **mysql_credentials
+    )
+
+
+@pytest.fixture()
+def mysql_to_csv_notebook(
+        work_policy,
+        mysql_export_policy,
+        csv_transform_policy,
+        csv_load_policy,
+        flowitem_model,
+):
+    from flowmaster.operators.etl.loaders.csv.service import CSVLoader
+    from flowmaster.operators.etl.policy import ETLNotebook
+    from flowmaster.operators.etl.providers import MySQLProvider
+
+    name = "__test_mysql_to_csv__"
+    flowitem_model.clear(name)
+    yield ETLNotebook(
+        name=name,
+        provider=MySQLProvider.name,
+        storage=CSVLoader.name,
+        work=work_policy,
+        export=mysql_export_policy,
         transform=csv_transform_policy,
         load=csv_load_policy,
     )

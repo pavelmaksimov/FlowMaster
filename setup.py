@@ -57,6 +57,7 @@ setup(
     extras_require={
         "clickhouse": ["clickhousepy==2021.3.10"],
         "postgres": ["psycopg2"],
+        "mysql": ["mysqlclient"],
         "yandexmetrika": ["tapi-yandex-metrika==2021.5.28"],
         "yandexdirect": ["tapi-yandex-direct==2021.5.29"],
         "criteo": ["criteo-marketing-transition==1.0.3"],

@@ -17,6 +17,7 @@ provider: Literal[
     "csv",
     "sqlite",
     "postgres",
+    "mysql",
     "flowmaster",
     "criteo",
 ]
@@ -108,6 +109,7 @@ transform:
 - [csv](provider-csv.md)
 - [sqlite](provider-sqlite.md)
 - [postgres](provider-postgres.md)
+- [mysql](provider-mysql.md)
 - [flowmaster](provider-flowmasterdata.md)
 - [criteo](provider-criteo.md)
 
