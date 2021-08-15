@@ -11,7 +11,7 @@ from flowmaster.operators.etl.loaders.clickhouse.policy import (
 from flowmaster.utils.logging_helper import Logger, getLogger
 
 if TYPE_CHECKING:
-    from flowmaster.operators.etl.policy import ETLNotebook
+    from flowmaster.operators.etl.policy import ETLNotebookPolicy
     from flowmaster.operators.etl.dataschema import TransformContext, ETLContext
 
 
@@ -30,7 +30,7 @@ class ClickhouseLoader:
     StageTable: Optional[clickhousepy.Table] = None
     data_orient = DataOrient.columns
 
-    def __init__(self, notebook: "ETLNotebook", logger: Optional[Logger] = None):
+    def __init__(self, notebook: "ETLNotebookPolicy", logger: Optional[Logger] = None):
         self.data_cleaning_mode = notebook.load.data_cleaning_mode
         self.credentials = notebook.load.credentials.dict()
         self.create_table_config = notebook.load.table_schema.dict()

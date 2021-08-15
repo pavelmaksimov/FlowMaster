@@ -14,7 +14,7 @@ from flowmaster.operators.etl.loaders.csv.policy import (
 from flowmaster.utils.logging_helper import Logger, getLogger
 
 if TYPE_CHECKING:
-    from flowmaster.operators.etl.policy import ETLNotebook
+    from flowmaster.operators.etl.policy import ETLNotebookPolicy
     from flowmaster.operators.etl.dataschema import TransformContext, ETLContext
 
 
@@ -33,7 +33,7 @@ class CSVLoader:
     _enter = False
     _is_add_columns = None
 
-    def __init__(self, notebook: "ETLNotebook", logger: Optional[Logger] = None):
+    def __init__(self, notebook: "ETLNotebookPolicy", logger: Optional[Logger] = None):
         self.notebook = notebook
         self.path = notebook.load.path
         self.save_mode = notebook.load.save_mode

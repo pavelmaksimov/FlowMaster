@@ -8,12 +8,12 @@ from flowmaster.operators.etl.providers.abstract import ExportAbstract
 from flowmaster.utils import chunker
 
 if TYPE_CHECKING:
-    from flowmaster.operators.etl.policy import ETLNotebook
+    from flowmaster.operators.etl.policy import ETLNotebookPolicy
     from flowmaster.operators.etl.providers.sqlite.policy import SQLiteExportPolicy
 
 
 class SQLiteExport(ExportAbstract):
-    def __init__(self, notebook: "ETLNotebook", *args, **kwargs):
+    def __init__(self, notebook: "ETLNotebookPolicy", *args, **kwargs):
         super(SQLiteExport, self).__init__(notebook, *args, **kwargs)
 
     def __call__(self, *args, **kwargs) -> Iterator[ExportContext]:

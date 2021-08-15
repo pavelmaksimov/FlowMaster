@@ -48,12 +48,12 @@ def test_expires_items(flowitem_model, flowmasterdata_items_to_csv_notebook):
 
 
 def test_current_worktime_daily(ya_metrika_logs_to_csv_notebook):
-    from flowmaster.operators.etl.policy import ETLNotebook
+    from flowmaster.operators.etl.policy import ETLNotebookPolicy
     from flowmaster.operators.base.work import Work
 
     tz = "Europe/Moscow"
     ya_metrika_logs_to_csv_notebook.work.triggers.schedule = (
-        ETLNotebook.WorkPolicy.TriggersPolicy.SchedulePolicy(
+        ETLNotebookPolicy.WorkPolicy.TriggersPolicy.SchedulePolicy(
             timezone=tz, start_time="01:00:00", from_date=None, interval="daily"
         )
     )
@@ -62,7 +62,7 @@ def test_current_worktime_daily(ya_metrika_logs_to_csv_notebook):
     assert work.current_worktime == pendulum.yesterday(tz).replace(hour=1)
 
     ya_metrika_logs_to_csv_notebook.work.triggers.schedule = (
-        ETLNotebook.WorkPolicy.TriggersPolicy.SchedulePolicy(
+        ETLNotebookPolicy.WorkPolicy.TriggersPolicy.SchedulePolicy(
             timezone="Europe/Moscow",
             start_time="01:00:00",
             from_date=pendulum.today("UTC") - dt.timedelta(5),
@@ -77,13 +77,13 @@ def test_current_worktime_daily(ya_metrika_logs_to_csv_notebook):
 def test_current_worktime_second_interval(
     flowitem_model, ya_metrika_logs_to_csv_notebook
 ):
-    from flowmaster.operators.etl.policy import ETLNotebook
+    from flowmaster.operators.etl.policy import ETLNotebookPolicy
     from flowmaster.operators.base.work import Work
 
     tz = "Europe/Moscow"
     ya_metrika_logs_to_csv_notebook.name = flowitem_model.name_for_test
     ya_metrika_logs_to_csv_notebook.work.triggers.schedule = (
-        ETLNotebook.WorkPolicy.TriggersPolicy.SchedulePolicy(
+        ETLNotebookPolicy.WorkPolicy.TriggersPolicy.SchedulePolicy(
             timezone=tz, start_time="01:00:00", from_date=None, interval=86400
         )
     )
@@ -92,7 +92,7 @@ def test_current_worktime_second_interval(
     assert work.current_worktime == pendulum.today(tz).replace(hour=1)
 
     ya_metrika_logs_to_csv_notebook.work.triggers.schedule = (
-        ETLNotebook.WorkPolicy.TriggersPolicy.SchedulePolicy(
+        ETLNotebookPolicy.WorkPolicy.TriggersPolicy.SchedulePolicy(
             timezone="Europe/Moscow",
             start_time="01:00:00",
             from_date=pendulum.today(tz) - dt.timedelta(5),

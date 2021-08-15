@@ -13,11 +13,11 @@ from flowmaster.operators.etl.providers.abstract import ExportAbstract
 from flowmaster.utils.logging_helper import Logger
 
 if TYPE_CHECKING:
-    from flowmaster.operators.etl.policy import ETLNotebook
+    from flowmaster.operators.etl.policy import ETLNotebookPolicy
 
 
 class YandexMetrikaLogsExport(ExportAbstract):
-    def __init__(self, notebook: "ETLNotebook", logger: Optional[Logger] = None):
+    def __init__(self, notebook: "ETLNotebookPolicy", logger: Optional[Logger] = None):
         self.counter_id = notebook.export.credentials.counter_id
         self.credentials = notebook.export.credentials.dict()
         self.params = notebook.export.params.dict()

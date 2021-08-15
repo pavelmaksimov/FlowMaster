@@ -10,13 +10,13 @@ from flowmaster.utils import iter_range_datetime, iter_period_from_range
 from flowmaster.utils.logging_helper import Logger, getLogger
 
 if TYPE_CHECKING:
-    from flowmaster.operators.base.policy import Notebook
+    from flowmaster.operators.base.policy import NotebookPolicy
     from flowmaster.operators.etl.core import BaseOperator
     from flowmaster.executors import ExecutorIterationTask
 
 
 class Work:
-    def __init__(self, notebook: "Notebook", logger: Optional[Logger] = None):
+    def __init__(self, notebook: "NotebookPolicy", logger: Optional[Logger] = None):
         self.notebook = notebook
         self.name = notebook.name
         self.interval_timedelta = notebook.work.triggers.schedule._interval_timedelta

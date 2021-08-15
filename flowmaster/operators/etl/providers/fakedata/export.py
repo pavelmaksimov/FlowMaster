@@ -12,11 +12,11 @@ fake = Faker()
 fake.seed_instance(0)
 
 if TYPE_CHECKING:
-    from flowmaster.operators.etl.policy import ETLNotebook
+    from flowmaster.operators.etl.policy import ETLNotebookPolicy
 
 
 class FakeDataExport(ExportAbstract):
-    def __init__(self, notebook: "ETLNotebook", logger: Optional[Logger] = None):
+    def __init__(self, notebook: "ETLNotebookPolicy", logger: Optional[Logger] = None):
         self.rows = notebook.export.rows
         self.columns = notebook.export.columns
         super(FakeDataExport, self).__init__(notebook, logger)

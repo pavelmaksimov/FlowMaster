@@ -7,12 +7,12 @@ from flowmaster.operators.etl.providers.abstract import ExportAbstract
 from flowmaster.utils import chunker
 
 if TYPE_CHECKING:
-    from flowmaster.operators.etl.policy import ETLNotebook
+    from flowmaster.operators.etl.policy import ETLNotebookPolicy
     from flowmaster.operators.etl.providers.csv.policy import CSVExportPolicy
 
 
 class CSVExport(ExportAbstract):
-    def __init__(self, notebook: "ETLNotebook", *args, **kwargs):
+    def __init__(self, notebook: "ETLNotebookPolicy", *args, **kwargs):
         self.export: "CSVExportPolicy" = notebook.export
         super(CSVExport, self).__init__(notebook, *args, **kwargs)
 

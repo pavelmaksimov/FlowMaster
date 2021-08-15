@@ -9,14 +9,14 @@ from flowmaster.operators.etl.enums import DataOrient
 from flowmaster.operators.etl.providers.abstract import ExportAbstract
 
 if TYPE_CHECKING:
-    from flowmaster.operators.etl.policy import ETLNotebook
+    from flowmaster.operators.etl.policy import ETLNotebookPolicy
     from flowmaster.operators.etl.providers.flowmaster_data.policy import (
         FlowmasterDataExportPolicy,
     )
 
 
 class FlowmasterDataExport(ExportAbstract):
-    def __init__(self, notebook: "ETLNotebook", *args, **kwargs):
+    def __init__(self, notebook: "ETLNotebookPolicy", *args, **kwargs):
         super(FlowmasterDataExport, self).__init__(notebook, *args, **kwargs)
 
     def resource_items(

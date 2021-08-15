@@ -44,7 +44,7 @@ from flowmaster.operators.etl import ProviderAbstract, ExportAbstract, ExportCon
 from pydantic import BaseModel
 
 if TYPE_CHECKING:
-    from flowmaster.operators.etl.policy import ETLNotebook
+    from flowmaster.operators.etl.policy import ETLNotebookPolicy
     from datetime import datetime
 
 
@@ -55,7 +55,7 @@ class MyProviderPolicy(BaseModel):
 
 class MyProviderExport(ExportAbstract):
 
-    def __init__(self, notebook: "ETLNotebook", *args, **kwargs):
+    def __init__(self, notebook: "ETLNotebookPolicy", *args, **kwargs):
         export: MyProviderPolicy = notebook.export
         self.my_str_param = export.my_str_param
         self.my_list_param = export.my_list_param
