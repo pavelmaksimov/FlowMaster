@@ -13,6 +13,7 @@ Works quickly, does not require a lot of resources.
 Runs on Windows and Linux.
 Flow run in parallel via threading library. 
 Internally SQLite Database.
+Нативное преобразование данных.
 
 At the moment there are connectors to sources
 - CSV file
