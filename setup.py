@@ -61,6 +61,7 @@ setup(
         "yandexmetrika": ["tapi-yandex-metrika==2021.5.28"],
         "yandexdirect": ["tapi-yandex-direct==2021.5.29"],
         "criteo": ["criteo-marketing-transition==1.0.3"],
+        "googlesheets": ["pygsheets>=2.0,<3.0"],
         "webui": [
             "uvicorn[standard]<0.14.0",
             "fastapi<=0.65",

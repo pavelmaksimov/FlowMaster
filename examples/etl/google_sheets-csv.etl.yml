@@ -1,0 +1,57 @@
+description: testing
+provider: yandex_metrika_stats
+storage: csv
+
+work:
+    update_stale_data: 1
+    triggers:
+        schedule:
+            timezone: Europe/Moscow
+            start_time: 00:00:00
+            interval: daily
+
+export:
+    credentials:
+        access_token:
+
+    # From URL https://docs.google.com/spreadsheets/d/1sb0avK6C34kf2pVARc5bAVLCK9pbF80c_hWTm10kRNU/edit#gid=0
+    sheet_id: 1sb0avK6C34kf2pVARc5bAVLCK9pbF80c_hWTm10kRNU
+    # First page default 0. From URL.
+    page_id: 0
+
+    columns:
+        - date_col
+        - col1
+        - col2
+
+    # If there is a row with column names.
+    with_columns: False
+
+    # Optional policies:
+
+    start:
+        - 3 # Index row.
+        - 1 # Index column.
+    end:
+
+load:
+    encoding: "UTF-8"
+    save_mode: "w" # 'w' or 'a'
+    file_name: "{{name}} {{provider}} {{storage}}.tsv"
+    sep: "\t"
+    newline: "\n"
+    with_columns: True
+    add_data_before: "{{name}}\n{{provider}} {{storage}} {{ datetime.date() }}\n\n"
+    add_data_after: "\nHappy end\nupdated at {datetime}\n"
+
+transform:
+    timezone: Europe/Moscow
+    error_policy: default
+
+    column_schema:
+        date_col:
+            name: date
+            dtype: date
+            errors: default
+            dt_format: "%Y-%m-%d"
+            allow_null: True

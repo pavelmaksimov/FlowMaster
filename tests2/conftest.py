@@ -48,6 +48,11 @@ def yandex_direct_credentials(credentials_dict):
 
 
 @pytest.fixture()
+def google_sheets_credentials(credentials_dict):
+    return credentials_dict["google-sheets"]
+
+
+@pytest.fixture()
 def flowitem_model():
     from flowmaster.models import FlowItem
 
@@ -341,3 +346,44 @@ def mysql_to_csv_notebook(
         load=csv_load_policy,
     )
     flowitem_model.clear(name)
+
+
+@pytest.fixture()
+def google_sheets_export_policy(google_sheets_credentials):
+    from flowmaster.operators.etl.providers import GoogleSheetsProvider
+
+    return GoogleSheetsProvider.policy_model(
+        **google_sheets_credentials
+    )
+
+
+@pytest.fixture()
+def google_sheets_to_csv_notebook(
+        work_policy,
+        google_sheets_export_policy,
+        csv_transform_policy,
+        csv_load_policy,
+        flowitem_model,
+):
+    from flowmaster.operators.etl.loaders.csv.service import CSVLoader
+    from flowmaster.operators.etl.policy import ETLNotebook
+    from flowmaster.operators.etl.providers import GoogleSheetsProvider
+
+    csv_transform_policy.column_schema["date_col"] = {
+        "name": "date",
+        "dtype": "date",
+        "errors": "default",
+        "dt_format": "%Y-%m-%d",
+        "allow_null": True,
+    }
+    name = "__test_google_sheets_to_csv__"
+    flowitem_model.clear(name)
+    yield ETLNotebook(
+        name=name,
+        provider=GoogleSheetsProvider.name,
+        storage=CSVLoader.name,
+        work=work_policy,
+        export=google_sheets_export_policy,
+        transform=csv_transform_policy,
+        load=csv_load_policy,
+    )

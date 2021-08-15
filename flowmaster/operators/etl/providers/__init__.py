@@ -5,6 +5,7 @@ from flowmaster.operators.etl.providers.criteo import CriteoProvider
 from flowmaster.operators.etl.providers.csv import CSVProvider
 from flowmaster.operators.etl.providers.fakedata import FakeDataProvider
 from flowmaster.operators.etl.providers.flowmaster_data import FlowmasterDataProvider
+from flowmaster.operators.etl.providers.google_sheets import GoogleSheetsProvider
 from flowmaster.operators.etl.providers.mysql import MySQLProvider
 from flowmaster.operators.etl.providers.postgres import PostgresProvider
 from flowmaster.operators.etl.providers.sqlite import SQLiteProvider
@@ -34,6 +35,7 @@ provider_classes = {
     CriteoProvider.name: CriteoProvider,
     PostgresProvider.name: PostgresProvider,
     MySQLProvider.name: MySQLProvider,
+    GoogleSheetsProvider.name: GoogleSheetsProvider,
 }
 
 # Fetching custom providers.

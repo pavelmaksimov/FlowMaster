@@ -12,3 +12,7 @@ class AuthError(FatalError):
 
 class ForbiddenError(AuthError):
     ...
+
+
+class PermissionError(AuthError):
+    ...

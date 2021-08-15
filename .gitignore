@@ -7,6 +7,7 @@ venv
 .git
 .pytest_cache
 tests2/credentials.yml
+tests2/*.json
 tests/__test_files__
 .pypirc
 Makefile

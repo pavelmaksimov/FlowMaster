@@ -26,6 +26,7 @@ At the moment there are connectors to sources
 - Yandex Direct API
 - Yandex Direct Report API
 - Criteo
+- Google Sheets
 
 Storages
 - Save to csv file
@@ -62,7 +63,7 @@ For Linux
     pip install flowmaster[webui]==0.6.1
 
     # Optional libraries.
-    pip install flowmaster[clickhouse,postgres,mysql,yandexdirect,yandexmetrika,criteo]==0.6.1
+    pip install flowmaster[clickhouse,postgres,mysql,yandexdirect,yandexmetrika,criteo,googlesheets]==0.6.1
 
 ## Run
     flowmaster run

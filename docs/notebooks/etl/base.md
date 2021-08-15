@@ -20,6 +20,7 @@ provider: Literal[
     "mysql",
     "flowmaster",
     "criteo",
+    "google_sheets",
 ]
 # Хранилище для вставки данных.
 storage: Literal["clickhouse", "csv"]
@@ -112,6 +113,7 @@ transform:
 - [mysql](provider-mysql.md)
 - [flowmaster](provider-flowmasterdata.md)
 - [criteo](provider-criteo.md)
+- [google_sheets](provider-google-sheets.md)
 
 
 ### Политики загрузчика в хранилище (load)
