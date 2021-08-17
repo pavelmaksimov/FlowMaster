@@ -92,10 +92,7 @@ class ETLOperator(BaseOperator):
                     yield NextIterationInPools(
                         pool_names=self.Work.transform_pool_names
                     )
-                    transform_context = self.Provider.Transform(
-                        result,
-                        storage_data_orient=self.Load.data_orient,
-                    )
+                    transform_context = self.Provider.Transform(result)
 
                     # Load step.
                     self.operator_context.step = ETLSteps.load

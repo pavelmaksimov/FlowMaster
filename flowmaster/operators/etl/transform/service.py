@@ -4,6 +4,7 @@ from datagun import DataSet, NULL_VALUES
 
 from flowmaster.operators.etl.dataschema import TransformContext
 from flowmaster.operators.etl.enums import DataOrient
+from flowmaster.operators.etl.loaders import Storages
 from flowmaster.operators.etl.transform.tschema import (
     FileTransformSchema,
     ClickhouseTransformSchema,
@@ -42,21 +43,21 @@ class Transform:
     ) -> DataSet:
         return DataSet(data, schema=column_schema, orient=orient)
 
-    def changing_data_orient_for_storage(self, dataset, storage_data_orient):
-        if storage_data_orient == DataOrient.values:
+    def changing_data_orient_for_storage(self, dataset):
+        Storage = Storages[self.notebook.storage]
+
+        if Storage.data_orient == DataOrient.values:
             data = dataset.to_values()
-        elif storage_data_orient == DataOrient.columns:
+        elif Storage.data_orient == DataOrient.columns:
             data = dataset.to_list()
-        elif storage_data_orient == DataOrient.dict:
+        elif Storage.data_orient == DataOrient.dict:
             data = dataset.to_dict()
         else:
-            raise NotImplementedError(f"{storage_data_orient=} not supported")
+            raise NotImplementedError(f"{Storage.data_orient=} not supported")
 
         return data
 
-    def __call__(
-        self, export_context: "ExportContext", storage_data_orient: DataOrient.LiteralT
-    ) -> TransformContext:
+    def __call__(self, export_context: "ExportContext") -> TransformContext:
         column_schema = self.Schema.create_column_schema(export_context.columns)
         assert column_schema is not None
 
@@ -69,7 +70,7 @@ class Transform:
 
         dataset.rename_columns({sch.name: sch.new_name for sch in column_schema.list})
 
-        data = self.changing_data_orient_for_storage(dataset, storage_data_orient)
+        data = self.changing_data_orient_for_storage(dataset)
 
         if self.partition_columns:
             partitions = dataset[self.partition_columns].distinct().to_values()
