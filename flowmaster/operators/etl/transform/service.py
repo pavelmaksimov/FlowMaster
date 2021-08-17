@@ -5,10 +5,7 @@ from datagun import DataSet, NULL_VALUES
 from flowmaster.operators.etl.dataschema import TransformContext
 from flowmaster.operators.etl.enums import DataOrient
 from flowmaster.operators.etl.loaders import Storages
-from flowmaster.operators.etl.transform.tschema import (
-    FileTransformSchema,
-    ClickhouseTransformSchema,
-)
+from flowmaster.operators.etl.transform import TransformSchemas
 from flowmaster.utils.logging_helper import Logger, getLogger
 
 if TYPE_CHECKING:
@@ -21,16 +18,11 @@ class Transform:
 
     def __init__(self, notebook: "ETLNotebookPolicy", logger: Optional[Logger] = None):
         self.notebook = notebook
-        self.storage = notebook.storage
         self.error_policy = notebook.transform.error_policy
         self.partition_columns = notebook.transform.partition_columns
 
-        self._schema_classes = {
-            FileTransformSchema.name: FileTransformSchema,
-            ClickhouseTransformSchema.name: ClickhouseTransformSchema,
-        }
-        self.Schema = self._schema_classes[self.storage](
-            notebook=notebook, null_values=self.null_values
+        self.Schema = TransformSchemas.init(
+            notebook.storage, notebook, null_values=self.null_values
         )
         self.logger = logger or getLogger()
 
