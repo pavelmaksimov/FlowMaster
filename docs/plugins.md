@@ -1,32 +1,42 @@
 # Plugins
 
-## Создание скрипта экспорта данных для ETL оператора
+## Creation of data export script for ETL operator
 
 ```python
-from flowmaster.operators.etl import ProviderAbstract, ExportAbstract, ExportContext, DataOrient
+from typing import TYPE_CHECKING, Iterator
+from flowmaster.operators.etl.providers.abstract import ProviderAbstract, ExportAbstract
+from flowmaster.operators.etl import ExportContext, DataOrient
 from pydantic import BaseModel
+
+if TYPE_CHECKING:
+    from flowmaster.operators.etl.policy import ETLNotebookPolicy
+    from datetime import datetime
 
 
 class MyProviderPolicy(BaseModel):
-    # Через аннотацию типов задается набор параметров в политике export.
-    # Все что здесь будет перечислено, можно будет задать в политике export.
-    # https://pydantic-docs.helpmanual.io/
-    my_str_param: str
-    my_list_param: list[int]
+    # Everything that will be listed here can be set in the 'export' policy.
+    # 'Pydantic' validates attributes.
+    my_columns: list[str]
+    token: str
+    rows: int
 
 
 class MyProviderExport(ExportAbstract):
-    
-    def __init__(self, notebook, *args, **kwargs):
-        self.my_str_param = notebook.export.my_str_param
-        self.my_list_param = notebook.export.my_list_param
+
+    def __init__(self, notebook: "ETLNotebookPolicy", *args, **kwargs):
+        self.export: MyProviderPolicy = notebook.export
         super(MyProviderExport, self).__init__(notebook, *args, **kwargs)
 
-    def __call__(self, start_period, end_period):
-        columns = ["col1", "col2"]
-        for iter_export in range(10):
-            data = [("value1", "value2")]
-            yield ExportContext(data=data, columns=columns, data_orient=DataOrient.values)
+    def __call__(self, start_period: "datetime", end_period: "datetime") -> Iterator[ExportContext]:
+        self.logger.info("Exportation data")
+
+        for iter_export in range(self.export.rows):
+            data = [f"value_of_col_{name}" for name in self.export.my_columns]
+            yield ExportContext(
+                data=data, 
+                columns=self.export.my_columns, 
+                data_orient=DataOrient.values
+            )
 
 
 class MyProvider(ProviderAbstract):
@@ -36,40 +46,86 @@ class MyProvider(ProviderAbstract):
 ```
 
 
-## С аннотацией типов
+## Testing
 
+### Create pytest
 ```python
-from typing import TYPE_CHECKING
-from flowmaster.operators.etl import ProviderAbstract, ExportAbstract, ExportContext, DataOrient
-from pydantic import BaseModel
+def test_my_provider(
+    create_etl_plugin_from_doc, work_policy, csv_transform_policy, csv_load_policy
+):
+    """Imports from flowmaster must be placed inside the tested functions."""
 
-if TYPE_CHECKING:
+    from flowmaster.operators.etl.providers import Providers
+    from flowmaster.operators.etl.loaders import Storages
     from flowmaster.operators.etl.policy import ETLNotebookPolicy
-    from datetime import datetime
+
+    MyProvider = Providers["my_provider_name"]
+    export_policy = MyProvider.policy_model(my_columns=["col1"], token="", rows=3)
+    notebook = ETLNotebookPolicy(
+        name="__test_my_provider__",
+        provider=MyProvider.name,
+        storage=Storages.CSVLoader.name,
+        export=export_policy,
+        transform=csv_transform_policy,
+        load=csv_load_policy,
+        work=work_policy,
+    )
+    my_provider = MyProvider(notebook)
+
+    for export_context in my_provider.Export(start_period=None, end_period=None):
+        assert export_context.data == ["value_of_col_col1"]
+        assert export_context.columns == ["col1"]
+```
 
 
-class MyProviderPolicy(BaseModel):
-    my_str_param: str
-    my_list_param: list[int]
+### Dry-run
+```python
+import datetime as dt
+
+from flowmaster.operators.etl.core import ETLOperator
+from flowmaster.operators.etl.loaders import Storages
+from flowmaster.operators.etl.policy import ETLNotebookPolicy
+from flowmaster.operators.etl.providers import Providers
+from flowmaster.setttings import Settings
 
 
-class MyProviderExport(ExportAbstract):
+def get_notebook():
+    MyProvider = Providers["my_provider_name"]
+    export_policy = MyProvider.policy_model(my_columns=["col1"], token="", rows=3)
+    csv_transform_policy = Storages.CSVLoader.transform_policy_model(error_policy="default")
+    csv_load_policy = Providers.CSVLoadPolicy(
+        path=Settings.FILE_STORAGE_DIR, 
+        file_name=f"test_my_provider.csv", 
+        save_mode="w"
+    )
+    work_policy = ETLNotebookPolicy.WorkPolicy(
+        triggers=ETLNotebookPolicy.WorkPolicy.TriggersPolicy(
+            schedule=ETLNotebookPolicy.WorkPolicy.TriggersPolicy.SchedulePolicy(
+                timezone="Europe/Moscow",
+                start_time="00:00:00",
+                from_date=dt.datetime.today() - dt.timedelta(5),
+                interval="daily",
+            )
+        )
+    )
+    return ETLNotebookPolicy(
+        name="__test_my_provider__",
+        provider=Providers.CSVProvider.name,
+        storage=Storages.CSVLoader.name,
+        work=work_policy,
+        export=export_policy,
+        transform=csv_transform_policy,
+        load=csv_load_policy,
+    )
 
-    def __init__(self, notebook: "ETLNotebookPolicy", *args, **kwargs):
-        export: MyProviderPolicy = notebook.export
-        self.my_str_param = export.my_str_param
-        self.my_list_param = export.my_list_param
-        super(MyProviderExport, self).__init__(notebook, *args, **kwargs)
 
-    def __call__(self, start_period: "datetime", end_period: "datetime"):
-        columns = ["col1", "col2"]
-        for iter_export in range(10):
-            data = [("value1", "value2")]
-            yield ExportContext(data=data, columns=columns, data_orient=DataOrient.values)
+def test_flow():
+    notebook = get_notebook()
+    flow = ETLOperator(notebook)
+    flow.dry_run(dt.datetime.now(), dt.datetime.now())
 
+    with flow.Load.open_file(mode="r") as loadfile:
+        text = loadfile.read()
 
-class MyProvider(ProviderAbstract):
-    name = "my_provider_name"
-    policy_model = MyProviderPolicy
-    export_class = MyProviderExport
+    assert text
 ```

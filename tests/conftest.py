@@ -1,6 +1,7 @@
 import datetime as dt
 import os
 import uuid
+from os.path import abspath
 from pathlib import Path
 
 import pendulum
@@ -586,3 +587,16 @@ def fakedata_to_csv_notebook(
         load=csv_load_policy,
     )
     flowitem_model.clear(name)
+
+
+@pytest.fixture()
+def create_etl_plugin_from_doc():
+    from flowmaster.setttings import Settings
+
+    with open(Path(abspath(__file__)).parent.parent / "docs" / "plugins.md", "r") as f:
+        text = f.read()
+
+    python_text = text.split("```python\n")[1].split("```")[0]
+
+    with open(Settings.PLUGINS_DIR / "test_etl_provider.py", "w") as f:
+        f.write(python_text)
