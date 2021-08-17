@@ -83,27 +83,20 @@ class ExportAbstract(ABC):
 
 
 class ProviderAbstract(ABC):
-    @property
-    @abstractmethod
-    def name(self) -> str:
-        ...
+    name: str = NotImplemented
+    policy_model: "PydanticModelT" = NotImplemented
+    export_class: Type[ExportAbstract] = NotImplemented
+    transform_class: Type["Transform"] = NotImplemented
 
     @property
-    @abstractmethod
-    def policy_model(self) -> "PydanticModelT":
-        ...
-
-    @property
-    @abstractmethod
-    def export_class(self) -> Type[ExportAbstract]:
-        ...
-
-    @property
-    def transform_class(self) -> Type["Transform"]:
+    def default_transform_class(self):
         from flowmaster.operators.etl.transform.service import Transform
 
         return Transform
 
     def __init__(self, *args, **kwargs):
         self.Export = self.export_class(*args, **kwargs)
-        self.Transform = self.transform_class(*args, **kwargs)
+        if self.transform_class == NotImplemented:
+            self.Transform = self.default_transform_class(*args, **kwargs)
+        else:
+            self.Transform = self.transform_class(*args, **kwargs)
