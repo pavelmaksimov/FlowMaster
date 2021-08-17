@@ -16,7 +16,7 @@ class GoogleSheetsExport(ExportAbstract):
     def __init__(self, notebook: "ETLNotebookPolicy", *args, **kwargs):
         super(GoogleSheetsExport, self).__init__(notebook, *args, **kwargs)
 
-    def drop_extra_columns(self, data):
+    def drop_extra_columns(self, data: list[list]) -> tuple[list[str], list[list]]:
         if self.export.with_columns:
             column_names = []
             data_ = []
@@ -34,7 +34,7 @@ class GoogleSheetsExport(ExportAbstract):
 
         return column_names, data
 
-    def fill_empty_cells(self, data):
+    def fill_empty_cells(self, data: list[list]) -> list[list]:
         if data:
             max_col_length = max(len(col) for col in data)
             for col in data:
@@ -94,5 +94,3 @@ class GoogleSheetsExport(ExportAbstract):
                 "page_name": page.title,
             },
         )
-
-# TODO: add Annotation

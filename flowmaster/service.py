@@ -129,7 +129,7 @@ def save_new_notebook(name: str, text: str, is_archive: bool) -> Optional[bool]:
     return save_notebook(name, text, is_archive)
 
 
-def delete_notebook(name: str):
+def delete_notebook(name: str) -> None:
     path = get_filepath_notebook(name)
     if path:
         path.unlink()

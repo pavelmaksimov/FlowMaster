@@ -228,3 +228,15 @@ class ETLOperator(BaseOperator):
         finally:
             self.Model.update_items(self.items)
             self.logger.info("End flow: {}  {}", self.name, period_text)
+
+    def dry_run(
+        self,
+        start_period: dt.datetime,
+        end_period: dt.datetime,
+        **kwargs,
+    ) -> None:
+        return super(ETLOperator, self).dry_run(
+            start_period,
+            end_period,
+            **kwargs,
+        )

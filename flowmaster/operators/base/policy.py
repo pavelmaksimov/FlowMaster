@@ -22,7 +22,7 @@ class _SchedulePolicy(BaseModel):
     interval: Union[PositiveInt, Literal["daily", "hourly"]]
     timezone: str
     start_time: str
-    from_date: Optional[Union[str, pendulum.DateTime]] = None
+    from_date: Optional[Union[str, pendulum.DateTime, dt.date, dt.datetime]] = None
     period_length: int = 1
     keep_sequence: bool = False
     _start_datetime: dt.datetime = PrivateAttr()

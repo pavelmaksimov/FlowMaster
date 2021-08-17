@@ -49,7 +49,9 @@ class FileTransformSchema(StorageTransformSchemaAbstract):
     allow_null = False
     null_default_value = ""
 
-    def __init__(self, notebook: "ETLNotebookPolicy", null_values: Union[list, tuple, set]):
+    def __init__(
+        self, notebook: "ETLNotebookPolicy", null_values: Union[list, tuple, set]
+    ):
         self.column_schema = {
             # TODO: refactoring .dict(exclude_unset=True)
             col_name: {k: v for k, v in col_schema.dict().items() if v is not None}
@@ -90,7 +92,9 @@ class ClickhouseTransformSchema(StorageTransformSchemaAbstract):
     name = ClickhouseLoader.name
     null_default_value = None
 
-    def __init__(self, notebook: "ETLNotebookPolicy", null_values: Union[list, tuple, set]):
+    def __init__(
+        self, notebook: "ETLNotebookPolicy", null_values: Union[list, tuple, set]
+    ):
         self.column_schema = {
             col_name: {k: v for k, v in col_schema.dict().items() if v is not None}
             for col_name, col_schema in notebook.transform.column_schema.items()
