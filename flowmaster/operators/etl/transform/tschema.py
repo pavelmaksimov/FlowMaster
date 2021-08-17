@@ -22,20 +22,14 @@ class TransformSchemaData(pydantic.BaseModel):
     dtype: Optional[DTypeLiteralT] = None
 
 
+# Do away with.
 class TransformSchemaListData(pydantic.BaseModel):
     list: list[TransformSchemaData]
 
 
 class StorageTransformSchemaAbstract(ABC):
-    @property
-    @abstractmethod
-    def name(self) -> str:
-        pass
-
-    @property
-    @abstractmethod
-    def null_default_value(self) -> Any:
-        pass
+    name: str = NotImplemented
+    null_default_value: Any = NotImplemented
 
     @abstractmethod
     def create_column_schema(

@@ -19,17 +19,16 @@ if TYPE_CHECKING:
 class Transform:
     null_values = NULL_VALUES
 
-    _schema_classes = {
-        FileTransformSchema.name: FileTransformSchema,
-        ClickhouseTransformSchema.name: ClickhouseTransformSchema,
-    }
-
     def __init__(self, notebook: "ETLNotebookPolicy", logger: Optional[Logger] = None):
         self.notebook = notebook
         self.storage = notebook.storage
         self.error_policy = notebook.transform.error_policy
         self.partition_columns = notebook.transform.partition_columns
 
+        self._schema_classes = {
+            FileTransformSchema.name: FileTransformSchema,
+            ClickhouseTransformSchema.name: ClickhouseTransformSchema,
+        }
         self.Schema = self._schema_classes[self.storage](
             notebook=notebook, null_values=self.null_values
         )
