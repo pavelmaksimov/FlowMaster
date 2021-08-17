@@ -49,17 +49,18 @@ class Transform:
         return data
 
     def __call__(self, export_context: "ExportContext") -> TransformContext:
-        column_schema = self.Schema.create_column_schema(export_context.columns)
-        assert column_schema is not None
+        column_schema_list = self.Schema.create_column_schema(export_context.columns)
+        assert column_schema_list is not None
+        column_schema_list_dict = [m.dict() for m in column_schema_list]
 
         dataset = self.processing(
             export_context.data,
-            column_schema=column_schema.dict()["list"],
+            column_schema=column_schema_list_dict,
             orient=export_context.data_orient,
         )
         assert isinstance(dataset, DataSet)
 
-        dataset.rename_columns({sch.name: sch.new_name for sch in column_schema.list})
+        dataset.rename_columns({sch.name: sch.new_name for sch in column_schema_list})
 
         data = self.changing_data_orient_for_storage(dataset)
 

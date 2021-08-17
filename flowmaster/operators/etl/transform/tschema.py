@@ -22,11 +22,6 @@ class TransformSchemaData(pydantic.BaseModel):
     dtype: Optional[DTypeLiteralT] = None
 
 
-# Do away with.
-class TransformSchemaListData(pydantic.BaseModel):
-    list: list[TransformSchemaData]
-
-
 class StorageTransformSchemaAbstract(ABC):
     name: str = NotImplemented
     null_default_value: Any = NotImplemented
@@ -58,7 +53,7 @@ class FileTransformSchema(StorageTransformSchemaAbstract):
 
     def create_column_schema(
         self, export_columns: Union[list, tuple, set]
-    ) -> TransformSchemaListData:
+    ) -> list[TransformSchemaData]:
         column_schema = []
         for export_colname in export_columns:
             new_colname = self.column_schema.get(export_colname, {}).pop(
@@ -79,7 +74,7 @@ class FileTransformSchema(StorageTransformSchemaAbstract):
                 )
             )
 
-        return TransformSchemaListData(list=column_schema)
+        return column_schema
 
 
 class ClickhouseTransformSchema(StorageTransformSchemaAbstract):
@@ -137,7 +132,7 @@ class ClickhouseTransformSchema(StorageTransformSchemaAbstract):
 
     def create_column_schema(
         self, export_col_names: Union[list, tuple, set]
-    ) -> TransformSchemaListData:
+    ) -> list[TransformSchemaData]:
         column_schema = []
         for export_colname in export_col_names:
             column_schema.append(
@@ -156,4 +151,4 @@ class ClickhouseTransformSchema(StorageTransformSchemaAbstract):
                 )
             )
 
-        return TransformSchemaListData(list=column_schema)
+        return column_schema
