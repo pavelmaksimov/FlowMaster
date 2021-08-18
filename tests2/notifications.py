@@ -8,9 +8,7 @@ from tests.fixtures.yandex_metrika import (
 
 from flowmaster.operators.etl.core import ETLOperator
 from flowmaster.operators.etl.policy import ETLNotebookPolicy
-from flowmaster.operators.etl.providers.yandex_metrika_logs.export import (
-    YandexMetrikaLogsExport,
-)
+from flowmaster.operators.etl.providers import Providers
 from flowmaster.utils.yaml_helper import YamlHelper
 from tests import get_tests_dir
 
@@ -29,7 +27,9 @@ def test_codex_telegram():
     )
     notebook = ETLNotebookPolicy(**dict(ya_metrika_logs_to_csv_notebook))
 
-    YandexMetrikaLogsExport.__call__ = Mock(side_effect=export_func)
+    Providers.YandexMetrikaLogsProvider.export_class.__call__ = Mock(
+        side_effect=export_func
+    )
     etl_flow = ETLOperator(notebook)
 
     list(

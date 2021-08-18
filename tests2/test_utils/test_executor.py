@@ -7,15 +7,15 @@ from flowmaster.executors import (
     ThreadAsyncExecutor,
 )
 from flowmaster.operators.etl.core import ETLOperator
-from flowmaster.operators.etl.providers.yandex_metrika_logs import (
-    YandexMetrikaLogsExportPolicy,
-)
+from flowmaster.operators.etl.providers import Providers
 from flowmaster.utils.yaml_helper import YamlHelper
 from tests import get_tests_dir
 
 credentials = YamlHelper.parse_file(get_tests_dir("tests2") / "credentials.yml")
-NOTEBOOK.export.credentials = YandexMetrikaLogsExportPolicy.CredentialsPolicy(
-    **credentials["yandex-metrika-logs"]
+NOTEBOOK.export.credentials = (
+    Providers.YandexMetrikaLogsProvider.export_class.CredentialsPolicy(
+        **credentials["yandex-metrika-logs"]
+    )
 )
 
 

@@ -118,14 +118,14 @@ def csv_load_policy(tmp_path):
 
 @pytest.fixture()
 def csv_transform_policy():
-    from flowmaster.operators.etl.loaders.csv.policy import CSVTransformPolicy
+    from flowmaster.operators.etl.loaders import Storages
 
-    return CSVTransformPolicy(error_policy="default")
+    return Storages.CSVLoader.transform_policy_model(error_policy="default")
 
 
 @pytest.fixture()
 def csv_export_policy(tmp_path):
-    from flowmaster.operators.etl.providers import CSVProvider
+    from flowmaster.operators.etl.providers import Providers
 
     export_filepath = tmp_path / "export_data.csv"
     with open(export_filepath, "w") as file:
@@ -140,7 +140,7 @@ def csv_export_policy(tmp_path):
             "1\t2\n"
         )
 
-    return CSVProvider.policy_model(
+    return Providers.CSVProvider.policy_model(
         file_path=str(export_filepath),
         with_columns=True,
         columns=["col1", "col2"],
@@ -157,16 +157,16 @@ def csv_to_csv_with_columns_notebook(
     csv_load_policy,
     flowitem_model,
 ):
-    from flowmaster.operators.etl.loaders.csv.service import CSVLoader
+    from flowmaster.operators.etl.loaders import Storages
     from flowmaster.operators.etl.policy import ETLNotebookPolicy
-    from flowmaster.operators.etl.providers.csv import CSVProvider
+    from flowmaster.operators.etl.providers import Providers
 
     name = "__test_csv_to_csv_with_columns__"
     flowitem_model.clear(name)
     yield ETLNotebookPolicy(
         name=name,
-        provider=CSVProvider.name,
-        storage=CSVLoader.name,
+        provider=Providers.CSVProvider.name,
+        storage=Storages.CSVLoader.name,
         work=work_policy,
         export=csv_export_policy,
         transform=csv_transform_policy,
@@ -203,11 +203,11 @@ def csv_to_csv_without_columns_notebook(
 
 @pytest.fixture()
 def sqlite_export_policy(tmp_path):
-    from flowmaster.operators.etl.providers import SQLiteProvider
+    from flowmaster.operators.etl.providers import Providers
 
     db_path = tmp_path / "test_sqlite_export.db"
 
-    return SQLiteProvider.policy_model(
+    return Providers.SQLiteProvider.policy_model(
         db_path=str(db_path),
         table="test_export",
         columns=["id", "key"],
@@ -232,16 +232,16 @@ def sqlite_to_csv_notebook(
     csv_load_policy,
     flowitem_model,
 ):
-    from flowmaster.operators.etl.loaders.csv.service import CSVLoader
+    from flowmaster.operators.etl.loaders import Storages
     from flowmaster.operators.etl.policy import ETLNotebookPolicy
-    from flowmaster.operators.etl.providers.sqlite import SQLiteProvider
+    from flowmaster.operators.etl.providers import Providers
 
     name = "__test_sqlite_to_csv__"
     flowitem_model.clear(name)
     yield ETLNotebookPolicy(
         name=name,
-        provider=SQLiteProvider.name,
-        storage=CSVLoader.name,
+        provider=Providers.SQLiteProvider.name,
+        storage=Storages.CSVLoader.name,
         work=work_policy,
         export=sqlite_export_policy,
         transform=csv_transform_policy,
@@ -252,11 +252,9 @@ def sqlite_to_csv_notebook(
 
 @pytest.fixture()
 def flowmasterdata_items_export_policy():
-    from flowmaster.operators.etl.providers.flowmaster_data import (
-        FlowmasterDataProvider,
-    )
+    from flowmaster.operators.etl.providers import Providers
 
-    return FlowmasterDataProvider.policy_model(
+    return Providers.FlowmasterDataProvider.policy_model(
         resource="items",
         columns=[
             "name",
@@ -278,11 +276,9 @@ def flowmasterdata_items_export_policy():
 
 @pytest.fixture()
 def flowmasterdata_pools_export_policy():
-    from flowmaster.operators.etl.providers.flowmaster_data import (
-        FlowmasterDataProvider,
-    )
+    from flowmaster.operators.etl.providers import Providers
 
-    return FlowmasterDataProvider.policy_model(
+    return Providers.FlowmasterDataProvider.policy_model(
         resource="pools",
         columns=["name", "size", "limit", "datetime"],
         export_mode="all",
@@ -291,11 +287,9 @@ def flowmasterdata_pools_export_policy():
 
 @pytest.fixture()
 def flowmasterdata_queues_export_policy():
-    from flowmaster.operators.etl.providers.flowmaster_data import (
-        FlowmasterDataProvider,
-    )
+    from flowmaster.operators.etl.providers import Providers
 
-    return FlowmasterDataProvider.policy_model(
+    return Providers.FlowmasterDataProvider.policy_model(
         resource="queues", columns=["name", "size", "datetime"], export_mode="all"
     )
 
@@ -359,16 +353,16 @@ def criteo_to_csv_notebook(
     csv_load_policy,
     flowitem_model,
 ):
-    from flowmaster.operators.etl.loaders.csv.service import CSVLoader
+    from flowmaster.operators.etl.loaders import Storages
     from flowmaster.operators.etl.policy import ETLNotebookPolicy
-    from flowmaster.operators.etl.providers.criteo import CriteoProvider
+    from flowmaster.operators.etl.providers import Providers
 
     name = "__test_criteo_to_csv__"
     flowitem_model.clear(name)
     yield ETLNotebookPolicy(
         name=name,
-        provider=CriteoProvider.name,
-        storage=CSVLoader.name,
+        provider=Providers.CriteoProvider.name,
+        storage=Storages.CSVLoader.name,
         work=work_policy,
         export=criteo_export_policy,
         transform=csv_transform_policy,
@@ -379,13 +373,13 @@ def criteo_to_csv_notebook(
 
 @pytest.fixture()
 def ya_metrika_logs_export_policy(tmp_path):
-    from flowmaster.operators.etl.providers import YandexMetrikaLogsProvider
+    from flowmaster.operators.etl.providers import Providers
 
-    return YandexMetrikaLogsProvider.policy_model(
-        credentials=YandexMetrikaLogsProvider.policy_model.CredentialsPolicy(
+    return Providers.YandexMetrikaLogsProvider.policy_model(
+        credentials=Providers.YandexMetrikaLogsProvider.policy_model.CredentialsPolicy(
             counter_id=0, access_token="token"
         ),
-        params=YandexMetrikaLogsProvider.policy_model.ParamsPolicy(
+        params=Providers.YandexMetrikaLogsProvider.policy_model.ParamsPolicy(
             source="visits",
             columns=[
                 "ym:s:counterID",
@@ -410,16 +404,16 @@ def ya_metrika_logs_to_csv_notebook(
     csv_load_policy,
     flowitem_model,
 ):
-    from flowmaster.operators.etl.loaders.csv.service import CSVLoader
+    from flowmaster.operators.etl.loaders import Storages
     from flowmaster.operators.etl.policy import ETLNotebookPolicy
-    from flowmaster.operators.etl.providers import YandexMetrikaLogsProvider
+    from flowmaster.operators.etl.providers import Providers
 
     name = "__test_ya_metrika_logs_to_csv__"
     flowitem_model.clear(name)
     yield ETLNotebookPolicy(
         name=name,
-        provider=YandexMetrikaLogsProvider.name,
-        storage=CSVLoader.name,
+        provider=Providers.YandexMetrikaLogsProvider.name,
+        storage=Storages.CSVLoader.name,
         work=work_policy,
         export=ya_metrika_logs_export_policy,
         transform=csv_transform_policy,
@@ -433,24 +427,24 @@ def ya_metrika_logs_to_csv_notebook(
 
 @pytest.fixture()
 def yml_visits_to_clickhouse_notebook(flowitem_model, ya_metrika_logs_to_csv_notebook):
-    from flowmaster.operators.etl.loaders.clickhouse.service import ClickhouseLoader
+    from flowmaster.operators.etl.loaders import Storages
 
     name = "__test_ya_metrika_logs_to_csv__"
     n = ya_metrika_logs_to_csv_notebook.copy(
         deep=True,
         update=dict(
             name=name,
-            storage=ClickhouseLoader.name,
-            transform=ClickhouseLoader.transform_policy_model(
+            storage=Storages.ClickhouseLoader.name,
+            transform=Storages.ClickhouseLoader.transform_policy_model(
                 error_policy="default",
                 partition_columns=["Date"],
                 column_map={"date": "Date"},
             ),
-            load=ClickhouseLoader.policy_model(
-                credentials=ClickhouseLoader.policy_model.CredentialsPolicy(
+            load=Storages.ClickhouseLoader.policy_model(
+                credentials=Storages.ClickhouseLoader.policy_model.CredentialsPolicy(
                     user="user1", host="localhost"
                 ),
-                table_schema=ClickhouseLoader.policy_model.TableSchemaPolicy(
+                table_schema=Storages.ClickhouseLoader.policy_model.TableSchemaPolicy(
                     db="default",
                     table="test_masterflow",
                     columns=[
@@ -459,7 +453,7 @@ def yml_visits_to_clickhouse_notebook(flowitem_model, ya_metrika_logs_to_csv_not
                     orders=["Date"],
                     partition=["Date"],
                 ),
-                data_cleaning_mode=ClickhouseLoader.DataCleaningMode.off,
+                data_cleaning_mode=Storages.ClickhouseLoader.DataCleaningMode.off,
                 sql_before=["SELECT 1"],
                 sql_after=["SELECT 2"],
             ),
@@ -472,20 +466,20 @@ def yml_visits_to_clickhouse_notebook(flowitem_model, ya_metrika_logs_to_csv_not
 
 @pytest.fixture()
 def ymm_goals_to_csv_notebook(flowitem_model, csv_transform_policy, csv_load_policy):
-    from flowmaster.operators.etl.loaders.csv.service import CSVLoader
+    from flowmaster.operators.etl.loaders import Storages
     from flowmaster.operators.etl.policy import ETLNotebookPolicy
-    from flowmaster.operators.etl.providers import YandexMetrikaManagementProvider
+    from flowmaster.operators.etl.providers import Providers
 
     name = "__test_ya_metrika_goals_to_csv__"
     flowitem_model.clear(name)
     yield ETLNotebookPolicy(
         name=name,
-        provider=YandexMetrikaManagementProvider.name,
-        storage=CSVLoader.name,
+        provider=Providers.YandexMetrikaManagementProvider.name,
+        storage=Storages.CSVLoader.name,
         work=work_policy,
-        export=YandexMetrikaManagementProvider.policy_model(
-            resource=YandexMetrikaManagementProvider.policy_model.ResourceNames.goals,
-            credentials=YandexMetrikaManagementProvider.policy_model.CredentialsPolicy(
+        export=Providers.YandexMetrikaManagementProvider.policy_model(
+            resource=Providers.YandexMetrikaManagementProvider.policy_model.ResourceNames.goals,
+            credentials=Providers.YandexMetrikaManagementProvider.policy_model.CredentialsPolicy(
                 access_token="token"
             ),
         ),
@@ -497,15 +491,15 @@ def ymm_goals_to_csv_notebook(flowitem_model, csv_transform_policy, csv_load_pol
 
 @pytest.fixture()
 def ymm_counters_to_csv_notebook(ymm_goals_to_csv_notebook):
-    from flowmaster.operators.etl.providers import YandexMetrikaManagementProvider
+    from flowmaster.operators.etl.providers import Providers
 
     name = "__test_ya_metrika_counters_to_csv__"
     n = ymm_goals_to_csv_notebook.copy(
         deep=True,
         update=dict(
-            export=YandexMetrikaManagementProvider.policy_model(
-                resource=YandexMetrikaManagementProvider.policy_model.ResourceNames.counters,
-                credentials=YandexMetrikaManagementProvider.policy_model.CredentialsPolicy(
+            export=Providers.YandexMetrikaManagementProvider.policy_model(
+                resource=Providers.YandexMetrikaManagementProvider.policy_model.ResourceNames.counters,
+                credentials=Providers.YandexMetrikaManagementProvider.policy_model.CredentialsPolicy(
                     access_token="token"
                 ),
             )
@@ -518,15 +512,15 @@ def ymm_counters_to_csv_notebook(ymm_goals_to_csv_notebook):
 
 @pytest.fixture()
 def ymm_clients_to_csv_notebook(ymm_goals_to_csv_notebook):
-    from flowmaster.operators.etl.providers import YandexMetrikaManagementProvider
+    from flowmaster.operators.etl.providers import Providers
 
     name = "__test_ya_metrika_clients_to_csv__"
     n = ymm_goals_to_csv_notebook.copy(
         deep=True,
         update=dict(
-            export=YandexMetrikaManagementProvider.policy_model(
-                resource=YandexMetrikaManagementProvider.policy_model.ResourceNames.clients,
-                credentials=YandexMetrikaManagementProvider.policy_model.CredentialsPolicy(
+            export=Providers.YandexMetrikaManagementProvider.policy_model(
+                resource=Providers.YandexMetrikaManagementProvider.policy_model.ResourceNames.clients,
+                credentials=Providers.YandexMetrikaManagementProvider.policy_model.CredentialsPolicy(
                     access_token="token"
                 ),
             )
@@ -539,22 +533,22 @@ def ymm_clients_to_csv_notebook(ymm_goals_to_csv_notebook):
 
 @pytest.fixture()
 def ymstats_to_csv_notebook(work_policy, csv_transform_policy, csv_load_policy):
-    from flowmaster.operators.etl.providers import YandexMetrikaStatsProvider
-    from flowmaster.operators.etl.loaders.csv.service import CSVLoader
+    from flowmaster.operators.etl.providers import Providers
+    from flowmaster.operators.etl.loaders import Storages
     from flowmaster.operators.etl.policy import ETLNotebookPolicy
 
     name = "__test_ya_metrika_stats_to_csv__"
     flowitem_model.clear(name)
     yield ETLNotebookPolicy(
         name=name,
-        provider=YandexMetrikaStatsProvider.name,
-        storage=CSVLoader.name,
+        provider=Providers.YandexMetrikaStatsProvider.name,
+        storage=Storages.CSVLoader.name,
         work=work_policy,
-        export=YandexMetrikaStatsProvider.policy_model(
-            credentials=YandexMetrikaStatsProvider.policy_model.CredentialsPolicy(
+        export=Providers.YandexMetrikaStatsProvider.policy_model(
+            credentials=Providers.YandexMetrikaStatsProvider.policy_model.CredentialsPolicy(
                 access_token="token"
             ),
-            params=YandexMetrikaStatsProvider.policy_model.ParamsPolicy(
+            params=Providers.YandexMetrikaStatsProvider.policy_model.ParamsPolicy(
                 ids=0,
                 metrics=["ym:s:visits"],
                 date1=True,
@@ -571,18 +565,18 @@ def ymstats_to_csv_notebook(work_policy, csv_transform_policy, csv_load_policy):
 def fakedata_to_csv_notebook(
     flowitem_model, work_policy, csv_transform_policy, csv_load_policy
 ):
-    from flowmaster.operators.etl.providers import FakeDataProvider
-    from flowmaster.operators.etl.loaders.csv.service import CSVLoader
+    from flowmaster.operators.etl.providers import Providers
+    from flowmaster.operators.etl.loaders import Storages
     from flowmaster.operators.etl.policy import ETLNotebookPolicy
 
     name = "__test_ya_metrika_stats_to_csv__"
     flowitem_model.clear(name)
     yield ETLNotebookPolicy(
         name=name,
-        provider=FakeDataProvider.name,
-        storage=CSVLoader.name,
+        provider=Providers.FakeDataProvider.name,
+        storage=Storages.CSVLoader.name,
         work=work_policy,
-        export=FakeDataProvider.policy_model(rows=1),
+        export=Storages.FakeDataProvider.policy_model(rows=1),
         transform=csv_transform_policy,
         load=csv_load_policy,
     )

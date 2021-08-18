@@ -15,9 +15,7 @@ from flowmaster.executors import (
 from flowmaster.operators.etl.core import ETLOperator
 from flowmaster.operators.etl.dataschema import ExportContext
 from flowmaster.operators.etl.enums import DataOrient
-from flowmaster.operators.etl.providers.yandex_metrika_logs.export import (
-    YandexMetrikaLogsExport,
-)
+from flowmaster.operators.etl.providers import Providers
 from flowmaster.pool import pools
 
 logger_ = getLogger(__name__)
@@ -124,7 +122,7 @@ def test_concurrency(ya_metrika_logs_to_csv_notebook):
             columns=["col1"], data=[[start_date]], data_orient=DataOrient.values
         )
 
-    YandexMetrikaLogsExport.__call__ = Mock(side_effect=flow)
+    Providers.YandexMetrikaLogsProvider.export_class.__call__ = Mock(side_effect=flow)
 
     def order_task(*args, **kwargs) -> Iterator[ExecutorIterationTask]:
         worktimes = [dt.datetime(2021, 1, i + 1) for i in range(count_task)]
@@ -168,7 +166,9 @@ def test_pools(ya_metrika_logs_to_csv_notebook):
             columns=["col1"], data=[[start_date]], data_orient=DataOrient.values
         )
 
-    YandexMetrikaLogsExport.__call__ = Mock(side_effect=export_func)
+    Providers.YandexMetrikaLogsProvider.export_class.__call__ = Mock(
+        side_effect=export_func
+    )
 
     def order_task(*args, **kwargs) -> Iterator[ExecutorIterationTask]:
         worktimes = [dt.datetime(2021, 1, i + 1) for i in range(count_task)]

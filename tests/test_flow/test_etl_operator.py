@@ -6,9 +6,7 @@ from mock import Mock
 
 def test_flow(ya_metrika_logs_to_csv_notebook):
     from flowmaster.operators.etl.dataschema import ExportContext
-    from flowmaster.operators.etl.providers.yandex_metrika_logs.export import (
-        YandexMetrikaLogsExport,
-    )
+    from flowmaster.operators.etl.providers import Providers
     from flowmaster.operators.etl.core import ETLOperator
     from flowmaster.operators.etl.enums import DataOrient
 
@@ -22,7 +20,7 @@ def test_flow(ya_metrika_logs_to_csv_notebook):
             columns=["col1"], data=[[end_period]], data_orient=DataOrient.values
         )
 
-    YandexMetrikaLogsExport.__call__ = Mock(side_effect=export_func)
+    Providers.YandexMetrikaLogsProvider.export_class.__call__ = Mock(side_effect=export_func)
 
     ya_metrika_logs_to_csv_notebook.load.file_name = f"{test_flow.__name__}.tsv"
     ya_metrika_logs_to_csv_notebook.load.with_columns = True

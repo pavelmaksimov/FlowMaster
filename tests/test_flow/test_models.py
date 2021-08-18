@@ -48,9 +48,7 @@ def test_retries(create_retries, retries, result, pendulum_utctoday, flowitem_mo
     assert len(items) == int(result)
 
 
-@pytest.mark.parametrize(
-    "retry_delay,passed_sec", [(10, 5), (10, 10), (10, 11)]
-)
+@pytest.mark.parametrize("retry_delay,passed_sec", [(10, 5), (10, 10), (10, 11)])
 def test_retry_delay(retry_delay, passed_sec, pendulum_utctoday, flowitem_model):
     name = "__test_retry_delay__"
     flowitem_model.clear(name)
@@ -64,7 +62,9 @@ def test_retry_delay(retry_delay, passed_sec, pendulum_utctoday, flowitem_model)
         }
     )
     pendulum.set_test_now(pendulum_utctoday.add(seconds=passed_sec))
-    items = list(flowitem_model.retry_error_items(name, retries=1, retry_delay=retry_delay))
+    items = list(
+        flowitem_model.retry_error_items(name, retries=1, retry_delay=retry_delay)
+    )
 
     assert len(items) == int(passed_sec >= retry_delay)
 
