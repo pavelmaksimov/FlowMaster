@@ -6,14 +6,14 @@ from flowmaster.operators.etl.enums import DataOrient
 from flowmaster.operators.etl.providers.abstract import ExportAbstract
 
 if TYPE_CHECKING:
-    from flowmaster.operators.etl.policy import ETLNotebookPolicy
+    from flowmaster.operators.etl.policy import ETLNotebook
     from flowmaster.operators.etl.providers.google_sheets.policy import (
         GoogleSheetsExportPolicy,
     )
 
 
 class GoogleSheetsExport(ExportAbstract):
-    def __init__(self, notebook: "ETLNotebookPolicy", *args, **kwargs):
+    def __init__(self, notebook: "ETLNotebook", *args, **kwargs):
         super(GoogleSheetsExport, self).__init__(notebook, *args, **kwargs)
 
     def drop_extra_columns(self, data: list[list]) -> tuple[list[str], list[list]]:

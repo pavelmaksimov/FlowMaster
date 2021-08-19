@@ -82,11 +82,11 @@ def csv_transform_policy():
 
 @pytest.fixture()
 def work_policy(pendulum_utcnow):
-    from flowmaster.operators.etl.policy import ETLNotebookPolicy
+    from flowmaster.operators.etl.policy import ETLNotebook
 
-    return ETLNotebookPolicy.WorkPolicy(
-        triggers=ETLNotebookPolicy.WorkPolicy.TriggersPolicy(
-            schedule=ETLNotebookPolicy.WorkPolicy.TriggersPolicy.SchedulePolicy(
+    return ETLNotebook.WorkPolicy(
+        triggers=ETLNotebook.WorkPolicy.TriggersPolicy(
+            schedule=ETLNotebook.WorkPolicy.TriggersPolicy.SchedulePolicy(
                 timezone="Europe/Moscow",
                 start_time="00:00:00",
                 from_date=pendulum.today().add(days=-5),
@@ -106,11 +106,11 @@ def ya_direct_report_to_csv_notebook(
 ):
     from flowmaster.operators.etl.providers import Providers
     from flowmaster.operators.etl.loaders import Storages
-    from flowmaster.operators.etl.policy import ETLNotebookPolicy
+    from flowmaster.operators.etl.policy import ETLNotebook
 
     name = "__test2_ya_direct_report_to_csv__"
     flowitem_model.clear(name)
-    yield ETLNotebookPolicy(
+    yield ETLNotebook(
         name=name,
         provider=Providers.YandexDirectProvider.name,
         storage=Storages.CSVLoader.name,
@@ -285,12 +285,12 @@ def postgres_to_csv_notebook(
     flowitem_model,
 ):
     from flowmaster.operators.etl.loaders import Storages
-    from flowmaster.operators.etl.policy import ETLNotebookPolicy
+    from flowmaster.operators.etl.policy import ETLNotebook
     from flowmaster.operators.etl.providers import Providers
 
     name = "__test_postgres_to_csv__"
     flowitem_model.clear(name)
-    yield ETLNotebookPolicy(
+    yield ETLNotebook(
         name=name,
         provider=Providers.PostgresProvider.name,
         storage=Storages.CSVLoader.name,
@@ -333,12 +333,12 @@ def mysql_to_csv_notebook(
     flowitem_model,
 ):
     from flowmaster.operators.etl.loaders import Storages
-    from flowmaster.operators.etl.policy import ETLNotebookPolicy
+    from flowmaster.operators.etl.policy import ETLNotebook
     from flowmaster.operators.etl.providers import Providers
 
     name = "__test_mysql_to_csv__"
     flowitem_model.clear(name)
-    yield ETLNotebookPolicy(
+    yield ETLNotebook(
         name=name,
         provider=Providers.MySQLProvider.name,
         storage=Storages.CSVLoader.name,
@@ -366,7 +366,7 @@ def google_sheets_to_csv_notebook(
     flowitem_model,
 ):
     from flowmaster.operators.etl.loaders import Storages
-    from flowmaster.operators.etl.policy import ETLNotebookPolicy
+    from flowmaster.operators.etl.policy import ETLNotebook
     from flowmaster.operators.etl.providers import Providers
 
     csv_transform_policy.column_schema["date_col"] = {
@@ -378,7 +378,7 @@ def google_sheets_to_csv_notebook(
     }
     name = "__test_google_sheets_to_csv__"
     flowitem_model.clear(name)
-    yield ETLNotebookPolicy(
+    yield ETLNotebook(
         name=name,
         provider=Providers.GoogleSheetsProvider.name,
         storage=Storages.CSVLoader.name,

@@ -2,6 +2,8 @@ from typing import Type, Optional
 
 from loguru._logger import Logger
 
+from flowmaster.operators.base.policy import BaseNotebook
+from flowmaster.utils import KlassCollection
 from .abstract import ProviderAbstract
 from .criteo import CriteoProvider
 from .csv import CSVProvider
@@ -15,8 +17,7 @@ from .yandex_direct import YandexDirectProvider
 from .yandex_metrika_logs import YandexMetrikaLogsProvider
 from .yandex_metrika_management import YandexMetrikaManagementProvider
 from .yandex_metrika_stats import YandexMetrikaStatsProvider
-from flowmaster.operators.base.policy import NotebookPolicy
-from flowmaster.utils import KlassCollection
+
 
 class ProviderCollection(KlassCollection):
     def __getitem__(self, provider_name: str) -> Type[ProviderAbstract]: ...
@@ -24,7 +25,7 @@ class ProviderCollection(KlassCollection):
     def init(
         self,
         provider_name: str,
-        notebook: NotebookPolicy,
+        notebook: BaseNotebook,
         logger: Optional[Logger] = None,
     ) -> ProviderAbstract: ...
     def load_provider_plugins(self) -> None: ...

@@ -93,7 +93,7 @@ class _SchedulePolicy(BaseModel):
         self._set_keep_sequence()
 
 
-class NotebookPolicy(BaseModel):
+class BaseNotebook(BaseModel):
     class WorkPolicy(BasePolicy):
         class TriggersPolicy(BaseModel):
             class SchedulePolicy(_SchedulePolicy):

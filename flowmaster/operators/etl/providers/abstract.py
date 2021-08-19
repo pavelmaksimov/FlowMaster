@@ -10,14 +10,14 @@ from flowmaster.utils.logging_helper import Logger, getLogger
 
 if TYPE_CHECKING:
     from flowmaster.operators.base.policy import PydanticModelT
-    from flowmaster.operators.etl.policy import ETLNotebookPolicy
+    from flowmaster.operators.etl.policy import ETLNotebook
     from flowmaster.operators.etl.transform import Transform
     from flowmaster.operators.etl.dataschema import ExportContext
     from flowmaster.executors import SleepIteration
 
 
 class ExportAbstract(ABC):
-    def __init__(self, notebook: "ETLNotebookPolicy", logger: Optional[Logger] = None):
+    def __init__(self, notebook: "ETLNotebook", logger: Optional[Logger] = None):
         self.notebook = notebook
         self.logger = logger or getLogger()
 

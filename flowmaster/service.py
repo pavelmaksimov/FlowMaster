@@ -8,7 +8,7 @@ import yaml
 from pydantic import ValidationError, BaseModel
 
 from flowmaster.models import FlowItem
-from flowmaster.operators.etl.policy import ETLNotebookPolicy
+from flowmaster.operators.etl.policy import ETLNotebook
 from flowmaster.setttings import Settings
 
 
@@ -81,7 +81,7 @@ def validate_notebook_policy(
 ) -> tuple[bool, dict, Optional[BaseModel], str]:
     try:
         if ".etl" in name:
-            notebook_class = ETLNotebookPolicy
+            notebook_class = ETLNotebook
         else:
             raise NotImplementedError()
 

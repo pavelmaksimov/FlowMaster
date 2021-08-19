@@ -77,11 +77,11 @@ def flowitem(pendulum_utctoday, flowitem_model):
 
 @pytest.fixture()
 def work_policy(pendulum_utcnow):
-    from flowmaster.operators.etl.policy import ETLNotebookPolicy
+    from flowmaster.operators.etl.policy import ETLNotebook
 
-    return ETLNotebookPolicy.WorkPolicy(
-        triggers=ETLNotebookPolicy.WorkPolicy.TriggersPolicy(
-            schedule=ETLNotebookPolicy.WorkPolicy.TriggersPolicy.SchedulePolicy(
+    return ETLNotebook.WorkPolicy(
+        triggers=ETLNotebook.WorkPolicy.TriggersPolicy(
+            schedule=ETLNotebook.WorkPolicy.TriggersPolicy.SchedulePolicy(
                 timezone="Europe/Moscow",
                 start_time="00:00:00",
                 from_date=pendulum.today() - dt.timedelta(5),
@@ -93,11 +93,11 @@ def work_policy(pendulum_utcnow):
 
 @pytest.fixture()
 def seconds_interval_work_policy(pendulum_utcnow):
-    from flowmaster.operators.etl.policy import ETLNotebookPolicy
+    from flowmaster.operators.etl.policy import ETLNotebook
 
-    return ETLNotebookPolicy.WorkPolicy(
-        triggers=ETLNotebookPolicy.WorkPolicy.TriggersPolicy(
-            schedule=ETLNotebookPolicy.WorkPolicy.TriggersPolicy.SchedulePolicy(
+    return ETLNotebook.WorkPolicy(
+        triggers=ETLNotebook.WorkPolicy.TriggersPolicy(
+            schedule=ETLNotebook.WorkPolicy.TriggersPolicy.SchedulePolicy(
                 timezone="Europe/Moscow",
                 start_time="00:00:00",
                 from_date=None,
@@ -158,12 +158,12 @@ def csv_to_csv_with_columns_notebook(
     flowitem_model,
 ):
     from flowmaster.operators.etl.loaders import Storages
-    from flowmaster.operators.etl.policy import ETLNotebookPolicy
+    from flowmaster.operators.etl.policy import ETLNotebook
     from flowmaster.operators.etl.providers import Providers
 
     name = "__test_csv_to_csv_with_columns__"
     flowitem_model.clear(name)
-    yield ETLNotebookPolicy(
+    yield ETLNotebook(
         name=name,
         provider=Providers.CSVProvider.name,
         storage=Storages.CSVLoader.name,
@@ -233,12 +233,12 @@ def sqlite_to_csv_notebook(
     flowitem_model,
 ):
     from flowmaster.operators.etl.loaders import Storages
-    from flowmaster.operators.etl.policy import ETLNotebookPolicy
+    from flowmaster.operators.etl.policy import ETLNotebook
     from flowmaster.operators.etl.providers import Providers
 
     name = "__test_sqlite_to_csv__"
     flowitem_model.clear(name)
-    yield ETLNotebookPolicy(
+    yield ETLNotebook(
         name=name,
         provider=Providers.SQLiteProvider.name,
         storage=Storages.CSVLoader.name,
@@ -304,14 +304,14 @@ def flowmasterdata_items_to_csv_notebook(
     flowitem_model,
 ):
     from flowmaster.operators.etl.loaders.csv.service import CSVLoader
-    from flowmaster.operators.etl.policy import ETLNotebookPolicy
+    from flowmaster.operators.etl.policy import ETLNotebook
     from flowmaster.operators.etl.providers.flowmaster_data import (
         FlowmasterDataProvider,
     )
 
     name = "__test_flowmasterdata_items_to_csv__"
     flowitem_model.clear(name)
-    yield ETLNotebookPolicy(
+    yield ETLNotebook(
         name=name,
         provider=FlowmasterDataProvider.name,
         storage=CSVLoader.name,
@@ -354,12 +354,12 @@ def criteo_to_csv_notebook(
     flowitem_model,
 ):
     from flowmaster.operators.etl.loaders import Storages
-    from flowmaster.operators.etl.policy import ETLNotebookPolicy
+    from flowmaster.operators.etl.policy import ETLNotebook
     from flowmaster.operators.etl.providers import Providers
 
     name = "__test_criteo_to_csv__"
     flowitem_model.clear(name)
-    yield ETLNotebookPolicy(
+    yield ETLNotebook(
         name=name,
         provider=Providers.CriteoProvider.name,
         storage=Storages.CSVLoader.name,
@@ -405,12 +405,12 @@ def ya_metrika_logs_to_csv_notebook(
     flowitem_model,
 ):
     from flowmaster.operators.etl.loaders import Storages
-    from flowmaster.operators.etl.policy import ETLNotebookPolicy
+    from flowmaster.operators.etl.policy import ETLNotebook
     from flowmaster.operators.etl.providers import Providers
 
     name = "__test_ya_metrika_logs_to_csv__"
     flowitem_model.clear(name)
-    yield ETLNotebookPolicy(
+    yield ETLNotebook(
         name=name,
         provider=Providers.YandexMetrikaLogsProvider.name,
         storage=Storages.CSVLoader.name,
@@ -467,12 +467,12 @@ def yml_visits_to_clickhouse_notebook(flowitem_model, ya_metrika_logs_to_csv_not
 @pytest.fixture()
 def ymm_goals_to_csv_notebook(flowitem_model, csv_transform_policy, csv_load_policy):
     from flowmaster.operators.etl.loaders import Storages
-    from flowmaster.operators.etl.policy import ETLNotebookPolicy
+    from flowmaster.operators.etl.policy import ETLNotebook
     from flowmaster.operators.etl.providers import Providers
 
     name = "__test_ya_metrika_goals_to_csv__"
     flowitem_model.clear(name)
-    yield ETLNotebookPolicy(
+    yield ETLNotebook(
         name=name,
         provider=Providers.YandexMetrikaManagementProvider.name,
         storage=Storages.CSVLoader.name,
@@ -535,11 +535,11 @@ def ymm_clients_to_csv_notebook(ymm_goals_to_csv_notebook):
 def ymstats_to_csv_notebook(work_policy, csv_transform_policy, csv_load_policy):
     from flowmaster.operators.etl.providers import Providers
     from flowmaster.operators.etl.loaders import Storages
-    from flowmaster.operators.etl.policy import ETLNotebookPolicy
+    from flowmaster.operators.etl.policy import ETLNotebook
 
     name = "__test_ya_metrika_stats_to_csv__"
     flowitem_model.clear(name)
-    yield ETLNotebookPolicy(
+    yield ETLNotebook(
         name=name,
         provider=Providers.YandexMetrikaStatsProvider.name,
         storage=Storages.CSVLoader.name,
@@ -567,11 +567,11 @@ def fakedata_to_csv_notebook(
 ):
     from flowmaster.operators.etl.providers import Providers
     from flowmaster.operators.etl.loaders import Storages
-    from flowmaster.operators.etl.policy import ETLNotebookPolicy
+    from flowmaster.operators.etl.policy import ETLNotebook
 
     name = "__test_ya_metrika_stats_to_csv__"
     flowitem_model.clear(name)
-    yield ETLNotebookPolicy(
+    yield ETLNotebook(
         name=name,
         provider=Providers.FakeDataProvider.name,
         storage=Storages.CSVLoader.name,

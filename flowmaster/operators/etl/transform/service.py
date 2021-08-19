@@ -9,14 +9,14 @@ from flowmaster.operators.etl.transform import TransformSchemas
 from flowmaster.utils.logging_helper import Logger, getLogger
 
 if TYPE_CHECKING:
-    from flowmaster.operators.etl.policy import ETLNotebookPolicy
+    from flowmaster.operators.etl.policy import ETLNotebook
     from flowmaster.operators.etl.dataschema import ExportContext
 
 
 class Transform:
     null_values = NULL_VALUES
 
-    def __init__(self, notebook: "ETLNotebookPolicy", logger: Optional[Logger] = None):
+    def __init__(self, notebook: "ETLNotebook", logger: Optional[Logger] = None):
         self.notebook = notebook
         self.error_policy = notebook.transform.error_policy
         self.partition_columns = notebook.transform.partition_columns

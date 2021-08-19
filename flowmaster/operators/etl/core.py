@@ -15,7 +15,7 @@ from flowmaster.operators.base.core import BaseOperator
 from flowmaster.operators.etl.dataschema import ETLContext
 from flowmaster.operators.etl.enums import ETLSteps
 from flowmaster.operators.etl.loaders import Storages
-from flowmaster.operators.etl.policy import ETLNotebookPolicy
+from flowmaster.operators.etl.policy import ETLNotebook
 from flowmaster.operators.etl.providers import Providers
 from flowmaster.operators.etl.work import ETLWork
 from flowmaster.utils import iter_range_datetime
@@ -25,9 +25,9 @@ from flowmaster.utils.logging_helper import create_logfile
 class ETLOperator(BaseOperator):
     items = None
 
-    def __init__(self, notebook: ETLNotebookPolicy):
+    def __init__(self, notebook: ETLNotebook):
         super(ETLOperator, self).__init__(notebook)
-        self.notebook: ETLNotebookPolicy
+        self.notebook: ETLNotebook
 
         self.Work = ETLWork(notebook, self.logger)
         self.Provider = Providers(notebook, self.logger)

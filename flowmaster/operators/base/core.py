@@ -4,14 +4,14 @@ from typing import Iterator
 
 from flowmaster.enums import Statuses
 from flowmaster.executors import ExecutorIterationTask, SleepIteration
-from flowmaster.operators.base.policy import NotebookPolicy
+from flowmaster.operators.base.policy import BaseNotebook
 from flowmaster.operators.base.work import Work
 from flowmaster.utils.logging_helper import getLogger, create_logfile
 from flowmaster.utils.notifications import send_codex_telegram_message
 
 
 class BaseOperator:
-    def __init__(self, notebook: NotebookPolicy):
+    def __init__(self, notebook: BaseNotebook):
         from flowmaster.models import FlowItem
 
         self.notebook = notebook

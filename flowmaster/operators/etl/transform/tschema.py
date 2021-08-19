@@ -8,7 +8,7 @@ from flowmaster.operators.etl.transform.policy import DTypeLiteralT
 from flowmaster.operators.etl.transform.policy import ErrorPolicyLiteralT
 
 if TYPE_CHECKING:
-    from flowmaster.operators.etl.policy import ETLNotebookPolicy
+    from flowmaster.operators.etl.policy import ETLNotebook
 
 
 class TransformSchemaData(pydantic.BaseModel):
@@ -39,7 +39,7 @@ class FileTransformSchema(StorageTransformSchemaAbstract):
     null_default_value = ""
 
     def __init__(
-        self, notebook: "ETLNotebookPolicy", null_values: Union[list, tuple, set]
+        self, notebook: "ETLNotebook", null_values: Union[list, tuple, set]
     ):
         self.column_schema = {
             # TODO: refactoring .dict(exclude_unset=True)
@@ -82,7 +82,7 @@ class ClickhouseTransformSchema(StorageTransformSchemaAbstract):
     null_default_value = None
 
     def __init__(
-        self, notebook: "ETLNotebookPolicy", null_values: Union[list, tuple, set]
+        self, notebook: "ETLNotebook", null_values: Union[list, tuple, set]
     ):
         self.column_schema = {
             col_name: {k: v for k, v in col_schema.dict().items() if v is not None}

@@ -14,11 +14,11 @@ from flowmaster.operators.etl.providers.yandex_direct.policy import (
 )
 
 if TYPE_CHECKING:
-    from flowmaster.operators.etl.policy import ETLNotebookPolicy
+    from flowmaster.operators.etl.policy import ETLNotebook
 
 
 class YandexDirectExport(ExportAbstract):
-    def __init__(self, notebook: "ETLNotebookPolicy", *args, **kwargs):
+    def __init__(self, notebook: "ETLNotebook", *args, **kwargs):
         self.export: ExportPolicy = notebook.export
         self.client = YandexDirect(
             wait_report=False,

@@ -16,11 +16,11 @@ from flowmaster.operators.etl.providers.criteo.policy import (
 from flowmaster.utils import chunker
 
 if TYPE_CHECKING:
-    from flowmaster.operators.etl.policy import ETLNotebookPolicy
+    from flowmaster.operators.etl.policy import ETLNotebook
 
 
 class CriteoExport(ExportAbstract):
-    def __init__(self, notebook: "ETLNotebookPolicy", *args, **kwargs):
+    def __init__(self, notebook: "ETLNotebook", *args, **kwargs):
         self.export: ExportPolicy = notebook.export
         configuration = cm.Configuration(
             username=self.export.credentials.client_id,

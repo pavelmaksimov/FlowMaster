@@ -10,11 +10,11 @@ def test_etl_plugin_from_doc(
 ):
     from flowmaster.operators.etl.providers import Providers
     from flowmaster.operators.etl.loaders import Storages
-    from flowmaster.operators.etl.policy import ETLNotebookPolicy
+    from flowmaster.operators.etl.policy import ETLNotebook
 
     MyProvider = Providers["my_provider_name"]
     export_policy = MyProvider.policy_model(my_columns=["col1"], token="", rows=3)
-    notebook = ETLNotebookPolicy(
+    notebook = ETLNotebook(
         name="__test_my_provider__",
         provider=MyProvider.name,
         storage=Storages.CSVLoader.name,

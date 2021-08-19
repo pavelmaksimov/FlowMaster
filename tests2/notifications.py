@@ -7,7 +7,7 @@ from tests.fixtures.yandex_metrika import (
 )
 
 from flowmaster.operators.etl.core import ETLOperator
-from flowmaster.operators.etl.policy import ETLNotebookPolicy
+from flowmaster.operators.etl.policy import ETLNotebook
 from flowmaster.operators.etl.providers import Providers
 from flowmaster.utils.yaml_helper import YamlHelper
 from tests import get_tests_dir
@@ -19,13 +19,13 @@ def test_codex_telegram():
     def export_func(start_period, end_period) -> Iterator[tuple[dict, list, list]]:
         yield ({}, ["date"], [[start_period]])
 
-    ya_metrika_logs_to_csv_notebook.work.notifications = ETLNotebookPolicy.WorkPolicy.NotificationsPolicy(
-        codex_telegram=ETLNotebookPolicy.WorkPolicy.NotificationsPolicy.CodexTelegramPolicy(
+    ya_metrika_logs_to_csv_notebook.work.notifications = ETLNotebook.WorkPolicy.NotificationsPolicy(
+        codex_telegram=ETLNotebook.WorkPolicy.NotificationsPolicy.CodexTelegramPolicy(
             links=[credentials["codex_telegram"]],
             on_success=True,
         )
     )
-    notebook = ETLNotebookPolicy(**dict(ya_metrika_logs_to_csv_notebook))
+    notebook = ETLNotebook(**dict(ya_metrika_logs_to_csv_notebook))
 
     Providers.YandexMetrikaLogsProvider.export_class.__call__ = Mock(
         side_effect=export_func

@@ -9,11 +9,11 @@ from flowmaster.utils.logging_helper import logger
 
 if TYPE_CHECKING:
     from flowmaster.operators.etl.core import ETLOperator
-    from flowmaster.operators.etl.policy import ETLNotebookPolicy
+    from flowmaster.operators.etl.policy import ETLNotebook
 
 
 class ETLWork(Work):
-    def __init__(self, notebook: "ETLNotebookPolicy", logger: Optional[Logger] = None):
+    def __init__(self, notebook: "ETLNotebook", logger: Optional[Logger] = None):
         super(ETLWork, self).__init__(notebook, logger)
 
         self.update_stale_data = notebook.work.update_stale_data
@@ -79,11 +79,11 @@ def ordering_etl_flow_tasks(
     # TODO: избавиться от функции, переделать так, чтобы одна функция была для заказа
 
     from flowmaster.operators.etl.core import ETLOperator
-    from flowmaster.operators.etl.policy import ETLNotebookPolicy
+    from flowmaster.operators.etl.policy import ETLNotebook
 
     for name in iter_active_notebook_filenames():
         validate, text, notebook_dict, notebook, error = get_notebook(name)
-        notebook: ETLNotebookPolicy
+        notebook: ETLNotebook
         if dry_run:
             if notebook.provider != "fakedata":
                 continue
