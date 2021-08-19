@@ -3,8 +3,8 @@ from flowmaster.operators.etl.loaders.csv.service import CSVLoader
 from flowmaster.utils import KlassCollection
 
 
-class StoragesCollection(KlassCollection):
+class LoadersCollection(KlassCollection):
     name_attr_of_klass = "storage"
 
 
-Storages = StoragesCollection(ClickhouseLoader, CSVLoader)
+Storages = LoadersCollection(ClickhouseLoader, CSVLoader)

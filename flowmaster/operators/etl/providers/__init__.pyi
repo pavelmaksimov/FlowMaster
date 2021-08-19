@@ -2,7 +2,7 @@ from typing import Type, Optional
 
 from loguru._logger import Logger
 
-from flowmaster.operators.base.policy import BaseNotebook
+from flowmaster.operators.base.policy import PydanticModelT
 from flowmaster.utils import KlassCollection
 from .abstract import ProviderAbstract
 from .criteo import CriteoProvider
@@ -18,14 +18,19 @@ from .yandex_metrika_logs import YandexMetrikaLogsProvider
 from .yandex_metrika_management import YandexMetrikaManagementProvider
 from .yandex_metrika_stats import YandexMetrikaStatsProvider
 
-
 class ProviderCollection(KlassCollection):
     def __getitem__(self, provider_name: str) -> Type[ProviderAbstract]: ...
-    def get(self, provider_name: str) -> Type[ProviderAbstract]: ...
+    def get(self, provider_name: str, /) -> Type[ProviderAbstract]: ...
+    def __call__(
+        self,
+        notebook: PydanticModelT,
+        logger: Optional[Logger] = None,
+    ) -> ProviderAbstract: ...
     def init(
         self,
         provider_name: str,
-        notebook: BaseNotebook,
+        /,
+        notebook: PydanticModelT,
         logger: Optional[Logger] = None,
     ) -> ProviderAbstract: ...
     def load_provider_plugins(self) -> None: ...

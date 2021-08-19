@@ -91,7 +91,7 @@ class KlassCollection:
         return self[name](*klass_args, **klass_kwargs)
 
     def init(
-        self, name: Union[NameAttrOfKlassT, KlassNameT], *klass_args, **klass_kwargs
+        self, name: Union[NameAttrOfKlassT, KlassNameT], /, *klass_args, **klass_kwargs
     ):
         return self[name](*klass_args, **klass_kwargs)
 
@@ -100,10 +100,10 @@ class KlassCollection:
             return self.__dict__.get(name, self.__dict__["_name_attr_of_klasses"][name])
         raise KeyError(name)
 
-    def get(self, name: Union[NameAttrOfKlassT, KlassNameT]) -> KlassT:
+    def get(self, name: Union[NameAttrOfKlassT, KlassNameT], /) -> KlassT:
         return self[name]
 
-    def set(self, klass: KlassT) -> None:
+    def set(self, klass: KlassT, /) -> None:
         if klass not in self._klasses:
             self._klasses.append(klass)
             self.__dict__[klass.__name__] = klass

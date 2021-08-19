@@ -32,7 +32,6 @@ class ETLOperator(BaseOperator):
 
         self.Work = ETLWork(notebook, self.logger)
         self.Provider = Providers(notebook, self.logger)
-        # TODO: Rename to 'self.Storage'.
         self.Load = Storages(notebook, self.logger)
 
         self.operator_context = ETLContext(
