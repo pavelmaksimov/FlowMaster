@@ -23,6 +23,7 @@ from flowmaster.utils.logging_helper import create_logfile
 
 
 class ETLOperator(BaseOperator):
+    name = "etl"
     items = None
 
     def __init__(self, notebook: ETLNotebook):
@@ -160,7 +161,7 @@ class ETLOperator(BaseOperator):
         period_text = self._get_period_text(
             self.operator_context.start_period, self.operator_context.end_period
         )
-        return create_logfile(f"{period_text}.log", self.name)
+        return create_logfile(f"{period_text}.log", self.notebook.name)
 
     def _iterator(
         self,
@@ -183,7 +184,7 @@ class ETLOperator(BaseOperator):
 
         # TODO: Записи уже должны быть, их не надо создавать
         self.items = self.Model.create_items(
-            self.name,
+            self.notebook.name,
             datetime_list,
             **{
                 self.Model.data.name: self.operator_context.dict(exclude_unset=True),
@@ -193,18 +194,18 @@ class ETLOperator(BaseOperator):
 
         log_data = {}
         try:
-            self.logger.info("Start flow: {} {}", self.name, period_text)
+            self.logger.info("Start flow: {} {}", self.notebook.name, period_text)
 
             for item in self(start_period, end_period, dry_run=dry_run, **kwargs):
                 if isinstance(item, dict):
                     log_data = item
                     self.Model.update_items(self.items, **log_data)
-                    self.logger.info("{}: {}", self.name, log_data)
+                    self.logger.info("{}: {}", self.notebook.name, log_data)
 
                 yield item
 
         except:
-            self.logger.exception("Fail flow: {}  {}", self.name, period_text)
+            self.logger.exception("Fail flow: {}  {}", self.notebook.name, period_text)
             if dry_run is False:
                 self.send_notifications(
                     **{
@@ -224,7 +225,7 @@ class ETLOperator(BaseOperator):
 
         finally:
             self.Model.update_items(self.items)
-            self.logger.info("End flow: {}  {}", self.name, period_text)
+            self.logger.info("End flow: {}  {}", self.notebook.name, period_text)
 
     def dry_run(
         self,

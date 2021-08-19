@@ -11,11 +11,12 @@ from flowmaster.utils.notifications import send_codex_telegram_message
 
 
 class BaseOperator:
+    name = "base"
+
     def __init__(self, notebook: BaseNotebook):
         from flowmaster.models import FlowItem
 
         self.notebook = notebook
-        self.name = notebook.name
 
         self.logger = getLogger()
         self.Work = Work(notebook, self.logger)
@@ -24,7 +25,7 @@ class BaseOperator:
     def get_logfile_path(self) -> Path:
         worktime = self.Work.current_worktime.strftime("%Y-%m-%dT%H-%M-%S")
         worktime = worktime.replace("T00-00-00", "")
-        return create_logfile(f"{worktime}.log", self.name)
+        return create_logfile(f"{worktime}.log", self.notebook.name)
 
     def add_logger_file(self, dry_run: bool) -> None:
         logfile_path = self.get_logfile_path()
@@ -38,7 +39,7 @@ class BaseOperator:
             retention=self.Work.interval_timedelta * 90,
             encoding="utf8",
         )
-        error_logfile_path = create_logfile(f"errors.log", self.name)
+        error_logfile_path = create_logfile(f"errors.log", self.notebook.name)
         self.logger.add(
             error_logfile_path,
             level="ERROR",
@@ -53,7 +54,7 @@ class BaseOperator:
         if self.notebook.work.notifications is None:
             return
 
-        message = f"{self.name} {status}"
+        message = f"{self.notebook.name} {status}"
         for key, value in kwargs.items():
             message += f"\n{key}: {value}"
 
@@ -65,11 +66,11 @@ class BaseOperator:
 
         elif status in Statuses.error_statuses:
             if not self.Model.allow_execute_flow(
-                self.name,
+                self.notebook.name,
                 notebook_hash=self.notebook.hash,
                 max_fatal_errors=self.notebook.work.max_fatal_errors,
             ) or not self.Model.retry_error_items(
-                self.name, self.Work.retries, retry_delay=0
+                self.notebook.name, self.Work.retries, retry_delay=0
             ):
                 if codex_tg.on_failure:
                     send_codex_telegram_message(codex_tg.links, message)
@@ -83,9 +84,9 @@ class BaseOperator:
 
     def _iterator(self, *args, dry_run: bool = False, **kwargs) -> Iterator:
         """Operator script wrapper."""
-        self.logger.info("Start flow: {}", self.name)
+        self.logger.info("Start flow: {}", self.notebook.name)
         yield from self(*args, dry_run=dry_run, **kwargs)
-        self.logger.info("End flow: {}", self.name)
+        self.logger.info("End flow: {}", self.notebook.name)
 
     def task(self, *args, **kwargs) -> ExecutorIterationTask:
         """Flow wrapper for scheduler and executor."""
