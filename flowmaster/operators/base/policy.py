@@ -1,4 +1,5 @@
 import datetime as dt
+from abc import ABC
 from typing import Optional, Union, Literal, TypeVar
 
 import pendulum
@@ -93,7 +94,7 @@ class _SchedulePolicy(BaseModel):
         self._set_keep_sequence()
 
 
-class BaseNotebook(BaseModel):
+class BaseNotebook(BaseModel, ABC):
     class WorkPolicy(BasePolicy):
         class TriggersPolicy(BaseModel):
             class SchedulePolicy(_SchedulePolicy):
