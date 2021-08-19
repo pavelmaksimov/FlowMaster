@@ -4,7 +4,7 @@ from typing import Optional, Union
 from pydantic import PositiveInt, NegativeInt, validator, BaseModel
 
 from flowmaster.operators.base.policy import BaseNotebook, PydanticModelT
-from flowmaster.operators.etl.loaders import Storages
+from flowmaster.operators.etl.loaders import Loaders
 from flowmaster.operators.etl.providers import Providers
 
 
@@ -26,7 +26,7 @@ class ETLNotebook(BaseNotebook):
 
     @validator("storage")
     def _validate_storage(cls, storage, values, **kwargs):
-        assert storage in Storages
+        assert storage in Loaders
         return storage
 
     def _set_partition_columns(self, **kwargs) -> None:
@@ -34,7 +34,10 @@ class ETLNotebook(BaseNotebook):
         load = kwargs.get("load", {})
 
         # For Clickhouse.
-        if kwargs.get("storage") == Storages.ClickhouseLoader.name and isinstance(load, dict):
+        if (
+            isinstance(load, dict)
+            and kwargs.get("storage") == Loaders.ClickhouseLoader.name
+        ):
             transform["partition_columns"] = load.get("table_schema", {}).get(
                 "partition"
             )
@@ -44,7 +47,10 @@ class ETLNotebook(BaseNotebook):
         load = kwargs.get("load", {})
 
         # For Clickhouse.
-        if kwargs.get("storage") == Storages.ClickhouseLoader.name and isinstance(load, dict):
+        if (
+            isinstance(load, dict)
+            and kwargs.get("storage") == Loaders.ClickhouseLoader.name
+        ):
             if "column_map" not in transform:
                 columns_schema = load.get("table_schema", {}).get("columns", None)
                 if columns_schema:
@@ -78,11 +84,11 @@ class ETLNotebook(BaseNotebook):
         # Checking if the input data are not dictionaries.
         if isinstance(transform := kwargs.get("transform", {}), BaseModel):
             transform = transform.dict()
-        self.transform = Storages[self.storage].transform_policy_model(**transform)
+        self.transform = Loaders[self.storage].transform_policy_model(**transform)
 
         if isinstance(load := kwargs.get("load", {}), BaseModel):
             load = load.dict()
-        self.load = Storages[self.storage].policy_model(**load)
+        self.load = Loaders[self.storage].policy_model(**load)
 
         if isinstance(export := kwargs.get("export", {}), BaseModel):
             export = export.dict()

@@ -4,7 +4,7 @@ from datagun import DataSet, NULL_VALUES
 
 from flowmaster.operators.etl.dataschema import TransformContext
 from flowmaster.operators.etl.enums import DataOrient
-from flowmaster.operators.etl.loaders import Storages
+from flowmaster.operators.etl.loaders import Loaders
 from flowmaster.operators.etl.transform import TransformSchemas
 from flowmaster.utils.logging_helper import Logger, getLogger
 
@@ -35,16 +35,16 @@ class Transform:
         return DataSet(data, schema=column_schema, orient=orient)
 
     def changing_data_orient_for_storage(self, dataset):
-        Storage = Storages[self.notebook.storage]
+        Loader = Loaders[self.notebook.storage]
 
-        if Storage.data_orient == DataOrient.values:
+        if Loader.data_orient == DataOrient.values:
             data = dataset.to_values()
-        elif Storage.data_orient == DataOrient.columns:
+        elif Loader.data_orient == DataOrient.columns:
             data = dataset.to_list()
-        elif Storage.data_orient == DataOrient.dict:
+        elif Loader.data_orient == DataOrient.dict:
             data = dataset.to_dict()
         else:
-            raise NotImplementedError(f"{Storage.data_orient=} not supported")
+            raise NotImplementedError(f"{Loader.data_orient=} not supported")
 
         return data
 

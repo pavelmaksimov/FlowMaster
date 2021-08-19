@@ -3,7 +3,6 @@ from typing import TYPE_CHECKING, Any, Optional, Union
 
 import pydantic
 
-from flowmaster.operators.etl.loaders import Storages
 from flowmaster.operators.etl.transform.policy import DTypeLiteralT
 from flowmaster.operators.etl.transform.policy import ErrorPolicyLiteralT
 
@@ -34,13 +33,11 @@ class StorageTransformSchemaAbstract(ABC):
 
 
 class FileTransformSchema(StorageTransformSchemaAbstract):
-    name = Storages.CSVLoader.name
+    name = "csv"
     allow_null = False
     null_default_value = ""
 
-    def __init__(
-        self, notebook: "ETLNotebook", null_values: Union[list, tuple, set]
-    ):
+    def __init__(self, notebook: "ETLNotebook", null_values: Union[list, tuple, set]):
         self.column_schema = {
             # TODO: refactoring .dict(exclude_unset=True)
             col_name: {k: v for k, v in col_schema.dict().items() if v is not None}
@@ -78,12 +75,10 @@ class FileTransformSchema(StorageTransformSchemaAbstract):
 
 
 class ClickhouseTransformSchema(StorageTransformSchemaAbstract):
-    name = Storages.ClickhouseLoader.name
+    name = "clickhouse"
     null_default_value = None
 
-    def __init__(
-        self, notebook: "ETLNotebook", null_values: Union[list, tuple, set]
-    ):
+    def __init__(self, notebook: "ETLNotebook", null_values: Union[list, tuple, set]):
         self.column_schema = {
             col_name: {k: v for k, v in col_schema.dict().items() if v is not None}
             for col_name, col_schema in notebook.transform.column_schema.items()

@@ -26,4 +26,4 @@ class LoadersCollection(KlassCollection):
     ClickhouseLoader: Type[ClickhouseLoader]
     CSVLoader: Type[CSVLoader]
 
-Storages: LoadersCollection
+Loaders: LoadersCollection

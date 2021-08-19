@@ -14,7 +14,7 @@ from flowmaster.executors import (
 from flowmaster.operators.base.core import BaseOperator
 from flowmaster.operators.etl.dataschema import ETLContext
 from flowmaster.operators.etl.enums import ETLSteps
-from flowmaster.operators.etl.loaders import Storages
+from flowmaster.operators.etl.loaders import Loaders
 from flowmaster.operators.etl.policy import ETLNotebook
 from flowmaster.operators.etl.providers import Providers
 from flowmaster.operators.etl.work import ETLWork
@@ -32,7 +32,7 @@ class ETLOperator(BaseOperator):
 
         self.Work = ETLWork(notebook, self.logger)
         self.Provider = Providers(notebook, self.logger)
-        self.Load = Storages(notebook, self.logger)
+        self.Load = Loaders(notebook, self.logger)
 
         self.operator_context = ETLContext(
             operator=Operators.etl, storage=notebook.storage

@@ -64,20 +64,20 @@ def flowitem_model():
 
 @pytest.fixture()
 def csv_load_policy(tmp_path):
-    from flowmaster.operators.etl.loaders import Storages
+    from flowmaster.operators.etl.loaders import Loaders
 
     name = uuid.uuid4()
 
-    return Storages.CSVLoadPolicy(
+    return Loaders.CSVLoadPolicy(
         path=str(tmp_path), file_name=f"{name}.csv", save_mode="w"
     )
 
 
 @pytest.fixture()
 def csv_transform_policy():
-    from flowmaster.operators.etl.loaders import Storages
+    from flowmaster.operators.etl.loaders import Loaders
 
-    return Storages.CSVLoader.transform_policy_model(error_policy="default")
+    return Loaders.CSVLoader.transform_policy_model(error_policy="default")
 
 
 @pytest.fixture()
@@ -105,7 +105,7 @@ def ya_direct_report_to_csv_notebook(
     yandex_direct_credentials,
 ):
     from flowmaster.operators.etl.providers import Providers
-    from flowmaster.operators.etl.loaders import Storages
+    from flowmaster.operators.etl.loaders import Loaders
     from flowmaster.operators.etl.policy import ETLNotebook
 
     name = "__test2_ya_direct_report_to_csv__"
@@ -113,7 +113,7 @@ def ya_direct_report_to_csv_notebook(
     yield ETLNotebook(
         name=name,
         provider=Providers.YandexDirectProvider.name,
-        storage=Storages.CSVLoader.name,
+        storage=Loaders.CSVLoader.name,
         work=work_policy,
         export=Providers.YandexDirectProvider.policy_model(
             credentials=Providers.YandexDirectProvider.policy_model.CredentialsPolicy(
@@ -145,35 +145,35 @@ def ya_direct_report_to_csv_notebook(
 def ya_direct_report_to_clickhouse_notebook(
     flowitem_model, ya_direct_report_to_csv_notebook, clickhouse_credentials
 ):
-    from flowmaster.operators.etl.loaders import Storages
+    from flowmaster.operators.etl.loaders import Loaders
 
     name = "__test2_ya_direct_report_to_clickhouse__"
     n = ya_direct_report_to_csv_notebook.copy(
         deep=True,
         update=dict(
             name=name,
-            storage=Storages.ClickhouseLoader.name,
-            transform=Storages.ClickhouseLoader.transform_policy_model(
+            storage=Loaders.ClickhouseLoader.name,
+            transform=Loaders.ClickhouseLoader.transform_policy_model(
                 error_policy="default",
                 column_map={"CampaignType": "CampaignType", "Cost": "Cost"},
             ),
-            load=Storages.ClickhouseLoader.policy_model(
-                credentials=Storages.ClickhouseLoader.policy_model.CredentialsPolicy(
+            load=Loaders.ClickhouseLoader.policy_model(
+                credentials=Loaders.ClickhouseLoader.policy_model.CredentialsPolicy(
                     **clickhouse_credentials
                 ),
-                table_schema=Storages.ClickhouseLoader.policy_model.TableSchemaPolicy(
+                table_schema=Loaders.ClickhouseLoader.policy_model.TableSchemaPolicy(
                     db="default",
                     table="flowmaster_ya_direct_report_to_clickhouse",
                     columns=["CampaignType String", "Cost Float32"],
                     orders=["CampaignType"],
                 ),
-                data_cleaning_mode=Storages.ClickhouseLoader.DataCleaningMode.truncate,
+                data_cleaning_mode=Loaders.ClickhouseLoader.DataCleaningMode.truncate,
                 sql_before=["SELECT 1"],
                 sql_after=["SELECT 2"],
             ),
         ),
     )
-    loader = Storages.ClickhouseLoader(n)
+    loader = Loaders.ClickhouseLoader(n)
     loader.Table.drop_table()
     flowitem_model.clear(name)
     yield n
@@ -218,35 +218,35 @@ def ya_direct_campaigns_to_csv_notebook(
 def ya_direct_campaigns_to_clickhouse_notebook(
     flowitem_model, ya_direct_campaigns_to_csv_notebook, clickhouse_credentials
 ):
-    from flowmaster.operators.etl.loaders import Storages
+    from flowmaster.operators.etl.loaders import Loaders
 
     name = "__test2_ya_direct_campaigns_to_clickhouse__"
     n = ya_direct_campaigns_to_csv_notebook.copy(
         deep=True,
         update=dict(
             name=name,
-            storage=Storages.ClickhouseLoader.name,
-            transform=Storages.ClickhouseLoader.transform_policy_model(
+            storage=Loaders.ClickhouseLoader.name,
+            transform=Loaders.ClickhouseLoader.transform_policy_model(
                 error_policy="default",
                 column_map={"Id": "CampaignID", "Name": "CampaignName"},
             ),
-            load=Storages.ClickhouseLoader.policy_model(
-                credentials=Storages.ClickhouseLoader.policy_model.CredentialsPolicy(
+            load=Loaders.ClickhouseLoader.policy_model(
+                credentials=Loaders.ClickhouseLoader.policy_model.CredentialsPolicy(
                     **clickhouse_credentials
                 ),
-                table_schema=Storages.ClickhouseLoader.policy_model.TableSchemaPolicy(
+                table_schema=Loaders.ClickhouseLoader.policy_model.TableSchemaPolicy(
                     db="default",
                     table="flowmaster_test_ya_direct_campaigns_to_clickhouse",
                     columns=["CampaignName String", "CampaignID UInt64"],
                     orders=["CampaignID"],
                 ),
-                data_cleaning_mode=Storages.ClickhouseLoader.DataCleaningMode.truncate,
+                data_cleaning_mode=Loaders.ClickhouseLoader.DataCleaningMode.truncate,
                 sql_before=["SELECT 1"],
                 sql_after=["SELECT 2"],
             ),
         ),
     )
-    loader = Storages.ClickhouseLoader(n)
+    loader = Loaders.ClickhouseLoader(n)
     loader.Table.drop_table()
     flowitem_model.clear(name)
     yield n
@@ -284,7 +284,7 @@ def postgres_to_csv_notebook(
     csv_load_policy,
     flowitem_model,
 ):
-    from flowmaster.operators.etl.loaders import Storages
+    from flowmaster.operators.etl.loaders import Loaders
     from flowmaster.operators.etl.policy import ETLNotebook
     from flowmaster.operators.etl.providers import Providers
 
@@ -293,7 +293,7 @@ def postgres_to_csv_notebook(
     yield ETLNotebook(
         name=name,
         provider=Providers.PostgresProvider.name,
-        storage=Storages.CSVLoader.name,
+        storage=Loaders.CSVLoader.name,
         work=work_policy,
         export=postgres_export_policy,
         transform=csv_transform_policy,
@@ -332,7 +332,7 @@ def mysql_to_csv_notebook(
     csv_load_policy,
     flowitem_model,
 ):
-    from flowmaster.operators.etl.loaders import Storages
+    from flowmaster.operators.etl.loaders import Loaders
     from flowmaster.operators.etl.policy import ETLNotebook
     from flowmaster.operators.etl.providers import Providers
 
@@ -341,7 +341,7 @@ def mysql_to_csv_notebook(
     yield ETLNotebook(
         name=name,
         provider=Providers.MySQLProvider.name,
-        storage=Storages.CSVLoader.name,
+        storage=Loaders.CSVLoader.name,
         work=work_policy,
         export=mysql_export_policy,
         transform=csv_transform_policy,
@@ -365,7 +365,7 @@ def google_sheets_to_csv_notebook(
     csv_load_policy,
     flowitem_model,
 ):
-    from flowmaster.operators.etl.loaders import Storages
+    from flowmaster.operators.etl.loaders import Loaders
     from flowmaster.operators.etl.policy import ETLNotebook
     from flowmaster.operators.etl.providers import Providers
 
@@ -381,7 +381,7 @@ def google_sheets_to_csv_notebook(
     yield ETLNotebook(
         name=name,
         provider=Providers.GoogleSheetsProvider.name,
-        storage=Storages.CSVLoader.name,
+        storage=Loaders.CSVLoader.name,
         work=work_policy,
         export=google_sheets_export_policy,
         transform=csv_transform_policy,

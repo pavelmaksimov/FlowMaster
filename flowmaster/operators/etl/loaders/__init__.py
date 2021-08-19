@@ -7,4 +7,4 @@ class LoadersCollection(KlassCollection):
     name_attr_of_klass = "storage"
 
 
-Storages = LoadersCollection(ClickhouseLoader, CSVLoader)
+Loaders = LoadersCollection(ClickhouseLoader, CSVLoader)

@@ -57,7 +57,7 @@ def test_my_provider(
     """Imports from flowmaster must be placed inside the tested functions."""
 
     from flowmaster.operators.etl.providers import Providers
-    from flowmaster.operators.etl.loaders import Storages
+    from flowmaster.operators.etl.loaders import Loaders
     from flowmaster.operators.etl.policy import ETLNotebook
 
     MyProvider = Providers["my_provider_name"]
@@ -65,7 +65,7 @@ def test_my_provider(
     notebook = ETLNotebook(
         name="__test_my_provider__",
         provider=MyProvider.name,
-        storage=Storages.CSVLoader.name,
+        storage=Loaders.CSVLoader.name,
         export=export_policy,
         transform=csv_transform_policy,
         load=csv_load_policy,
@@ -85,7 +85,7 @@ def test_my_provider(
 import datetime as dt
 
 from flowmaster.operators.etl.core import ETLOperator
-from flowmaster.operators.etl.loaders import Storages
+from flowmaster.operators.etl.loaders import Loaders
 from flowmaster.operators.etl.policy import ETLNotebook
 from flowmaster.operators.etl.providers import Providers
 from flowmaster.setttings import Settings
@@ -94,7 +94,7 @@ from flowmaster.setttings import Settings
 def get_notebook():
     MyProvider = Providers["my_provider_name"]
     export_policy = MyProvider.policy_model(my_columns=["col1"], token="", rows=3)
-    csv_transform_policy = Storages.CSVLoader.transform_policy_model(error_policy="default")
+    csv_transform_policy = Loaders.CSVLoader.transform_policy_model(error_policy="default")
     csv_load_policy = Providers.CSVLoadPolicy(
         path=Settings.FILE_STORAGE_DIR,
         file_name=f"test_my_provider.csv",
@@ -113,7 +113,7 @@ def get_notebook():
     return ETLNotebook(
         name="__test_my_provider__",
         provider=Providers.CSVProvider.name,
-        storage=Storages.CSVLoader.name,
+        storage=Loaders.CSVLoader.name,
         work=work_policy,
         export=export_policy,
         transform=csv_transform_policy,

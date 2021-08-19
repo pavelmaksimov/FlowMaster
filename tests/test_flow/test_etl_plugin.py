@@ -9,7 +9,7 @@ def test_etl_plugin_from_doc(
     create_etl_plugin_from_doc, work_policy, csv_transform_policy, csv_load_policy
 ):
     from flowmaster.operators.etl.providers import Providers
-    from flowmaster.operators.etl.loaders import Storages
+    from flowmaster.operators.etl.loaders import Loaders
     from flowmaster.operators.etl.policy import ETLNotebook
 
     MyProvider = Providers["my_provider_name"]
@@ -17,7 +17,7 @@ def test_etl_plugin_from_doc(
     notebook = ETLNotebook(
         name="__test_my_provider__",
         provider=MyProvider.name,
-        storage=Storages.CSVLoader.name,
+        storage=Loaders.CSVLoader.name,
         export=export_policy,
         transform=csv_transform_policy,
         load=csv_load_policy,
