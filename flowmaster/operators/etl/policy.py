@@ -87,3 +87,6 @@ class ETLNotebook(BaseNotebook):
         if isinstance(export := kwargs.get("export", {}), BaseModel):
             export = export.dict()
         self.export = Providers[self.provider].policy_model(**export)
+
+    class Config:
+        operator = "etl"

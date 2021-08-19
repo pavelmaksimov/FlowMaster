@@ -119,3 +119,15 @@ class BaseNotebook(BaseModel):
     description: Optional[str] = None
     work: WorkPolicy
     hash: str = ""
+    operator: str = "base"
+
+    class Config:
+        operator = "base"
+
+    def __init__(self, **kwargs):
+        super(BaseNotebook, self).__init__(**kwargs)
+        if not getattr(self.Config, "operator"):
+            raise AttributeError(
+                "Assign to your model in the Config class, the 'operator' attribute"
+            )
+        self.operator = self.Config.operator
