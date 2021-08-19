@@ -49,6 +49,7 @@ KlassNameT = TypeVar("KlassNameT", bound=str)
 
 class KlassCollection:
     name_attr_of_klass = "name"
+    name_attr_in_kwargs = None
 
     def __init__(self, *klasses: tuple[KlassT]):
         self.__dict__["_name_attr_of_klasses"] = {}
@@ -75,18 +76,18 @@ class KlassCollection:
         return name in self.__dict__["_name_attr_of_klasses"] or self.__dict__
 
     def __call__(self, *klass_args, **klass_kwargs):
-        name = klass_kwargs.get(self.name_attr_of_klass)
+        name = klass_kwargs.get(self.name_attr_in_kwargs or self.name_attr_of_klass)
         if name is None:
             for arg in klass_args:
                 if isinstance(arg, dict):
-                    name = arg.get(self.name_attr_of_klass)
+                    name = arg.get(self.name_attr_in_kwargs or self.name_attr_of_klass)
                 else:
-                    name = getattr(arg, self.name_attr_of_klass)
+                    name = getattr(arg, self.name_attr_in_kwargs or self.name_attr_of_klass)
 
                 if isinstance(name, str):
                     break
             else:
-                raise AttributeError(self.name_attr_of_klass)
+                raise AttributeError(self.name_attr_in_kwargs or self.name_attr_of_klass)
 
         return self[name](*klass_args, **klass_kwargs)
 
@@ -96,8 +97,10 @@ class KlassCollection:
         return self[name](*klass_args, **klass_kwargs)
 
     def __getitem__(self, name: Union[NameAttrOfKlassT, KlassNameT]) -> KlassT:
-        if name in self.__dict__["_name_attr_of_klasses"] or self.__dict__:
-            return self.__dict__.get(name, self.__dict__["_name_attr_of_klasses"][name])
+        if name in self.__dict__:
+            return self.__dict__[name]
+        if name in self.__dict__["_name_attr_of_klasses"]:
+            return self.__dict__["_name_attr_of_klasses"][name]
         raise KeyError(name)
 
     def get(self, name: Union[NameAttrOfKlassT, KlassNameT], /) -> KlassT:
@@ -107,8 +110,9 @@ class KlassCollection:
         if klass not in self._klasses:
             self._klasses.append(klass)
             self.__dict__[klass.__name__] = klass
-            if hasattr(klass, "name"):
-                self.__dict__["_name_attr_of_klasses"][klass.name] = klass
+            name = getattr(klass, self.name_attr_of_klass, None)
+            if name is not None:
+                self.__dict__["_name_attr_of_klasses"][name] = klass
 
     def klass_names(self) -> list[str]:
         return [c.__name__ for c in self._klasses]

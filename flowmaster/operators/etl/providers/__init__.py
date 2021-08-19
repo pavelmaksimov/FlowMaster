@@ -25,11 +25,18 @@ from flowmaster.utils.import_helper import iter_module_objects
 
 
 class ProviderCollection(KlassCollection):
-    name_attr_of_klass = "provider"
+    name_attr_in_kwargs = "provider"
 
     def __init__(self, *args):
         super(ProviderCollection, self).__init__(*args)
         self.load_provider_plugins()
+
+    def __getitem__(self, name: str):
+        try:
+            return super().__getitem__(name)
+        except KeyError:
+            self.load_provider_plugins()
+            return super().__getitem__(name)
 
     def load_provider_plugins(self) -> None:
         """Fetching custom providers."""

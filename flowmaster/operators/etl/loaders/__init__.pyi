@@ -8,7 +8,7 @@ from .clickhouse.service import ClickhouseLoader
 from .csv.service import CSVLoader
 
 
-class LoadersCollection(KlassCollection):
+class KlassCollection(KlassCollection):
     def __getitem__(self, storage_name: str) -> Type[ClickhouseLoader, CSVLoader]: ...
     def get(self, storage_name: str, /) -> Type[ClickhouseLoader, CSVLoader]: ...
     def __call__(
@@ -26,4 +26,4 @@ class LoadersCollection(KlassCollection):
     ClickhouseLoader: Type[ClickhouseLoader]
     CSVLoader: Type[CSVLoader]
 
-Loaders: LoadersCollection
+Loaders: KlassCollection

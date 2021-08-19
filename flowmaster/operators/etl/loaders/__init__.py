@@ -4,7 +4,6 @@ from flowmaster.utils import KlassCollection
 
 
 class LoadersCollection(KlassCollection):
-    name_attr_of_klass = "storage"
-
+    name_attr_in_kwargs = "storage"
 
 Loaders = LoadersCollection(ClickhouseLoader, CSVLoader)
