@@ -123,12 +123,10 @@ class BaseNotebook(BaseModel, ABC):
     operator: str = "base"
 
     class Config:
+        # For class NotebooksCollection.
         operator = "base"
 
     def __init__(self, **kwargs):
         super(BaseNotebook, self).__init__(**kwargs)
-        if not getattr(self.Config, "operator"):
-            raise AttributeError(
-                "Assign to your model in the Config class, the 'operator' attribute"
-            )
+        assert hasattr(self.Config, "operator")
         self.operator = self.Config.operator
