@@ -22,6 +22,19 @@ class BaseOperator:
         self.Work = Work(notebook, self.logger)
         self.Model = FlowItem  # TODO replace to Pydantic
 
+        if self.notebook.work is not None:
+            self.concurrency_pool_names = notebook.work.pools or []
+            if self.notebook.work.concurrency is not None:
+                self.concurrency_pool_names.append(f"__{self.name}_concurrency__")
+                self.add_pool(
+                    f"__{self.name}_concurrency__", self.notebook.work.concurrency
+                )
+
+    def add_pool(self, name: str, limit: int) -> None:
+        from flowmaster.pool import pools
+
+        pools.update_pools({name: limit})
+
     def get_logfile_path(self) -> Path:
         worktime = self.Work.current_worktime.strftime("%Y-%m-%dT%H-%M-%S")
         worktime = worktime.replace("T00-00-00", "")

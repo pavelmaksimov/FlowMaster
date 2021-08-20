@@ -17,36 +17,6 @@ class ETLWork(Work):
         super(ETLWork, self).__init__(notebook, logger)
 
         self.update_stale_data = notebook.work.update_stale_data
-        self.export_pool_names = [
-            *self.concurrency_pool_names,
-            *(notebook.export.pools or []),
-        ]
-        self.transform_pool_names = [
-            *self.concurrency_pool_names,
-            *(notebook.transform.pools or []),
-        ]
-        self.load_pool_names = [
-            *self.concurrency_pool_names,
-            *(notebook.load.pools or []),
-        ]
-
-        if notebook.export.concurrency is not None:
-            self.export_pool_names.append(f"__{self.name}_export_concurrency__")
-            self.add_pool(
-                f"__{self.name}_export_concurrency__", notebook.export.concurrency
-            )
-
-        if notebook.transform.concurrency is not None:
-            self.transform_pool_names.append(f"__{self.name}_transform_concurrency__")
-            self.add_pool(
-                f"__{self.name}_transform_concurrency__", notebook.transform.concurrency
-            )
-
-        if notebook.load.concurrency is not None:
-            self.load_pool_names.append(f"__{self.name}_load_concurrency__")
-            self.add_pool(
-                f"__{self.name}_load_concurrency__", notebook.load.concurrency
-            )
 
         self.Model = FlowItem
         self.logger = logger or getLogger()

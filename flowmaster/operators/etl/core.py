@@ -38,6 +38,35 @@ class ETLOperator(BaseOperator):
             operator=Operators.etl, storage=notebook.storage
         )
 
+        # Adding pools.
+        self.export_pool_names = [
+            *self.concurrency_pool_names,
+            *(notebook.export.pools or []),
+        ]
+        self.transform_pool_names = [
+            *self.concurrency_pool_names,
+            *(notebook.transform.pools or []),
+        ]
+        self.load_pool_names = [
+            *self.concurrency_pool_names,
+            *(notebook.load.pools or []),
+        ]
+        if notebook.export.concurrency is not None:
+            self.export_pool_names.append(f"__{self.name}_export_concurrency__")
+            self.add_pool(
+                f"__{self.name}_export_concurrency__", notebook.export.concurrency
+            )
+        if notebook.transform.concurrency is not None:
+            self.transform_pool_names.append(f"__{self.name}_transform_concurrency__")
+            self.add_pool(
+                f"__{self.name}_transform_concurrency__", notebook.transform.concurrency
+            )
+        if notebook.load.concurrency is not None:
+            self.load_pool_names.append(f"__{self.name}_load_concurrency__")
+            self.add_pool(
+                f"__{self.name}_load_concurrency__", notebook.load.concurrency
+            )
+
     def __call__(
         self,
         start_period: dt.datetime,
@@ -66,7 +95,7 @@ class ETLOperator(BaseOperator):
                             exclude_unset=True
                         )
                     }
-                    yield NextIterationInPools(pool_names=self.Work.export_pool_names)
+                    yield NextIterationInPools(pool_names=self.export_pool_names)
                     try:
                         result = next(export_iterator)
 
@@ -90,7 +119,7 @@ class ETLOperator(BaseOperator):
                         ),
                     }
                     yield NextIterationInPools(
-                        pool_names=self.Work.transform_pool_names
+                        pool_names=self.transform_pool_names
                     )
                     transform_context = self.Provider.Transform(result)
 
@@ -107,7 +136,7 @@ class ETLOperator(BaseOperator):
                         ),
                         "data_errors": transform_context.data_errors,
                     }
-                    yield NextIterationInPools(pool_names=self.Work.load_pool_names)
+                    yield NextIterationInPools(pool_names=self.load_pool_names)
                     load(transform_context)
 
         except FatalError as er:
