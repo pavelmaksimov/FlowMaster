@@ -4,16 +4,17 @@
 
 ```python
 from typing import TYPE_CHECKING, Iterator
+
+from flowmaster.operators.base.policy import BasePolicy
 from flowmaster.operators.etl.providers.abstract import ProviderAbstract, ExportAbstract
 from flowmaster.operators.etl import ExportContext, DataOrient
-from pydantic import BaseModel
 
 if TYPE_CHECKING:
     from flowmaster.operators.etl.policy import ETLNotebook
     from datetime import datetime
 
 
-class MyProviderPolicy(BaseModel):
+class MyProviderPolicy(BasePolicy):
     # Everything that will be listed here can be set in the 'export' policy.
     # 'Pydantic' validates attributes.
     my_columns: list[str]
@@ -52,17 +53,20 @@ class MyProvider(ProviderAbstract):
 
 ```python
 def test_my_provider(
-        create_etl_plugin_from_doc, work_policy, csv_transform_policy, csv_load_policy
+    create_etl_plugin_from_doc, work_policy, csv_transform_policy, csv_load_policy
 ):
     """Imports from flowmaster must be placed inside the tested functions."""
 
     from flowmaster.operators.etl.providers import Providers
     from flowmaster.operators.etl.loaders import Loaders
-    from flowmaster.operators.etl.policy import ETLNotebook
+    from flowmaster.notebook import Notebooks
+    
+    assert "my_provider_name" in Providers
 
+    # Get class 'MyProvider'
     MyProvider = Providers["my_provider_name"]
     export_policy = MyProvider.policy_model(my_columns=["col1"], token="", rows=3)
-    notebook = ETLNotebook(
+    notebook = Notebooks.ETLNotebook(
         name="__test_my_provider__",
         provider=MyProvider.name,
         storage=Loaders.CSVLoader.name,
@@ -71,6 +75,7 @@ def test_my_provider(
         load=csv_load_policy,
         work=work_policy,
     )
+    # Init class
     my_provider = MyProvider(notebook)
 
     for export_context in my_provider.Export(start_period=None, end_period=None):
@@ -83,51 +88,45 @@ def test_my_provider(
 
 ```python
 import datetime as dt
+from typing import Union
 
-from flowmaster.operators.etl.core import ETLOperator
+from flowmaster.flow import Flow
 from flowmaster.operators.etl.loaders import Loaders
-from flowmaster.operators.etl.policy import ETLNotebook
+from flowmaster.notebook import Notebooks
 from flowmaster.operators.etl.providers import Providers
 from flowmaster.setttings import Settings
 
 
-def get_notebook():
+def get_notebook() -> Union[dict, Notebooks.ETLNotebook]:
     MyProvider = Providers["my_provider_name"]
     export_policy = MyProvider.policy_model(my_columns=["col1"], token="", rows=3)
     csv_transform_policy = Loaders.CSVLoader.transform_policy_model(error_policy="default")
-    csv_load_policy = Providers.CSVLoadPolicy(
+    csv_load_policy = Loaders.CSVLoader.policy_model(
         path=Settings.FILE_STORAGE_DIR,
         file_name=f"test_my_provider.csv",
         save_mode="w"
     )
-    work_policy = ETLNotebook.WorkPolicy(
-        triggers=ETLNotebook.WorkPolicy.TriggersPolicy(
-            schedule=ETLNotebook.WorkPolicy.TriggersPolicy.SchedulePolicy(
-                timezone="Europe/Moscow",
-                start_time="00:00:00",
-                from_date=dt.datetime.today() - dt.timedelta(5),
-                interval="daily",
-            )
-        )
-    )
-    return ETLNotebook(
+    return Notebooks.ETLNotebook(
         name="__test_my_provider__",
-        provider=Providers.CSVProvider.name,
+        provider=MyProvider.name,
         storage=Loaders.CSVLoader.name,
-        work=work_policy,
         export=export_policy,
         transform=csv_transform_policy,
         load=csv_load_policy,
     )
 
 
-def test_flow():
+def main(start_period, end_period):
     notebook = get_notebook()
-    flow = ETLOperator(notebook)
-    flow.dry_run(dt.datetime.now(), dt.datetime.now())
+    flow = Flow(notebook)
+    flow.dry_run(start_period=start_period, end_period=end_period)
 
     with flow.Load.open_file(mode="r") as loadfile:
         text = loadfile.read()
 
     assert text
+
+    
+if __name__ in "__main__":
+    main(dt.datetime.now(), dt.datetime.now())
 ```
