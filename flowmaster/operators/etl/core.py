@@ -26,6 +26,8 @@ class ETLOperator(BaseOperator):
     name = "etl"
     work_class = ETLWork
     items = None
+    Providers = Providers
+    Loaders = Loaders
 
     def __init__(self, notebook: ETLNotebook):
         super(ETLOperator, self).__init__(notebook)
