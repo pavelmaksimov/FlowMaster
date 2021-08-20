@@ -1,4 +1,5 @@
-from typing import Literal, Optional
+from pathlib import Path
+from typing import Literal, Optional, Union
 
 from pydantic import BaseModel, Field
 
@@ -14,7 +15,7 @@ from flowmaster.setttings import Settings
 class CSVLoadPolicy(BasePolicy):
     save_mode: Literal["a", "w"]
     file_name: str = "{{provider}} {{storage}}  {{name}}.tsv"
-    path: str = Settings.FILE_STORAGE_DIR
+    path: Union[str, Path] = Settings.FILE_STORAGE_DIR
     encoding: str = "UTF-8"
     sep: str = "\t"
     newline: str = "\n"
