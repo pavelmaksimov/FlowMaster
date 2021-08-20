@@ -24,13 +24,13 @@ from flowmaster.utils.logging_helper import create_logfile
 
 class ETLOperator(BaseOperator):
     name = "etl"
+    work_class = ETLWork
     items = None
 
     def __init__(self, notebook: ETLNotebook):
         super(ETLOperator, self).__init__(notebook)
         self.notebook: ETLNotebook
 
-        self.Work = ETLWork(notebook, self.logger)
         self.Provider = Providers(notebook, self.logger)
         self.Load = Loaders(notebook, self.logger)
 

@@ -14,7 +14,7 @@ class ETLNotebook(BaseNotebook):
 
     provider: str
     storage: str
-    work: WorkPolicy
+    work: Optional[WorkPolicy] = None
     export: PydanticModelT
     load: PydanticModelT
     transform: PydanticModelT

@@ -12,18 +12,21 @@ from flowmaster.utils.notifications import send_codex_telegram_message
 
 class BaseOperator:
     name = "base"
+    work_class = Work
 
     def __init__(self, notebook: BaseNotebook):
         from flowmaster.models import FlowItem
 
         self.notebook = notebook
-
         self.logger = getLogger()
-        self.Work = Work(notebook, self.logger)
+        if notebook.work is not None:
+            self.Work = self.work_class(notebook, self.logger)
+
         self.Model = FlowItem  # TODO replace to Pydantic
 
+        self.concurrency_pool_names = []
         if self.notebook.work is not None:
-            self.concurrency_pool_names = notebook.work.pools or []
+            self.concurrency_pool_names += notebook.work.pools
             if self.notebook.work.concurrency is not None:
                 self.concurrency_pool_names.append(f"__{self.name}_concurrency__")
                 self.add_pool(

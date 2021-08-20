@@ -576,7 +576,7 @@ def fakedata_to_csv_notebook(
         provider=Providers.FakeDataProvider.name,
         storage=Loaders.CSVLoader.name,
         work=work_policy,
-        export=Loaders.FakeDataProvider.policy_model(rows=1),
+        export=Providers.FakeDataProvider.policy_model(rows=1),
         transform=csv_transform_policy,
         load=csv_load_policy,
     )

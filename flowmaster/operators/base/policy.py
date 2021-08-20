@@ -118,7 +118,7 @@ class BaseNotebook(BaseModel, ABC):
 
     name: str
     description: Optional[str] = None
-    work: WorkPolicy
+    work: Optional[WorkPolicy] = None
     hash: str = ""
     operator: str = "base"
 
