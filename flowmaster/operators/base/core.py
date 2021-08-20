@@ -112,6 +112,6 @@ class BaseOperator:
     def dry_run(self, *args, **kwargs) -> None:
         """Immediate execution without restrictions."""
         kwargs["dry_run"] = True
-        for item in self._iterator(*args, **kwargs):
+        for item in self(*args, **kwargs):
             if isinstance(item, SleepIteration):
                 time.sleep(item.rest_of_sleep())
