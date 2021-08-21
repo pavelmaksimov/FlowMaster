@@ -30,7 +30,6 @@ class FlowmasterDataExport(ExportAbstract):
             )
 
         yield ExportContext(
-            export_kwargs={},
             columns=self.export.columns,
             data=list(query.dicts()),
             data_orient=DataOrient.dict,
@@ -40,7 +39,6 @@ class FlowmasterDataExport(ExportAbstract):
         from flowmaster.pool import pools
 
         yield ExportContext(
-            export_kwargs={},
             columns=self.export.columns,
             data=pools.info(only_used=False),
             data_orient=DataOrient.dict,
@@ -64,7 +62,6 @@ class FlowmasterDataExport(ExportAbstract):
         ]
 
         yield ExportContext(
-            export_kwargs={},
             columns=self.export.columns,
             data=data,
             data_orient=DataOrient.dict,

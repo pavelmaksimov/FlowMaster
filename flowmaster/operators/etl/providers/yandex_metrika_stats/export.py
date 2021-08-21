@@ -55,7 +55,7 @@ class YandexMetrikaStatsExport(ExportAbstract):
                 self.logger.info("Iter export data")
 
                 yield ExportContext(
-                    export_kwargs=result().request_kwargs,
+                    request_kwargs=result().request_kwargs,
                     columns=report.columns,
                     data=result().to_columns(),
                     data_orient=DataOrient.columns,

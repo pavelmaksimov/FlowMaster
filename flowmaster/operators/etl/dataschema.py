@@ -28,8 +28,7 @@ class ExportContext(pydantic.BaseModel):
     columns: Union[list, tuple, set]
     data: list
     data_orient: DataOrient.LiteralT
-    # TODO: rename to requests_kwargs
-    export_kwargs: dict = pydantic.Field(default_factory=dict)
+    request_kwargs: dict = pydantic.Field(default_factory=dict)
     response_kwargs: dict = pydantic.Field(default_factory=dict)
 
 

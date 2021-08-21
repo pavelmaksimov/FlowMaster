@@ -86,7 +86,7 @@ class GoogleSheetsExport(ExportAbstract):
             columns=column_names,
             data=data,
             data_orient=DataOrient.columns,
-            export_kwargs={
+            request_kwargs={
                 "sheet_id": self.export.sheet_id,
                 "sheet_name": sheet.title,
                 "sheet_url": sheet.url,

@@ -126,7 +126,7 @@ class YandexDirectExport(ExportAbstract):
                     data = result().to_values()
 
                     yield ExportContext(
-                        export_kwargs=result.request_kwargs,
+                        request_kwargs=result.request_kwargs,
                         columns=result.columns,
                         data=data,
                         data_orient=DataOrient.values,
@@ -141,7 +141,7 @@ class YandexDirectExport(ExportAbstract):
                         columns = sorted(page.data[0].keys())
 
                     yield ExportContext(
-                        export_kwargs=page.request_kwargs,
+                        request_kwargs=page.request_kwargs,
                         columns=columns,
                         data=page.data,
                         data_orient=DataOrient.dict,

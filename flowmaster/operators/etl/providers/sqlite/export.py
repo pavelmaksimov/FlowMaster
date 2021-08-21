@@ -45,7 +45,6 @@ class SQLiteExport(ExportAbstract):
             size=self.export.chunk_size,
         ):
             yield ExportContext(
-                export_kwargs={},
                 columns=self.export.columns,
                 data=chunk,
                 data_orient=DataOrient.values,

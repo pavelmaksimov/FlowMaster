@@ -135,7 +135,7 @@ class YandexMetrikaLogsExport(ExportAbstract):
                 self.logger.info("Iter export data")
 
                 yield ExportContext(
-                    export_kwargs=part().request_kwargs,
+                    request_kwargs=part().request_kwargs,
                     columns=report.columns,
                     data=part().to_columns(),
                     data_orient=DataOrient.columns,

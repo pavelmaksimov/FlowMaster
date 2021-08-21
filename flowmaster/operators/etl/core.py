@@ -113,7 +113,7 @@ class ETLOperator(BaseOperator):
                     # Transform step.
                     self.operator_context.step = ETLSteps.transform
                     self.operator_context.export_kwargs.update(
-                        {**kwargs, **result.export_kwargs}
+                        {**kwargs, **result.request_kwargs}
                     )
                     yield {
                         self.Model.data.name: self.operator_context.dict(

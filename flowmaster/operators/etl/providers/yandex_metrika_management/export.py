@@ -92,7 +92,7 @@ class YandexMetrikaManagementExport(ExportAbstract):
                     self.resource, result().data, self.columns
                 )
                 yield ExportContext(
-                    export_kwargs=result().request_kwargs,
+                    request_kwargs=result().request_kwargs,
                     columns=self.columns,
                     data=data,
                     data_orient=DataOrient.dict,
