@@ -11,17 +11,12 @@ from flowmaster.operators.etl.loaders.csv.policy import (
     CSVLoadPolicy,
     CSVTransformPolicy,
 )
+from flowmaster.utils import custom_encoder
 from flowmaster.utils.logging_helper import Logger, getLogger
 
 if TYPE_CHECKING:
     from flowmaster.operators.etl.policy import ETLNotebook
     from flowmaster.operators.etl.dataschema import TransformContext, ETLContext
-
-
-def custom_encoder(obj):
-    if isinstance(obj, (pendulum.Date, pendulum.DateTime)):
-        return str(obj)
-    raise TypeError
 
 
 class CSVLoader:

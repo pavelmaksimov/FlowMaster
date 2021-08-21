@@ -3,6 +3,8 @@ from copy import deepcopy
 from itertools import islice
 from typing import Iterable, Any, Optional, TypeVar, Union
 
+import pendulum
+
 
 def chunker(iterable: Iterable, size: int) -> Any:
     iterator = iter(iterable)
@@ -119,3 +121,9 @@ class KlassCollection:
 
     def name_attr_of_klasses(self) -> list[str]:
         return list(self.__dict__["_name_attr_of_klasses"].keys())
+
+
+def custom_encoder(obj):
+    if isinstance(obj, (pendulum.Date, pendulum.DateTime)):
+        return str(obj)
+    raise TypeError
