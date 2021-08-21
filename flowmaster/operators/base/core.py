@@ -25,12 +25,15 @@ class BaseOperator:
         self.Model = FlowItem  # TODO replace to Pydantic
 
         self.concurrency_pool_names = []
-        if self.notebook.work is not None:
-            self.concurrency_pool_names += notebook.work.pools
+        if notebook.work is not None:
+            self.concurrency_pool_names += notebook.work.pools or []
             if self.notebook.work.concurrency is not None:
-                self.concurrency_pool_names.append(f"__{self.name}_concurrency__")
+                self.concurrency_pool_names.append(
+                    f"__{self.notebook.name}_concurrency__"
+                )
                 self.add_pool(
-                    f"__{self.name}_concurrency__", self.notebook.work.concurrency
+                    f"__{self.notebook.name}_concurrency__",
+                    self.notebook.work.concurrency,
                 )
 
     def add_pool(self, name: str, limit: int) -> None:

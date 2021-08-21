@@ -54,19 +54,19 @@ class ETLOperator(BaseOperator):
             *(notebook.load.pools or []),
         ]
         if notebook.export.concurrency is not None:
-            self.export_pool_names.append(f"__{self.name}_export_concurrency__")
+            self.export_pool_names.append(f"__{self.notebook.name}_export_concurrency__")
             self.add_pool(
-                f"__{self.name}_export_concurrency__", notebook.export.concurrency
+                f"__{self.notebook.name}_export_concurrency__", notebook.export.concurrency
             )
         if notebook.transform.concurrency is not None:
-            self.transform_pool_names.append(f"__{self.name}_transform_concurrency__")
+            self.transform_pool_names.append(f"__{self.notebook.name}_transform_concurrency__")
             self.add_pool(
-                f"__{self.name}_transform_concurrency__", notebook.transform.concurrency
+                f"__{self.notebook.name}_transform_concurrency__", notebook.transform.concurrency
             )
         if notebook.load.concurrency is not None:
-            self.load_pool_names.append(f"__{self.name}_load_concurrency__")
+            self.load_pool_names.append(f"__{self.notebook.name}_load_concurrency__")
             self.add_pool(
-                f"__{self.name}_load_concurrency__", notebook.load.concurrency
+                f"__{self.notebook.name}_load_concurrency__", notebook.load.concurrency
             )
 
     def __call__(
