@@ -48,8 +48,28 @@ def yandex_direct_credentials(credentials_dict):
 
 
 @pytest.fixture()
+def yandex_metrika_logs_credentials(credentials_dict):
+    return credentials_dict["yandex-metrika-logs"]
+
+
+@pytest.fixture()
+def yandex_metrika_management_credentials(credentials_dict):
+    return credentials_dict["yandex-metrika-management"]
+
+
+@pytest.fixture()
+def yandex_metrika_stats_credentials(credentials_dict):
+    return credentials_dict["yandex-metrika-stats"]
+
+
+@pytest.fixture()
 def google_sheets_credentials(credentials_dict):
     return credentials_dict["google-sheets"]
+
+
+@pytest.fixture()
+def criteo_credentials(credentials_dict):
+    return credentials_dict["criteo"]
 
 
 @pytest.fixture()
@@ -68,7 +88,7 @@ def csv_load_policy(tmp_path):
 
     name = uuid.uuid4()
 
-    return Loaders.CSVLoadPolicy(
+    return Loaders.CSVLoader.policy_model(
         path=str(tmp_path), file_name=f"{name}.csv", save_mode="w"
     )
 
@@ -384,6 +404,215 @@ def google_sheets_to_csv_notebook(
         storage=Loaders.CSVLoader.name,
         work=work_policy,
         export=google_sheets_export_policy,
+        transform=csv_transform_policy,
+        load=csv_load_policy,
+    )
+
+
+@pytest.fixture()
+def csv_to_clickhouse_notebook(flowitem_model, work_policy, clickhouse_credentials):
+    from flowmaster.operators.etl.loaders import Loaders
+    from flowmaster.operators.etl.policy import ETLNotebook
+    from flowmaster.operators.etl.providers import Providers
+
+    name = "__test_csv_to_clickhouse__"
+    flowitem_model.clear(name)
+    yield ETLNotebook(
+        name=name,
+        provider=Providers.CSVProvider.name,
+        storage=Loaders.ClickhouseLoader.name,
+        work=work_policy,
+        export=Providers.CSVProvider.policy_model(
+            file_path="", with_columns=False, columns=["date"]
+        ),
+        transform=Loaders.ClickhouseLoader.transform_policy_model(
+            error_policy="default",
+            partition_columns=["Date"],
+            column_map={"date": "Date"},
+        ),
+        load=Loaders.ClickhouseLoader.policy_model(
+            credentials=Loaders.ClickhouseLoader.policy_model.CredentialsPolicy(
+                **clickhouse_credentials
+            ),
+            table_schema=Loaders.ClickhouseLoader.policy_model.TableSchemaPolicy(
+                db="default",
+                table=name,
+                columns=[
+                    "Date Date",
+                ],
+                orders=["Date"],
+                partition=["Date"],
+            ),
+            data_cleaning_mode=Loaders.ClickhouseLoader.DataCleaningMode.off,
+            sql_before=["SELECT 1"],
+            sql_after=["SELECT 2"],
+        ),
+    )
+
+
+@pytest.fixture()
+def criteo_export_policy(criteo_credentials):
+    from flowmaster.operators.etl.providers.criteo import CriteoProvider
+
+    return CriteoProvider.policy_model(
+        api_version="202104",
+        credentials=CriteoProvider.policy_model.CredentialsPolicy(**criteo_credentials),
+        resource="stats",
+        params=CriteoProvider.policy_model.StatsV202104ParamsPolicy(
+            dimensions=["Day"],
+            metrics=["Clicks"],
+            currency="RUB",
+            timezone="Europe/Moscow",
+        ),
+        chunk_size=100,
+        concurrency=1,
+    )
+
+
+@pytest.fixture()
+def criteo_to_csv_notebook(
+    work_policy,
+    criteo_export_policy,
+    csv_transform_policy,
+    csv_load_policy,
+    flowitem_model,
+):
+    from flowmaster.operators.etl.loaders import Loaders
+    from flowmaster.operators.etl.policy import ETLNotebook
+    from flowmaster.operators.etl.providers import Providers
+
+    name = "__test_criteo_to_csv__"
+    flowitem_model.clear(name)
+    yield ETLNotebook(
+        name=name,
+        provider=Providers.CriteoProvider.name,
+        storage=Loaders.CSVLoader.name,
+        work=work_policy,
+        export=criteo_export_policy,
+        transform=csv_transform_policy,
+        load=csv_load_policy,
+    )
+
+
+@pytest.fixture()
+def ymm_goals_to_csv_notebook(
+    flowitem_model,
+    work_policy,
+    yandex_metrika_management_credentials,
+    csv_transform_policy,
+    csv_load_policy,
+):
+    from flowmaster.operators.etl.loaders import Loaders
+    from flowmaster.operators.etl.policy import ETLNotebook
+    from flowmaster.operators.etl.providers import Providers
+
+    name = "__test_ya_metrika_goals_to_csv__"
+    flowitem_model.clear(name)
+    yield ETLNotebook(
+        name=name,
+        provider=Providers.YandexMetrikaManagementProvider.name,
+        storage=Loaders.CSVLoader.name,
+        work=work_policy,
+        export=Providers.YandexMetrikaManagementProvider.policy_model(
+            resource=Providers.YandexMetrikaManagementProvider.policy_model.ResourceNames.goals,
+            credentials=Providers.YandexMetrikaManagementProvider.policy_model.CredentialsPolicy(
+                **yandex_metrika_management_credentials
+            ),
+        ),
+        transform=csv_transform_policy,
+        load=csv_load_policy,
+    )
+
+
+@pytest.fixture()
+def ymm_counters_to_csv_notebook(flowitem_model, ymm_goals_to_csv_notebook):
+    from flowmaster.operators.etl.providers import Providers
+
+    name = "__test_ya_metrika_counters_to_csv__"
+    n = ymm_goals_to_csv_notebook.copy(deep=True)
+    n.export.resource = (
+        Providers.YandexMetrikaManagementProvider.policy_model.ResourceNames.counters
+    )
+    flowitem_model.clear(name)
+    yield n
+
+
+@pytest.fixture()
+def ymm_clients_to_csv_notebook(flowitem_model, ymm_goals_to_csv_notebook):
+    from flowmaster.operators.etl.providers import Providers
+
+    name = "__test_ya_metrika_clients_to_csv__"
+    n = ymm_goals_to_csv_notebook.copy(deep=True)
+    n.export.resource = (
+        Providers.YandexMetrikaManagementProvider.policy_model.ResourceNames.clients
+    )
+    flowitem_model.clear(name)
+    yield n
+
+
+@pytest.fixture()
+def ymstats_to_csv_notebook(
+    flowitem_model,
+    work_policy,
+    yandex_metrika_stats_credentials,
+    csv_transform_policy,
+    csv_load_policy,
+):
+    from flowmaster.operators.etl.providers import Providers
+    from flowmaster.operators.etl.loaders import Loaders
+    from flowmaster.operators.etl.policy import ETLNotebook
+
+    name = "__test_ya_metrika_stats_to_csv__"
+    flowitem_model.clear(name)
+    yield ETLNotebook(
+        name=name,
+        provider=Providers.YandexMetrikaStatsProvider.name,
+        storage=Loaders.CSVLoader.name,
+        work=work_policy,
+        export=Providers.YandexMetrikaStatsProvider.policy_model(
+            **yandex_metrika_stats_credentials
+        ),
+        transform=csv_transform_policy,
+        load=csv_load_policy,
+    )
+
+
+@pytest.fixture()
+def ya_metrika_logs_export_policy(tmp_path, yandex_metrika_logs_credentials):
+    from flowmaster.operators.etl.providers import Providers
+
+    return Providers.YandexMetrikaLogsProvider.policy_model(
+        credentials=Providers.YandexMetrikaLogsProvider.policy_model.CredentialsPolicy(
+            **yandex_metrika_logs_credentials
+        ),
+        params=Providers.YandexMetrikaLogsProvider.policy_model.ParamsPolicy(
+            source="visits",
+            columns=["ym:s:counterID"],
+        ),
+    )
+
+
+@pytest.fixture()
+def ya_metrika_logs_to_csv_notebook2(
+    tmp_path,
+    work_policy,
+    ya_metrika_logs_export_policy,
+    csv_transform_policy,
+    csv_load_policy,
+    flowitem_model,
+):
+    from flowmaster.operators.etl.loaders import Loaders
+    from flowmaster.operators.etl.policy import ETLNotebook
+    from flowmaster.operators.etl.providers import Providers
+
+    name = "__test_ya_metrika_logs_to_csv2__"
+    flowitem_model.clear(name)
+    yield ETLNotebook(
+        name=name,
+        provider=Providers.YandexMetrikaLogsProvider.name,
+        storage=Loaders.CSVLoader.name,
+        work=work_policy,
+        export=ya_metrika_logs_export_policy,
         transform=csv_transform_policy,
         load=csv_load_policy,
     )

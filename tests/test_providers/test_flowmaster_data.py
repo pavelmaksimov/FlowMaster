@@ -1,14 +1,12 @@
 import datetime as dt
 
-from flowmaster.models import FlowItem
 from flowmaster.operators.etl.core import ETLOperator
 
 
 def test_flow_flowmaster_items(flowmasterdata_items_to_csv_notebook):
-    FlowItem.clear(flowmasterdata_items_to_csv_notebook.name)
-
     etl_flow = ETLOperator(flowmasterdata_items_to_csv_notebook)
-    etl_flow.dry_run(dt.datetime(2021, 2, 5), dt.datetime(2021, 2, 5))
+    task = etl_flow.task(dt.datetime(2021, 2, 5), dt.datetime(2021, 2, 5))
+    list(task)
 
     with etl_flow.Load.open_file(mode="r") as loadfile:
         data = loadfile.readlines()

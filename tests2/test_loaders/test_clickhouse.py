@@ -2,36 +2,24 @@ import datetime as dt
 from typing import Iterator
 
 from mock import Mock
-from tests.fixtures.yandex_metrika import yml_visits_to_clickhouse_notebook as NOTEBOOK
 
-from flowmaster.operators.etl.core import ETLOperator
+from flowmaster.flow import Flow
 from flowmaster.operators.etl.dataschema import ExportContext
 from flowmaster.operators.etl.enums import DataOrient
-from flowmaster.operators.etl.loaders.clickhouse.policy import ClickhouseLoadPolicy
 from flowmaster.operators.etl.loaders.clickhouse.service import ClickhouseLoader
-from flowmaster.operators.etl.providers.yandex_metrika_logs.export import (
-    YandexMetrikaLogsExport,
-)
-from flowmaster.utils.yaml_helper import YamlHelper
-from tests import get_tests_dir
-
-credentials = YamlHelper.parse_file(get_tests_dir("tests2") / "credentials.yml")
-NOTEBOOK.load.credentials = ClickhouseLoadPolicy.CredentialsPolicy(
-    **credentials["clickhouse"]
-)
 
 
-def test_real_load_clickhouse():
+def test_real_load_clickhouse(csv_to_clickhouse_notebook):
     def export_func(start_period, end_period) -> Iterator[tuple[dict, list, list]]:
         yield ExportContext(
             columns=["date"], data=[[start_period]], data_orient=DataOrient.values
         )
 
-    YandexMetrikaLogsExport.__call__ = Mock(side_effect=export_func)
+    Flow.ETLOperator.Providers.CSVProvider.export_class.__call__ = Mock(
+        side_effect=export_func
+    )
 
-    NOTEBOOK.load.table_schema.table = test_real_load_clickhouse.__name__
-
-    flow = ETLOperator(NOTEBOOK)
+    flow = Flow(csv_to_clickhouse_notebook)
     flow.Load.Table.drop_table()
     try:
         list(
@@ -44,8 +32,10 @@ def test_real_load_clickhouse():
 
         # test data_cleaning_mode off
 
-        NOTEBOOK.load.data_cleaning_mode = ClickhouseLoader.DataCleaningMode.off
-        flow = ETLOperator(NOTEBOOK)
+        csv_to_clickhouse_notebook.load.data_cleaning_mode = (
+            ClickhouseLoader.DataCleaningMode.off
+        )
+        flow = Flow(csv_to_clickhouse_notebook)
 
         list(
             flow(
@@ -60,8 +50,10 @@ def test_real_load_clickhouse():
 
         # test data_cleaning_mode partition
 
-        NOTEBOOK.load.data_cleaning_mode = ClickhouseLoader.DataCleaningMode.partition
-        flow = ETLOperator(NOTEBOOK)
+        csv_to_clickhouse_notebook.load.data_cleaning_mode = (
+            ClickhouseLoader.DataCleaningMode.partition
+        )
+        flow = Flow(csv_to_clickhouse_notebook)
 
         list(
             flow(
@@ -76,8 +68,10 @@ def test_real_load_clickhouse():
 
         # test data_cleaning_mode truncate
 
-        NOTEBOOK.load.data_cleaning_mode = ClickhouseLoader.DataCleaningMode.truncate
-        flow = ETLOperator(NOTEBOOK)
+        csv_to_clickhouse_notebook.load.data_cleaning_mode = (
+            ClickhouseLoader.DataCleaningMode.truncate
+        )
+        flow = Flow(csv_to_clickhouse_notebook)
 
         list(
             flow(
