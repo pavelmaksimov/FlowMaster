@@ -2,8 +2,6 @@ import datetime as dt
 import hashlib
 from typing import TYPE_CHECKING, Iterator, Union
 
-from tapi_yandex_direct import YandexDirect, exceptions
-
 from flowmaster.exceptions import AuthError
 from flowmaster.executors import SleepIteration
 from flowmaster.operators.etl.dataschema import ExportContext
@@ -19,6 +17,8 @@ if TYPE_CHECKING:
 
 class YandexDirectExport(ExportAbstract):
     def __init__(self, notebook: "ETLNotebook", *args, **kwargs):
+        from tapi_yandex_direct import YandexDirect
+
         self.export: ExportPolicy = notebook.export
         self.client = YandexDirect(
             wait_report=False,
@@ -67,6 +67,8 @@ class YandexDirectExport(ExportAbstract):
     def __call__(
         self, start_period: dt.datetime, end_period: dt.datetime, **kwargs
     ) -> Iterator[Union[ExportContext, SleepIteration]]:
+        from tapi_yandex_direct import exceptions
+
         self.logger.info("Exportation data")
 
         result = None
