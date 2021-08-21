@@ -1,4 +1,5 @@
 import datetime as dt
+from functools import partial
 from typing import Union, Iterable, Optional, Sequence
 
 import orjson
@@ -10,7 +11,7 @@ from playhouse.hybrid import hybrid_property
 
 from flowmaster.database import db
 from flowmaster.enums import Statuses
-from flowmaster.utils import iter_period_from_range, iter_range_datetime
+from flowmaster.utils import iter_period_from_range, iter_range_datetime, custom_encoder
 from flowmaster.utils.logging_helper import logger
 
 
@@ -62,7 +63,9 @@ class FlowItem(BaseDBModel):
 
     status = playhouse.sqlite_ext.CharField(default=Statuses.add, null=False)
     data = playhouse.sqlite_ext.JSONField(
-        default={}, json_dumps=orjson.dumps, json_loads=orjson.loads
+        default={},
+        json_dumps=partial(orjson.dumps, default=custom_encoder),
+        json_loads=orjson.loads,
     )
     notebook_hash = playhouse.sqlite_ext.CharField(default="", null=False)
     retries = playhouse.sqlite_ext.IntegerField(default=0)
