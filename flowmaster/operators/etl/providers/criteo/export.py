@@ -1,9 +1,7 @@
 import datetime as dt
 from typing import TYPE_CHECKING, Iterator, Union
 
-import criteo_marketing_transition as cm
 import orjson
-from criteo_marketing_transition.rest import ApiException
 from urllib3.response import HTTPResponse
 
 from flowmaster.exceptions import AuthError, ForbiddenError
@@ -21,6 +19,8 @@ if TYPE_CHECKING:
 
 class CriteoExport(ExportAbstract):
     def __init__(self, notebook: "ETLNotebook", *args, **kwargs):
+        import criteo_marketing_transition as cm
+
         self.export: ExportPolicy = notebook.export
         configuration = cm.Configuration(
             username=self.export.credentials.client_id,
@@ -34,6 +34,8 @@ class CriteoExport(ExportAbstract):
     def __call__(
         self, start_period: dt.datetime, end_period: dt.datetime, **kwargs
     ) -> Iterator[Union[ExportContext, SleepIteration]]:
+        import criteo_marketing_transition as cm
+        from criteo_marketing_transition.rest import ApiException
         from flowmaster.operators.etl import DataOrient
 
         self.logger.info("Exportation data")
