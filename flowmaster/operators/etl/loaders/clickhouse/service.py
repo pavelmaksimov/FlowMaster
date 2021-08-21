@@ -1,8 +1,6 @@
 import random
 from typing import TYPE_CHECKING, Optional
 
-import clickhousepy
-
 from flowmaster.operators.etl.enums import DataOrient
 from flowmaster.operators.etl.loaders.clickhouse.policy import (
     ClickhouseLoadPolicy,
@@ -26,11 +24,11 @@ class ClickhouseLoader:
     name = "clickhouse"
     policy_model = ClickhouseLoadPolicy
     transform_policy_model = ClickhouseTransformPolicy
-
-    StageTable: Optional[clickhousepy.Table] = None
     data_orient = DataOrient.columns
 
     def __init__(self, notebook: "ETLNotebook", logger: Optional[Logger] = None):
+        import clickhousepy
+
         self.data_cleaning_mode = notebook.load.data_cleaning_mode
         self.credentials = notebook.load.credentials.dict()
         self.create_table_config = notebook.load.table_schema.dict()
@@ -42,6 +40,7 @@ class ClickhouseLoader:
         self.Table = self.client.Table(
             self.create_table_config["db"], self.create_table_config["table"]
         )
+        self.StageTable: Optional[clickhousepy.Table] = None
         self.partitions = []
         self.logger = logger or getLogger()
 
