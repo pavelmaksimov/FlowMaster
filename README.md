@@ -1,6 +1,6 @@
 ![logo](docs/img/logoza.ru.png)
 
-# ETL flow framework based on Yaml configs in Python
+# ETL framework based on Yaml configs in Python
 
 ![Supported Python Versions](https://img.shields.io/static/v1?label=python&message=>=3.9&color=blue)
 ![License](https://img.shields.io/static/v1?label=license&message=GPLv3&color=green)
@@ -13,7 +13,8 @@ Works quickly, does not require a lot of resources.
 Runs on Windows and Linux.
 Flow run in parallel via threading library. 
 Internally SQLite Database.
-Нативное преобразование данных.
+Native data transformation.
+There is a web interface.
 
 At the moment there are connectors to sources
 - CSV file
@@ -66,12 +67,11 @@ For Linux
     pip install flowmaster[clickhouse,postgres,mysql,yandexdirect,yandexmetrika,criteo,googlesheets]==0.6.1
 
 ## Run
+    flowmaster run --help
     flowmaster run
 
-args
-
-    flowmaster run --help
-
+## WEB UI
+http://localhost:8822
 
 ## [CHANGELOG](CHANGELOG.md)
 
