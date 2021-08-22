@@ -2,9 +2,6 @@ import datetime as dt
 import time
 from typing import TYPE_CHECKING, Optional, Iterator, Union
 
-from tapi_yandex_metrika import YandexMetrikaLogsapi
-from tapi_yandex_metrika.exceptions import YandexMetrikaTokenError
-
 from flowmaster.exceptions import AuthError
 from flowmaster.executors import SleepIteration
 from flowmaster.operators.etl.dataschema import ExportContext
@@ -18,6 +15,8 @@ if TYPE_CHECKING:
 
 class YandexMetrikaLogsExport(ExportAbstract):
     def __init__(self, notebook: "ETLNotebook", logger: Optional[Logger] = None):
+        from tapi_yandex_metrika import YandexMetrikaLogsapi
+
         self.counter_id = notebook.export.credentials.counter_id
         self.credentials = notebook.export.credentials.dict()
         self.params = notebook.export.params.dict()
@@ -25,6 +24,11 @@ class YandexMetrikaLogsExport(ExportAbstract):
             notebook.export.initial_interval_check_report
         )
         super(YandexMetrikaLogsExport, self).__init__(notebook, logger)
+        self.client = YandexMetrikaLogsapi(
+            wait_report=True,
+            **self.credentials,
+            default_url_params={"counterId": self.counter_id},
+        )
 
     @classmethod
     def validate_params(cls, **params: dict) -> None:
@@ -32,14 +36,6 @@ class YandexMetrikaLogsExport(ExportAbstract):
         assert "date2" in params
         assert "fields" in params
         assert "source" in params
-
-    @property
-    def client(self) -> YandexMetrikaLogsapi:
-        return YandexMetrikaLogsapi(
-            wait_report=True,
-            **self.credentials,
-            default_url_params={"counterId": self.counter_id},
-        )
 
     def collect_params(
         self, start_period: dt.datetime, end_period: dt.datetime, **params
@@ -78,6 +74,8 @@ class YandexMetrikaLogsExport(ExportAbstract):
         dry_run=False,
         **kwargs,
     ) -> Iterator[Union[ExportContext, SleepIteration]]:
+        from tapi_yandex_metrika.exceptions import YandexMetrikaTokenError
+
         try:
             params = self.collect_params(start_period, end_period)
 
