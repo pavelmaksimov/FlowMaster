@@ -58,13 +58,13 @@ For Linux
     export FLOWMASTER_HOME={YOUR_PATH}
 
 ## Installing
-    pip install flowmaster==0.6.1
+    pip install flowmaster==0.7.0
 
     # For install web UI.
-    pip install flowmaster[webui]==0.6.1
+    pip install flowmaster[webui]==0.7.0
 
     # Optional libraries.
-    pip install flowmaster[clickhouse,postgres,mysql,yandexdirect,yandexmetrika,criteo,googlesheets]==0.6.1
+    pip install flowmaster[clickhouse,postgres,mysql,yandexdirect,yandexmetrika,criteo,googlesheets]==0.7.0
 
 ## Run
     flowmaster run --help

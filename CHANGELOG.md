@@ -1,5 +1,20 @@
 # CHANGELOG
 
+# v0.7.0
+### 2021.08.22
+
+### New
+- Add WEB UI !!!
+  
+
+- Add Google Sheets provider
+- Add MySQL provider
+- Add Postgres provider
+- Add Criteo provider
+
+### There are backward incompatible changes
+- Many objects have been renamed
+
 # v0.6.1
 ### 2021.06.21
 
