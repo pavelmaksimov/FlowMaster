@@ -1,10 +1,6 @@
 import datetime as dt
 from typing import TYPE_CHECKING, Iterator, Optional, Literal
 
-from tapi_yandex_metrika import YandexMetrikaManagement
-from tapi_yandex_metrika.exceptions import YandexMetrikaTokenError
-from tapi_yandex_metrika.resource_mapping import MANAGEMENT_RESOURCE_MAPPING
-
 from flowmaster.exceptions import AuthError
 from flowmaster.operators.etl.dataschema import ExportContext
 from flowmaster.operators.etl.enums import DataOrient
@@ -23,15 +19,14 @@ class YandexMetrikaManagementExport(ExportAbstract):
         LiteralT = Literal["counters", "clients", "goals"]
 
     def __init__(self, notebook: "ETLNotebook", logger: Optional[Logger] = None):
+        from tapi_yandex_metrika import YandexMetrikaManagement
+
         self.resource = notebook.export.resource
         self.columns = notebook.export.columns
         self.params = notebook.export.params.dict()
         self.credentials = notebook.export.credentials.dict()
+        self.client = YandexMetrikaManagement(**self.credentials)
         super(YandexMetrikaManagementExport, self).__init__(notebook, logger)
-
-    @property
-    def client(self) -> YandexMetrikaManagement:
-        return YandexMetrikaManagement(**self.credentials)
 
     def get_counter_ids(self) -> list:
         result = self.client.counters().get()
@@ -70,6 +65,8 @@ class YandexMetrikaManagementExport(ExportAbstract):
     def processing_response_data(
         self, resource: str, response_data: dict, filter_columns: list
     ) -> list[dict]:
+        from tapi_yandex_metrika.resource_mapping import MANAGEMENT_RESOURCE_MAPPING
+
         key = MANAGEMENT_RESOURCE_MAPPING[resource]["response_data_key"]
         data = response_data[key]
         for row in data:
@@ -82,6 +79,8 @@ class YandexMetrikaManagementExport(ExportAbstract):
     def __call__(
         self, start_period: dt.datetime, end_period: dt.datetime, **kwargs
     ) -> Iterator[ExportContext]:
+        from tapi_yandex_metrika.exceptions import YandexMetrikaTokenError
+
         for url_params, get_params in self.collect_params(start_period, end_period):
             method = getattr(self.client, self.resource)
             try:
