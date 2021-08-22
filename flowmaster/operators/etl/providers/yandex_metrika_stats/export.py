@@ -1,9 +1,6 @@
 import datetime as dt
 from typing import TYPE_CHECKING, Optional, Iterator
 
-from tapi_yandex_metrika import YandexMetrikaStats
-from tapi_yandex_metrika.exceptions import YandexMetrikaTokenError
-
 from flowmaster.exceptions import AuthError
 from flowmaster.operators.etl.dataschema import ExportContext
 from flowmaster.operators.etl.enums import DataOrient
@@ -16,18 +13,17 @@ if TYPE_CHECKING:
 
 class YandexMetrikaStatsExport(ExportAbstract):
     def __init__(self, notebook: "ETLNotebook", logger: Optional[Logger] = None):
+        from tapi_yandex_metrika import YandexMetrikaStats
+
         self.credentials = notebook.export.credentials.dict()
         self.params = notebook.export.params.dict()
+        self.client = YandexMetrikaStats(**self.credentials)
         super(YandexMetrikaStatsExport, self).__init__(notebook, logger)
 
     @classmethod
     def validate_params(cls, **params: dict) -> None:
         assert "ids" in params
         assert "metrics" in params
-
-    @property
-    def client(self) -> YandexMetrikaStats:
-        return YandexMetrikaStats(**self.credentials)
 
     def collect_params(
         self, start_period: dt.datetime, end_period: dt.datetime, **kwargs
@@ -46,6 +42,8 @@ class YandexMetrikaStatsExport(ExportAbstract):
     def __call__(
         self, start_period: dt.datetime, end_period: dt.datetime, **kwargs
     ) -> Iterator[ExportContext]:
+        from tapi_yandex_metrika.exceptions import YandexMetrikaTokenError
+
         try:
             params = self.collect_params(start_period, end_period)
 
