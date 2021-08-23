@@ -53,7 +53,7 @@ class MyProvider(ProviderAbstract):
 
 ```python
 def test_my_provider(
-    create_etl_plugin_from_doc, work_policy, csv_transform_policy, csv_load_policy
+    work_policy, csv_transform_policy, csv_load_policy
 ):
     """Imports from flowmaster must be placed inside the tested functions."""
 
