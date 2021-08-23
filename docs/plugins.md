@@ -53,7 +53,7 @@ class MyProvider(ProviderAbstract):
 
 ```python
 def test_my_provider(
-    work_policy, csv_transform_policy, csv_load_policy
+    csv_transform_policy, csv_load_policy
 ):
     """Imports from flowmaster must be placed inside the tested functions."""
 
@@ -73,7 +73,6 @@ def test_my_provider(
         export=export_policy,
         transform=csv_transform_policy,
         load=csv_load_policy,
-        work=work_policy,
     )
     # Init class
     my_provider = MyProvider(notebook)
