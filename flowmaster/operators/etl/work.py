@@ -69,6 +69,6 @@ def ordering_etl_flow_tasks(
 
             with prepare_items_for_order(flow, start_period, end_period):
                 logger.info(
-                    "Order ETL flow [{}]: {} {}", flow.name, start_period, end_period
+                    "Order ETL flow [{}]: {} {}", notebook.name, start_period, end_period
                 )
                 yield etl_flow_task

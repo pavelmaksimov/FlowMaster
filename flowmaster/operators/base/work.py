@@ -110,14 +110,14 @@ def prepare_items_for_order(
 ):
     # The status is changed so that there is no repeated ordering of tasks.
     FlowItem.change_status(
-        flow.name,
+        flow.notebook.name,
         new_status=Statuses.run,
         from_time=start_period,
         to_time=end_period,
     )
     if flow.Work.expires is not None:
         FlowItem.change_expires(
-            flow.name,
+            flow.notebook.name,
             expires=flow.Work.expires,
             from_time=start_period,
             to_time=end_period,
