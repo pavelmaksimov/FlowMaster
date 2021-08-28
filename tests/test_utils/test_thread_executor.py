@@ -12,6 +12,7 @@ from flowmaster.executors import (
     ThreadAsyncExecutor,
     NextIterationInPools,
 )
+from flowmaster.flow import Flow
 from flowmaster.operators.etl.core import ETLOperator
 from flowmaster.operators.etl.dataschema import ExportContext
 from flowmaster.operators.etl.enums import DataOrient
@@ -192,3 +193,123 @@ def test_pools(ya_metrika_logs_to_csv_notebook):
 
     assert len(set(completed_tasks)) == count_task / pool_size
     assert sorted(completed_tasks)[-1] >= count_task * duration_func / pool_size
+
+
+def test_parallels(fakedata_to_csv_notebook):
+    """
+    Checking that 1 worker executes in 3 seconds,
+    processes with a total duration of 9 seconds.
+    """
+    fakedata_to_csv_notebook.export.rows = 100
+    flow1 = Flow(fakedata_to_csv_notebook)
+    flow2 = Flow(fakedata_to_csv_notebook)
+    task1 = flow1.task(start_period=dt.datetime.now(), end_period=dt.datetime.now())
+    task2 = flow2.task(start_period=dt.datetime.now(), end_period=dt.datetime.now())
+
+    next(task1), next(task1), next(task2), next(task2)
+    while True:
+        next(task1)
+        assert flow2.Load.__enter == True
+        if flow1.Load.__enter == False:
+            break
+        next(task2)
+
+    list(task1)
+    assert flow2.Load.__enter == True
+    list(task2)
+    assert flow2.Load.__enter == False
+
+
+def test_parallels2(fakedata_to_csv_notebook):
+    """
+    Checking that 1 worker executes in 3 seconds,
+    processes with a total duration of 9 seconds.
+    """
+    flow1 = Flow(fakedata_to_csv_notebook)
+    flow2 = Flow(fakedata_to_csv_notebook)
+    flow1.Load.__enter = True
+    assert flow1.Load.__enter == True
+    assert flow2.Load.__enter == False
+
+    flow2.Load.__enter = False
+    assert flow1.Load.__enter == True
+    assert flow2.Load.__enter == False
+
+    flow2.Load.__enter = True
+    assert flow1.Load.__enter == True
+    assert flow2.Load.__enter == True
+
+    flow2.Load.__enter = False
+    assert flow1.Load.__enter == True
+    assert flow2.Load.__enter == False
+
+    flow1.Load.__enter = False
+    assert flow1.Load.__enter == False
+    assert flow2.Load.__enter == False
+
+
+def test_sanity_iterator_sleep_task(fakedata_to_csv_notebook):
+    export_iters = 5
+    count_order_tasks = 10
+    workers = 4
+    lst_size = 1000
+    wait = 180
+    pools.append_pools({"my": 2})
+
+    class Export:
+        def __call__(self, *args, **kwargs):
+            for i in range(export_iters):
+                yield NextIterationInPools(pool_names=["my"], sleep=0)
+                yield [i for i in range(lst_size)]
+
+    class Loader:
+        def __init__(self):
+            self._enter = False
+            self._dict = None
+
+        def __enter__(self):
+            self._enter = True
+            self._dict = {"enter": 1}
+            return self
+
+        def __exit__(self, exc_type, exc_val, exc_tb):
+            self._enter = False
+            del self._dict["enter"]
+
+        def __call__(self, lst):
+            if self._enter is False:
+                raise Exception("Call through the context manager")
+
+            print(len(lst))
+
+    class Operator:
+        def __init__(self):
+            self.Export = Export()
+            self.Loader = Loader()
+
+        def __call__(self, *args, **kwargs):
+            yield
+            with self.Loader as load:
+                for lst in self.Export():
+                    yield
+                    if isinstance(lst, list):
+                        load(lst)
+                    yield
+            yield
+
+        def task(self, *args, **kwargs) -> ExecutorIterationTask:
+            """Flow wrapper for scheduler and executor."""
+            return ExecutorIterationTask(
+                self(*args, **kwargs), expires=None, soft_time_limit_seconds=None
+            )
+
+    def order_tasks(*args, **kwargs) -> Iterator[ExecutorIterationTask]:
+        for _ in range(count_order_tasks):
+            flow = Operator()
+            task = flow.task()
+            yield task
+
+    executor = ThreadAsyncExecutor(ordering_task_func=order_tasks)
+    executor.start(workers=workers, interval=1)
+    time.sleep(wait)
+    executor.stop()
