@@ -36,6 +36,8 @@ class BaseOperator:
                     self.notebook.work.concurrency,
                 )
 
+        self._task: bool = False
+
     def add_pool(self, name: str, limit: int) -> None:
         from flowmaster.pool import pools
 
@@ -109,6 +111,9 @@ class BaseOperator:
 
     def task(self, *args, **kwargs) -> ExecutorIterationTask:
         """Flow wrapper for scheduler and executor."""
+        if self._task is not False:
+            raise PermissionError("For one class object, you can create one task")
+        self._task = True
         return ExecutorIterationTask(
             self._iterator(*args, **kwargs),
             expires=self.Work.expires,

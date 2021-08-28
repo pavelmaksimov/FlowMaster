@@ -62,9 +62,9 @@ def ordering_etl_flow_tasks(
             logger.error("ValidationError: '{}': {}", name, error)
             continue
 
-        flow = ETLOperator(notebook)
-
-        for start_period, end_period in flow.Work.iter_period_for_execute():
+        work = Work(notebook)
+        for start_period, end_period in work.iter_period_for_execute():
+            flow = ETLOperator(notebook)
             etl_flow_task = flow.task(start_period, end_period, dry_run=dry_run)
 
             with prepare_items_for_order(flow, start_period, end_period):
