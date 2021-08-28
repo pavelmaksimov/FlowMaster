@@ -195,17 +195,16 @@ class ThreadAsyncExecutor:
 
     def wake_sleep_func(self) -> None:
         """Get the task out of sleep and add it to the queue."""
-        new_sleeping_storage = {}
-        for sleep_task in self.sleeping_task_storage:
+        new_sleeping_storage = []
+        while self.sleeping_task_storage:
+            sleep_task = self.sleeping_task_storage.pop(0)
             sleep_task: ExecutorIterationTask
             if sleep_task.allow():
                 sleeptask_queue.put(sleep_task)
             else:
-                new_sleeping_storage[sleep_task.rest_of_sleep()] = sleep_task
+                new_sleeping_storage.append(sleep_task)
 
-        self.sleeping_task_storage = [
-            i[1] for i in sorted(new_sleeping_storage.items())
-        ]
+        self.sleeping_task_storage = new_sleeping_storage
 
     def fill_queue(self) -> None:
         """Adds new function to the queue"""
@@ -250,8 +249,6 @@ class ThreadAsyncExecutor:
                         self.sleeping_task_storage.append(task)
                     except Exception as exc:
                         logger.error("Fail task: {}", exc)
-                    except GeneratorExit:
-                        ...
                     finally:
                         queue_.task_done()
         except:

@@ -77,7 +77,7 @@ class ETLOperator(BaseOperator):
         dry_run: bool = False,
         **kwargs,
     ) -> Iterator[Union[dict, AsyncIterationT]]:
-
+        closed = False
         begin_time = time.time()
         try:
             yield {
@@ -148,17 +148,15 @@ class ETLOperator(BaseOperator):
             }
             raise
 
-        except Exception as er:
-            yield {
-                self.Model.status.name: Statuses.error,
-                self.Model.info.name: str(er),
-            }
+        except (GeneratorExit, RuntimeError):
+            self.logger.exception()
+            closed = True
             raise
 
-        except:
+        except (KeyboardInterrupt, Exception) as exc:
             yield {
                 self.Model.status.name: Statuses.error,
-                self.Model.info.name: "Unknown error",
+                self.Model.info.name: str(exc),
             }
             raise
 
@@ -172,10 +170,11 @@ class ETLOperator(BaseOperator):
             }
 
         finally:
-            yield {
-                self.Model.finished_utc.name: pendulum.now("UTC"),
-                self.Model.duration.name: round(time.time() - begin_time) or 1,
-            }
+            if not closed:
+                yield {
+                    self.Model.finished_utc.name: pendulum.now("UTC"),
+                    self.Model.duration.name: round(time.time() - begin_time) or 1,
+                }
 
     @staticmethod
     def _get_period_text(start_period: dt.datetime, end_period: dt.datetime) -> str:
@@ -232,9 +231,10 @@ class ETLOperator(BaseOperator):
                     self.Model.update_items(self.items, **log_data)
                     self.logger.info("{}: {}", self.notebook.name, log_data)
 
-                yield item
+                if isinstance(item, (SleepIteration, NextIterationInPools)):
+                    yield item
 
-        except:
+        except Exception:
             self.logger.exception("Fail flow: {}  {}", self.notebook.name, period_text)
             if dry_run is False:
                 self.send_notifications(
