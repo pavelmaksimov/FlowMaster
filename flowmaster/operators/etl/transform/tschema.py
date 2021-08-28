@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Any, Optional, Union
 
 import pydantic
+from datagun import Series
 
 from flowmaster.operators.etl.transform.policy import DTypeLiteralT
 from flowmaster.operators.etl.transform.policy import ErrorPolicyLiteralT
@@ -19,6 +20,7 @@ class TransformSchemaData(pydantic.BaseModel):
     null_values: Union[list, tuple, set]
     timezone: Optional[str] = None
     dtype: Optional[DTypeLiteralT] = None
+    depth: Optional[int] = None
 
 
 class StorageTransformSchemaAbstract(ABC):
@@ -31,6 +33,7 @@ class StorageTransformSchemaAbstract(ABC):
     ) -> list[dict]:
         pass
 
+# TODO: Move to loaders
 
 class FileTransformSchema(StorageTransformSchemaAbstract):
     name = "csv"
@@ -103,14 +106,26 @@ class ClickhouseTransformSchema(StorageTransformSchemaAbstract):
             "DateTime": "datetime",
             "Date": "date",
         }
+
+        column_name = self.get_insert_col_name(export_colname)
+        for col_schema in self.table_schema_columns:
+            col_schema = col_schema.split(" ")
+            name, dtype = col_schema[0], col_schema[1]
+            dtype = Series._parse_dtype(dtype)
+            if name == column_name:
+                for db_dtype in dtype_map:
+                    if db_dtype in dtype:
+                        return dtype_map[db_dtype]
+
+        raise KeyError("Column type not matched")
+
+    def get_depth(self, export_colname: str):
         column_name = self.get_insert_col_name(export_colname)
         for col_schema in self.table_schema_columns:
             col_schema = col_schema.split(" ")
             name, dtype = col_schema[0], col_schema[1]
             if name == column_name:
-                for db_dtype in dtype_map:
-                    if db_dtype in dtype:
-                        return dtype_map[db_dtype]
+                return dtype.count("Array")
 
         raise KeyError("Column type not matched")
 
@@ -141,6 +156,7 @@ class ClickhouseTransformSchema(StorageTransformSchemaAbstract):
                         "allow_null": self.get_null_policy(export_colname),
                         "null_value": self.null_default_value,
                         "null_values": self.null_values,
+                        "depth": self.get_depth(export_colname),
                         **self.column_schema.get(export_colname, {}),
                     }
                 )
