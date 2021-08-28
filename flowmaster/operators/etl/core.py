@@ -165,7 +165,6 @@ class ETLOperator(BaseOperator):
             self.operator_context.export_kwargs.clear()
             yield {
                 self.Model.status.name: Statuses.success,
-                self.Model.retries.name: 0,
                 self.Model.data.name: self.operator_context.dict(exclude_unset=True),
             }
 
