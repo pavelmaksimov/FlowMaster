@@ -6,7 +6,6 @@ import time
 from typing import Optional, TypeVar, Union, Callable
 
 import pendulum
-from pydantic import BaseModel, PrivateAttr
 
 from flowmaster.executors.exceptions import (
     ExpiredError,
@@ -34,10 +33,10 @@ def catch_exceptions(func):
     return wrapper
 
 
-class SleepIteration(BaseModel):
-    sleep: int
-    _time_begin: pendulum.datetime = PrivateAttr(default_factory=pendulum.now)
-    _this_is_sleeptask = PrivateAttr(default=True)
+class SleepIteration:
+    def __init__(self, sleep):
+        self.sleep = sleep
+        self._time_begin = pendulum.now()
 
     def reset(self):
         self._time_begin = pendulum.now()
@@ -50,11 +49,11 @@ class SleepIteration(BaseModel):
         return max(0, a)
 
 
-class NextIterationInPools(BaseModel):
-    pool_names: Optional[list[str]]
-    sleep: int = 1
-    _time_begin: pendulum.datetime = PrivateAttr(default_factory=pendulum.now)
-    _this_is_taskpool = PrivateAttr(default=True)
+class NextIterationInPools:
+    def __init__(self, pool_names: Optional[list[str]], sleep=1):
+        self.pool_names = pool_names
+        self.sleep = sleep
+        self._time_begin = pendulum.now()
 
     def allow(self) -> bool:
         return pools.allow(self.pool_names)
@@ -125,7 +124,7 @@ class ExecutorIterationTask:
             result = self._sleep_item
             self._sleep_item = None
 
-        if getattr(result, "_this_is_taskpool", False):
+        if isinstance(result, NextIterationInPools):
             with threading_lock:
                 pool: NextIterationInPools = result
                 if not pool.allow():
@@ -140,7 +139,7 @@ class ExecutorIterationTask:
             finally:
                 pool.done()
 
-        elif getattr(result, "_this_is_sleeptask", False):
+        elif isinstance(result, SleepIteration):
             sleep_iteration: SleepIteration = result
             if not sleep_iteration.allow():
                 self._sleep_item = sleep_iteration
@@ -178,7 +177,7 @@ class ExecutorIterationTask:
             while True:
                 try:
                     yield next(self)
-                except SleepException as sleep_iteration:
+                except (SleepException, PoolOverflowingException) as sleep_iteration:
                     time.sleep(sleep_iteration.sleep)
                 except StopIteration:
                     break
@@ -245,7 +244,7 @@ class ThreadAsyncExecutor:
                     queue_, task = queue_and_task
                     try:
                         list(task)
-                    except SleepException:
+                    except (SleepException, PoolOverflowingException):
                         self.sleeping_task_storage.append(task)
                     except Exception as exc:
                         logger.error("Fail task: {}", exc)
@@ -294,16 +293,19 @@ class ThreadAsyncExecutor:
 
                     logger.info("Pool info: {}", pools.info_text())
                     logger.info(
-                        "The number of new tasks in the queue: {}", task_queue.qsize()
+                        "The number of new tasks in the queue: {}",
+                        task_queue.qsize() + sleeptask_queue.qsize(),
                     )
                     logger.info(
                         "Number of sleeping tasks in the queue: {}",
-                        sleeptask_queue.qsize(),
+                        len(self.sleeping_task_storage),
                     )
 
                     if orders is None or num_order < orders:
                         self.fill_queue()
                         num_order += 1
+                    else:
+                        break
 
                 time.sleep(0 if self.dry_run else 1)
                 duration += time.time() - iter_begin
@@ -314,7 +316,7 @@ class ThreadAsyncExecutor:
             target=scheduler,
             name="Flowmaster_scheduler",
         )
-        self.threads["schedule_thread"] = schedule_thread
+        self.threads[schedule_thread.name] = schedule_thread
         schedule_thread.start()
 
     def start(
