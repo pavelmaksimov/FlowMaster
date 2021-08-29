@@ -25,9 +25,6 @@ class CSVLoader:
     transform_policy_model = CSVTransformPolicy
     data_orient = DataOrient.values
 
-    _enter = False
-    _is_add_columns = None
-
     def __init__(self, notebook: "ETLNotebook", logger: Optional[Logger] = None):
         self.notebook = notebook
         self.path = notebook.load.path
@@ -57,6 +54,8 @@ class CSVLoader:
         self.insert_counter = 0
         self.file_path = pathlib.Path(self.path) / self.file_name
         self.open_file = partial(open, self.file_path, encoding=self.encoding)
+        self._is_add_columns = None
+        self.__enter = False
 
     def update_context(self, model: "ETLContext") -> None:
         model.path = str(self.file_path)
@@ -70,7 +69,7 @@ class CSVLoader:
         return data
 
     def __enter__(self) -> "CSVLoader":
-        self._enter = True
+        self.__enter = True
         self._is_add_columns = self.save_mode == "w" or not pathlib.Path.exists(
             self.file_path
         )
@@ -81,7 +80,7 @@ class CSVLoader:
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        self._enter = False
+        self.__enter = False
         self.insert_counter = 0
 
         with self.open_file(mode="a") as f:
@@ -89,7 +88,7 @@ class CSVLoader:
         self.logger.info("Save data to file: {}", f.name)
 
     def __call__(self, context: "TransformContext", *args, **kwargs) -> None:
-        if self._enter is False:
+        if self.__enter is False:
             raise Exception("Call through the context manager")
 
         self.columns = context.insert_columns
