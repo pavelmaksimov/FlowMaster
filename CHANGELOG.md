@@ -1,5 +1,11 @@
 # CHANGELOG
 
+# v0.7.1
+### 2021.08.29
+- prevented planned of tasks from one instance of the operator class
+- fixed error GeneratorExit
+- fixed transform array type for Clickhouse loader
+
 # v0.7.0
 ### 2021.08.22
 
