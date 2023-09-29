@@ -89,7 +89,7 @@ pyasn1==0.4.8
     # via
     #   pyasn1-modules
     #   rsa
-pydantic==1.8.1
+pydantic==2.4.0
     # via
     #   -r requirements.in
     #   fastapi
