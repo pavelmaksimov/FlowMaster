@@ -1,4 +1,4 @@
-FROM python:3.9-slim
+FROM python:3.12.0b1-slim
 LABEL autor="Pavel Maksimov"
 LABEL maintainer="vur21@ya.ru"
 
